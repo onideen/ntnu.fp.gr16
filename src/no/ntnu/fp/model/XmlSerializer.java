@@ -26,7 +26,7 @@ import nu.xom.ParsingException;
  */
 public class XmlSerializer {
 	
-	DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM, java.util.Locale.US);
+	static DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM, java.util.Locale.US);
 	
 	public Document toXml(Project aProject) {
 		Element root = new Element("project");
@@ -103,7 +103,7 @@ public class XmlSerializer {
 		return format.parse(date);
 	}
 	
-	private Element messageToXml(Message m) {
+	public static Element messageToXml(Message m) {
 		Element e = new Element("message");
 		
 		appendChildren(e,
@@ -111,23 +111,26 @@ public class XmlSerializer {
 				createElement(Message.PROPERTY_CONTENT, m.getContent()),
 				createElement(Message.PROPERTY_RECEIVER, m.getReceiver()),
 				createElement(Message.PROPERTY_TIMESENT, m.getTimeSent()),
-				createElement(Message.PROPERTY_TYPE, m.getType().toString())
+				createElement(Message.PROPERTY_TYPE, m.getType().toString()),
+				createElement(Message.PROPERTY_EVENT, m.getEvent())
+
 				);
 		
 		return e;
 	}
 	
-	private Message toMessage(Element m) throws ParseException {
+	public static Message toMessage(Element m) throws ParseException {
 		return new Message(
 				readInt(m, Message.PROPERTY_MID),
 				readString(m, Message.PROPERTY_CONTENT),
 				readDate(m, Message.PROPERTY_TIMESENT),
 				readString(m, Message.PROPERTY_TYPE),
-				readString(m, Message.PROPERTY_RECEIVER)
+				readString(m, Message.PROPERTY_RECEIVER),
+				readInt(m, Message.PROPERTY_EVENT)
 				);
 	}
 	
-	private Element eventToXml(Event m) {
+	public static Element eventToXml(Event m) {
 		Element e = new Element("event");
 		
 		appendChildren(e,
@@ -137,13 +140,14 @@ public class XmlSerializer {
 				createElement(Event.PROPERTY_ENDTIME, m.getEndTime()),
 				createElement(Event.PROPERTY_RESERVATIONID, m.getReservationID()),
 				createElement(Event.PROPERTY_STARTTIME, m.getStartTime()),
-				createElement(Event.PROPERTY_TYPE, m.getType().toString())
+				createElement(Event.PROPERTY_TYPE, m.getType().toString()),
+				createElement(Event.PROPERTY_RESPONSIBLE, m.getResponsible())
 				);
 		
 		return e;
 	}
 	
-	private Event toEvent(Element m) throws ParseException {
+	public static Event toEvent(Element m) throws ParseException {
 		return new Event(
 				readInt(m, Event.PROPERTY_EID),
 				readString(m, Event.PROPERTY_TYPE),
@@ -151,50 +155,104 @@ public class XmlSerializer {
 				readString(m, Event.PROPERTY_DESCRIPTION),
 				readDate(m, Event.PROPERTY_DATE),
 				readDate(m, Event.PROPERTY_STARTTIME),
+				readDate(m, Event.PROPERTY_ENDTIME),
+				readString(m, Event.PROPERTY_RESPONSIBLE)
+
+				);
+	}
+	
+	public static Element reservationToXml(Reservation m) {
+		Element e = new Element("event");
+		
+		appendChildren(e,
+				createElement(Event.PROPERTY_RESERVATIONID, m.getReservationID()),
+				createElement(Event.PROPERTY_EID, m.getEventID()),
+				createElement(Event.PROPERTY_RESPONSIBLE, m.getResponsible()),
+				createElement(Room.PROPERTY_NAME, m.getRoomName()),
+				createElement(Event.PROPERTY_DATE, m.getDate()),
+				createElement(Event.PROPERTY_STARTTIME, m.getStartTime()),
+				createElement(Event.PROPERTY_ENDTIME, m.getEndTime())
+				);
+		
+		return e;
+	}
+	
+	public static Reservation toReservation(Element m) throws ParseException {
+		return new Reservation(
+				readInt(m, Event.PROPERTY_RESERVATIONID),
+				readInt(m,Event.PROPERTY_EID),
+				readString(m, Event.PROPERTY_RESPONSIBLE),
+				readString(m, Room.PROPERTY_NAME),
+				readDate(m, Event.PROPERTY_DATE),
+				readDate(m, Event.PROPERTY_STARTTIME),
 				readDate(m, Event.PROPERTY_ENDTIME)
 				);
 	}
 	
-	private String readString(Element m, String id)
+	public static Element roomToXml(Room m) {
+		Element e = new Element("event");
+		
+		appendChildren(e,
+				createElement(Room.PROPERTY_NAME, m.getName()),
+				createElement(Room.PROPERTY_SIZE, m.getSize())
+				);
+		
+		return e;
+	}
+	
+	public static Room toRoom(Element m) throws ParseException {
+		return new Room(
+				readString(m, Room.PROPERTY_NAME),
+				readInt(m, Room.PROPERTY_SIZE)
+				);
+	}
+	
+	public static String readString(Element m, String id)
 	{
 		return m.getFirstChildElement(id).getValue();
 	}
 	
-	private int readInt(Element m, String id)
+	public static int readInt(Element m, String id)
 	{
 		return Integer.parseInt(readString(m, id));
 	}
 	
-	private Date readDate(Element m, String id) throws ParseException
+	public static Date readDate(Element m, String id) throws ParseException
 	{
 		return format.parse(readString(m, id));
 	}
 	
-	private Element createElement(String key, String value)
+	public static Element createElement(String key, String value)
 	{
 		Element e = new Element(key);
 		e.appendChild(value);
 		return e;
 	}
 	
-	private Element createElement(String key, int value)
+	public static Element createElement(String key, int value)
 	{
 		Element e = new Element(key);
 		e.appendChild(Integer.toString(value));
 		return e;
 	}
 	
-	private Element createElement(String key, Date value)
+	public static Element createElement(String key, Date value)
 	{
 		Element e = new Element(key);
 		e.appendChild(format.format(value));
 		return e;
 	}
+	
+	public static Element createElement(String key, Element... children)
+	{
+		Element e = new Element(key);
+		appendChildren(e, children);
+		return e;
+	}
 
-	private void appendChildren(Element e, Element...elements)
+	public static void appendChildren(Element e, Element...elements)
 	{
 		for(Element child:elements)
 			e.appendChild(child);
 	}
 }
-

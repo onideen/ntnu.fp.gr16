@@ -16,6 +16,7 @@ public class Event {
 	Date endTime;
 	String description;
 	Type type;
+	String responsible;
 	
 	public enum Type{
 		Meeting,
@@ -31,8 +32,10 @@ public class Event {
 	public final static String PROPERTY_ENDTIME = "endtime";
 	public final static String PROPERTY_DESCRIPTION = "description";
 	public final static String PROPERTY_TYPE = "type";
+	public final static String PROPERTY_RESPONSIBLE = "responsible";
+
 	
-	public Event(int eid, String type, int resID, String desc, Date date, Date start, Date end)
+	public Event(int eid, String type, int resID, String desc, Date date, Date start, Date end, String responsible)
 	{
 		this.eid=eid;
 		this.type=Type.valueOf(type);
@@ -41,6 +44,7 @@ public class Event {
 		this.date=date;
 		this.startTime=start;
 		this.endTime=end;
+		this.responsible=responsible;
 	}
 	
 	public int getEid() {
@@ -120,7 +124,15 @@ public class Event {
 		propChangeSupp.firePropertyChange(event);
 	}
 	
-	public List<Person> getAttendees(){
-		throw new NotImplementedException();
+	public String getResponsible() {
+		return responsible;
 	}
+	
+	public void setResponsible(String responsible) {
+		String old = this.responsible;
+		this.responsible = responsible;
+		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_RESPONSIBLE, old, responsible);
+		propChangeSupp.firePropertyChange(event);
+	}
+	
 }
