@@ -12,19 +12,15 @@ import nu.xom.ParsingException;
 
 public class Communication {
 
-	private static ServerResponse sendData(String function, Element...parameters)
-	{
-		Element e = new Element(function);
-		for(Element o : parameters)
-			e.appendChild(o);
-		
-		//TODO: Do magic.
-		throw new NotImplementedException();
+	private static ServerResponse sendData(String function, Object...parameters)
+	{		
+		ServerRequest sr = new ServerRequest(function, parameters);
+		return sr.sendRequest();
 	}
 	
 	public static List<Message> getMessages(String email)
 	{
-		ServerResponse sr = sendData("getMessages", XmlSerializer.createElement("email", email));
+		ServerResponse sr = sendData("getMessages", email);
 		if(sr.isSuccess())
 		{
 			ArrayList<Message> messages = new ArrayList<Message>();
@@ -62,7 +58,7 @@ public class Communication {
 	
 	public static boolean saveMessage(Message m)
 	{
-		ServerResponse sr = sendData("saveMessage", XmlSerializer.messageToXml(m));
+		ServerResponse sr = sendData("saveMessage", m);
 		if(sr.isSuccess())
 			m.setMid(XmlSerializer.readInt(sr.returnData, Message.PROPERTY_MID));
 		return sr.isSuccess();
@@ -71,7 +67,7 @@ public class Communication {
 	
 	public static boolean saveEvent(Event e)
 	{
-		ServerResponse sr = sendData("saveEvent", XmlSerializer.eventToXml(e));
+		ServerResponse sr = sendData("saveEvent", e);
 		if(sr.isSuccess())
 			e.setEid(XmlSerializer.readInt(sr.returnData, Event.PROPERTY_EID));
 		return sr.isSuccess();
@@ -79,7 +75,7 @@ public class Communication {
 	
 	public static boolean saveReservation(Reservation r)
 	{
-		ServerResponse sr = sendData("saveReservation", XmlSerializer.reservationToXml(r));
+		ServerResponse sr = sendData("saveReservation", r);
 		if(sr.isSuccess())
 			r.setReservationID(XmlSerializer.readInt(sr.returnData, Event.PROPERTY_RESERVATIONID));
 		return sr.isSuccess();
@@ -87,17 +83,17 @@ public class Communication {
 	
 	public static boolean deleteMessage(Message m)
 	{
-		return sendData("deleteMessage", XmlSerializer.createElement("message", XmlSerializer.createElement(Message.PROPERTY_MID, m.getMid()))).isSuccess();
+		return sendData("deleteMessage", m.getMid()).isSuccess();
 	}
 	
 	public static boolean deleteEvent(Event e)
 	{
-		return sendData("deleteEvent", XmlSerializer.createElement("event", XmlSerializer.createElement(Message.PROPERTY_MID, e.getEid()))).isSuccess();
+		return sendData("deleteEvent", e.getEid()).isSuccess();
 	}
 	
 	public static boolean deleteReservation(Reservation r)
 	{
-		return sendData("deleteReservation", XmlSerializer.reservationToXml(r)).isSuccess();
+		return sendData("deleteReservation", r.getReservationID()).isSuccess();
 	}
 	
 	public static boolean updateEvent(Event e)
@@ -107,12 +103,12 @@ public class Communication {
 	
 	public static boolean updateReservation(Reservation r)
 	{
-		return sendData("updateReservation", XmlSerializer.reservationToXml(r)).isSuccess();
+		return sendData("updateReservation", r).isSuccess();
 	}
 	
 	public static List<Room> getFreeRooms(Reservation r)
 	{
-		ServerResponse sr = sendData("getFreeRooms", XmlSerializer.reservationToXml(r));
+		ServerResponse sr = sendData("getFreeRooms", r);
 		if(sr.isSuccess())
 		{
 			ArrayList<Room> rooms = new ArrayList<Room>();
@@ -131,13 +127,7 @@ public class Communication {
 	
 	public static boolean answerMessage(Message m, boolean answer)
 	{
-		Element a = new Element("answer");
-		XmlSerializer.appendChildren(a,
-				XmlSerializer.createElement(Message.PROPERTY_MID, m.getMid()),
-				XmlSerializer.createElement("answer",Boolean.toString(answer))
-				);
-		
-		ServerResponse sr = sendData("answerMessage", a);
+		ServerResponse sr = sendData("answerMessage", m.getMid(), answer);
 		
 		return sr.isSuccess();
 	}

@@ -134,4 +134,5 @@ public class Event {
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_RESPONSIBLE, old, responsible);
 		propChangeSupp.firePropertyChange(event);
 	}
+	
 }
