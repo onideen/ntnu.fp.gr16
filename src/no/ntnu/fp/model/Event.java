@@ -32,6 +32,17 @@ public class Event {
 	public final static String PROPERTY_DESCRIPTION = "description";
 	public final static String PROPERTY_TYPE = "type";
 	
+	public Event(int eid, String type, int resID, String desc, Date date, Date start, Date end)
+	{
+		this.eid=eid;
+		this.type=Type.valueOf(type);
+		this.reservationID=resID;
+		this.description=desc;
+		this.date=date;
+		this.startTime=start;
+		this.endTime=end;
+	}
+	
 	public int getEid() {
 		return eid;
 	}

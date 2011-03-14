@@ -24,6 +24,15 @@ public class Message {
 		Invitation, 
 		Information
 	}
+	
+	public Message(int mid, String content, Date timeSent, String type, String receiver)
+	{
+		this.mid=mid;
+		this.content=content;
+		this.timeSent=timeSent;
+		this.type=Type.valueOf(type);
+		this.receiver=receiver;
+	}
 
 	public final int getMid() {
 		return mid;

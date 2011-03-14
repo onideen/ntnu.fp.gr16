@@ -106,73 +106,92 @@ public class XmlSerializer {
 	private Element messageToXml(Message m) {
 		Element e = new Element("message");
 		
-		AppendChildren(e,
-				CreateElement(Message.PROPERTY_MID, m.getMid()),
-				CreateElement(Message.PROPERTY_CONTENT, m.getContent()),
-				CreateElement(Message.PROPERTY_RECEIVER, m.getReceiver()),
-				CreateElement(Message.PROPERTY_TIMESENT, m.getTimeSent()),
-				CreateElement(Message.PROPERTY_TYPE, m.getType().ordinal())
+		appendChildren(e,
+				createElement(Message.PROPERTY_MID, m.getMid()),
+				createElement(Message.PROPERTY_CONTENT, m.getContent()),
+				createElement(Message.PROPERTY_RECEIVER, m.getReceiver()),
+				createElement(Message.PROPERTY_TIMESENT, m.getTimeSent()),
+				createElement(Message.PROPERTY_TYPE, m.getType().toString())
 				);
 		
 		return e;
 	}
 	
 	private Message toMessage(Element m) throws ParseException {
-		String name = null, email = null;
-		Date date = null;
-		Element element = m.getFirstChildElement("name");
-		if (element != null) {
-			name = element.getValue();
-		}
-		element = personElement.getFirstChildElement("email");
-		if (element != null) {
-			email = element.getValue();
-		}
-		element = personElement.getFirstChildElement("date-of-birth");
-		if (element != null) {
-			date = parseDate(element.getValue());
-		}
-		return new Person(name, email, date);
+		return new Message(
+				readInt(m, Message.PROPERTY_MID),
+				readString(m, Message.PROPERTY_CONTENT),
+				readDate(m, Message.PROPERTY_TIMESENT),
+				readString(m, Message.PROPERTY_TYPE),
+				readString(m, Message.PROPERTY_RECEIVER)
+				);
 	}
 	
 	private Element eventToXml(Event m) {
 		Element e = new Element("event");
 		
-		AppendChildren(e,
-				CreateElement(Event.PROPERTY_EID, m.getEid()),
-				CreateElement(Event.PROPERTY_DATE, m.getDate()),
-				CreateElement(Event.PROPERTY_DESCRIPTION, m.getDescription()),
-				CreateElement(Event.PROPERTY_ENDTIME, m.getEndTime()),
-				CreateElement(Event.PROPERTY_RESERVATIONID, m.getReservationID()),
-				CreateElement(Event.PROPERTY_STARTTIME, m.getStartTime()),
-				CreateElement(Event.PROPERTY_TYPE, m.getType().ordinal())
+		appendChildren(e,
+				createElement(Event.PROPERTY_EID, m.getEid()),
+				createElement(Event.PROPERTY_DATE, m.getDate()),
+				createElement(Event.PROPERTY_DESCRIPTION, m.getDescription()),
+				createElement(Event.PROPERTY_ENDTIME, m.getEndTime()),
+				createElement(Event.PROPERTY_RESERVATIONID, m.getReservationID()),
+				createElement(Event.PROPERTY_STARTTIME, m.getStartTime()),
+				createElement(Event.PROPERTY_TYPE, m.getType().toString())
 				);
 		
 		return e;
 	}
 	
-	private Element CreateElement(String key, String value)
+	private Event toEvent(Element m) throws ParseException {
+		return new Event(
+				readInt(m, Event.PROPERTY_EID),
+				readString(m, Event.PROPERTY_TYPE),
+				readInt(m, Event.PROPERTY_RESERVATIONID),
+				readString(m, Event.PROPERTY_DESCRIPTION),
+				readDate(m, Event.PROPERTY_DATE),
+				readDate(m, Event.PROPERTY_STARTTIME),
+				readDate(m, Event.PROPERTY_ENDTIME)
+				);
+	}
+	
+	private String readString(Element m, String id)
+	{
+		return m.getFirstChildElement(id).getValue();
+	}
+	
+	private int readInt(Element m, String id)
+	{
+		return Integer.parseInt(readString(m, id));
+	}
+	
+	private Date readDate(Element m, String id) throws ParseException
+	{
+		return format.parse(readString(m, id));
+	}
+	
+	private Element createElement(String key, String value)
 	{
 		Element e = new Element(key);
 		e.appendChild(value);
 		return e;
 	}
 	
-	private Element CreateElement(String key, int value)
+	private Element createElement(String key, int value)
 	{
 		Element e = new Element(key);
 		e.appendChild(Integer.toString(value));
 		return e;
 	}
 	
-	private Element CreateElement(String key, Date value)
+	private Element createElement(String key, Date value)
 	{
 		Element e = new Element(key);
 		e.appendChild(format.format(value));
 		return e;
 	}
 
-	private void AppendChildren(Element e, Element...elements)
+	private void appendChildren(Element e, Element...elements)
 	{
 		for(Element child:elements)
 			e.appendChild(child);
