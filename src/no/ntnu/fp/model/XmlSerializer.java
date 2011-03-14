@@ -25,7 +25,9 @@ import nu.xom.ParsingException;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class XmlSerializer {
-
+	
+	DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM, java.util.Locale.US);
+	
 	public Document toXml(Project aProject) {
 		Element root = new Element("project");
 		
@@ -59,7 +61,6 @@ public class XmlSerializer {
     }
 	
 	private Element personToXml(Person aPerson) {
-		DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM, java.util.Locale.US);
 		Element element = new Element("person");
 		Element name = new Element("name");
 		name.appendChild(aPerson.getName());
@@ -99,9 +100,82 @@ public class XmlSerializer {
 	 * @throws ParseException
 	 */
 	private Date parseDate(String date) throws ParseException {
-		DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM, java.util.Locale.US);
 		return format.parse(date);
 	}
+	
+	private Element messageToXml(Message m) {
+		Element e = new Element("message");
+		
+		AppendChildren(e,
+				CreateElement(Message.PROPERTY_MID, m.getMid()),
+				CreateElement(Message.PROPERTY_CONTENT, m.getContent()),
+				CreateElement(Message.PROPERTY_RECEIVER, m.getReceiver()),
+				CreateElement(Message.PROPERTY_TIMESENT, m.getTimeSent()),
+				CreateElement(Message.PROPERTY_TYPE, m.getType().ordinal())
+				);
+		
+		return e;
+	}
+	
+	private Message toMessage(Element m) throws ParseException {
+		String name = null, email = null;
+		Date date = null;
+		Element element = m.getFirstChildElement("name");
+		if (element != null) {
+			name = element.getValue();
+		}
+		element = personElement.getFirstChildElement("email");
+		if (element != null) {
+			email = element.getValue();
+		}
+		element = personElement.getFirstChildElement("date-of-birth");
+		if (element != null) {
+			date = parseDate(element.getValue());
+		}
+		return new Person(name, email, date);
+	}
+	
+	private Element eventToXml(Event m) {
+		Element e = new Element("event");
+		
+		AppendChildren(e,
+				CreateElement(Event.PROPERTY_EID, m.getEid()),
+				CreateElement(Event.PROPERTY_DATE, m.getDate()),
+				CreateElement(Event.PROPERTY_DESCRIPTION, m.getDescription()),
+				CreateElement(Event.PROPERTY_ENDTIME, m.getEndTime()),
+				CreateElement(Event.PROPERTY_RESERVATIONID, m.getReservationID()),
+				CreateElement(Event.PROPERTY_STARTTIME, m.getStartTime()),
+				CreateElement(Event.PROPERTY_TYPE, m.getType().ordinal())
+				);
+		
+		return e;
+	}
+	
+	private Element CreateElement(String key, String value)
+	{
+		Element e = new Element(key);
+		e.appendChild(value);
+		return e;
+	}
+	
+	private Element CreateElement(String key, int value)
+	{
+		Element e = new Element(key);
+		e.appendChild(Integer.toString(value));
+		return e;
+	}
+	
+	private Element CreateElement(String key, Date value)
+	{
+		Element e = new Element(key);
+		e.appendChild(format.format(value));
+		return e;
+	}
 
+	private void AppendChildren(Element e, Element...elements)
+	{
+		for(Element child:elements)
+			e.appendChild(child);
+	}
 }
 

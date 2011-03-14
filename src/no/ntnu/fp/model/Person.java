@@ -3,7 +3,9 @@ package no.ntnu.fp.model;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * The <code>Person</code> class stores information about a single person.
@@ -18,6 +20,10 @@ public class Person {
 	 * This member variable holds the person's name.
 	 */
 	private String name;
+	
+	private String password;
+	
+	private List<Event> events = new ArrayList<Event>();
 	
 	/**
 	 * This member variable holds the person's email address.
@@ -49,6 +55,7 @@ public class Person {
 	 * @see #setName(String) the setName(String) method
 	 */
 	public final static String NAME_PROPERTY_NAME = "name";
+	public final static String PASSWORD_PROPERTY_NAME = "password";
 
 	/**
 	 * Constant used when calling 
@@ -79,6 +86,7 @@ public class Person {
 	public Person() {
 		name = "";
 		email = "";
+		password="";
 		dateOfBirth = new Date();
 		id = System.currentTimeMillis();
 		propChangeSupp = new PropertyChangeSupport(this);
@@ -97,6 +105,13 @@ public class Person {
 		this.name = name;
 		this.email = email;
 		this.dateOfBirth = dateOfBirth;
+	}
+	
+	public Person(String name, String email, String password) {
+		this();
+		this.name = name;
+		this.email = email;
+		this.password = password;
 	}
 	
 	/**
@@ -199,6 +214,13 @@ public class Person {
 		propChangeSupp.firePropertyChange(event);
 	}
 	
+	public void setPassword(String p) {
+		String op=password;
+		password=p;
+		PropertyChangeEvent event = new PropertyChangeEvent(this, PASSWORD_PROPERTY_NAME, op, password);
+		propChangeSupp.firePropertyChange(event);
+	}
+	
 	/**
 	 * Returns the person's name.
 	 * 
@@ -233,6 +255,10 @@ public class Person {
 	 */
 	public long getId() {
 		return id;
+	}
+
+	public String getPassword() {
+		return password;
 	}
 
 	/**

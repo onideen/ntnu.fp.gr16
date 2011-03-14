@@ -64,7 +64,6 @@ public abstract class AbstractConnection implements Connection {
      * for a data packet and receiving an internal packet (e.g. ACK).
      */
     private List<KtnDatagram> internalQueue;
-
     /**
      * Unhandled external (application-destined) packets. Packets are put in
      * this queue when waiting for internal packets (e.g. ACK) and receiving a
