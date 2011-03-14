@@ -11,6 +11,7 @@ public class Message {
 	Date timeSent;
 	Type type;
 	String receiver;
+	int event;
 	
 	private PropertyChangeSupport propChangeSupp;
 
@@ -19,73 +20,96 @@ public class Message {
 	public final static String PROPERTY_TIMESENT = "timesent";
 	public final static String PROPERTY_TYPE = "type";
 	public final static String PROPERTY_RECEIVER = "receiver";
+	public final static String PROPERTY_EVENT = "event";
+
 	
 	public enum Type {
 		Invitation, 
 		Information
 	}
 	
-	public Message(int mid, String content, Date timeSent, String type, String receiver)
+	public Message(int mid, String content, Date timeSent, String type, String receiver, int event)
 	{
 		this.mid=mid;
 		this.content=content;
 		this.timeSent=timeSent;
 		this.type=Type.valueOf(type);
 		this.receiver=receiver;
+		this.event=event;
+	}
+	
+	
+	public Message(String content, Type type, String receiver, int event)
+	{
+		this.content=content;
+		this.type=type;
+		this.receiver=receiver;
+		this.event=event;
 	}
 
-	public final int getMid() {
+	public int getMid() {
 		return mid;
 	}
 
-	public final void setMid(int mid) {
+	public void setMid(int mid) {
 		int old = this.mid;
 		this.mid = mid;
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_MID, old, mid);
 		propChangeSupp.firePropertyChange(event);
 	}
 
-	public final String getContent() {
+	public String getContent() {
 		return content;
 	}
 
-	public final void setContent(String content) {
+	public void setContent(String content) {
 		Object old = this.content;
 		this.content = content;
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_CONTENT, old, content);
 		propChangeSupp.firePropertyChange(event);
 	}
 
-	public final Date getTimeSent() {
+	public Date getTimeSent() {
 		return timeSent;
 	}
 
-	public final void setTimeSent(Date timeSent) {
+	public void setTimeSent(Date timeSent) {
 		Object old = this.timeSent;
 		this.timeSent = timeSent;
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_TIMESENT, old, timeSent);
 		propChangeSupp.firePropertyChange(event);
 	}
 
-	public final Type getType() {
+	public Type getType() {
 		return type;
 	}
 
-	public final void setType(Type type) {
+	public void setType(Type type) {
 		Object old = this.type;
 		this.type = type;
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_TYPE, old, type);
 		propChangeSupp.firePropertyChange(event);
 	}
 
-	public final String getReceiver() {
+	public String getReceiver() {
 		return receiver;
 	}
 
-	public final void setReceiver(String receiver) {
+	public void setReceiver(String receiver) {
 		Object old = this.receiver;
 		this.receiver = receiver;
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_RECEIVER, old, receiver);
 		propChangeSupp.firePropertyChange(event);
+	}
+	
+	public int getEvent() {
+		return event;
+	}
+	
+	public void setEvent(int event) {
+		int old = this.event;
+		this.event = event;
+		PropertyChangeEvent pcEvent = new PropertyChangeEvent(this, PROPERTY_EVENT, old, event);
+		propChangeSupp.firePropertyChange(pcEvent);
 	}
 }
