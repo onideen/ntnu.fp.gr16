@@ -25,7 +25,9 @@ import nu.xom.ParsingException;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class XmlSerializer {
-
+	
+	DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM, java.util.Locale.US);
+	
 	public Document toXml(Project aProject) {
 		Element root = new Element("project");
 		
@@ -59,7 +61,6 @@ public class XmlSerializer {
     }
 	
 	private Element personToXml(Person aPerson) {
-		DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM, java.util.Locale.US);
 		Element element = new Element("person");
 		Element name = new Element("name");
 		name.appendChild(aPerson.getName());
@@ -99,9 +100,101 @@ public class XmlSerializer {
 	 * @throws ParseException
 	 */
 	private Date parseDate(String date) throws ParseException {
-		DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM, java.util.Locale.US);
 		return format.parse(date);
 	}
+	
+	private Element messageToXml(Message m) {
+		Element e = new Element("message");
+		
+		appendChildren(e,
+				createElement(Message.PROPERTY_MID, m.getMid()),
+				createElement(Message.PROPERTY_CONTENT, m.getContent()),
+				createElement(Message.PROPERTY_RECEIVER, m.getReceiver()),
+				createElement(Message.PROPERTY_TIMESENT, m.getTimeSent()),
+				createElement(Message.PROPERTY_TYPE, m.getType().toString())
+				);
+		
+		return e;
+	}
+	
+	private Message toMessage(Element m) throws ParseException {
+		return new Message(
+				readInt(m, Message.PROPERTY_MID),
+				readString(m, Message.PROPERTY_CONTENT),
+				readDate(m, Message.PROPERTY_TIMESENT),
+				readString(m, Message.PROPERTY_TYPE),
+				readString(m, Message.PROPERTY_RECEIVER)
+				);
+	}
+	
+	private Element eventToXml(Event m) {
+		Element e = new Element("event");
+		
+		appendChildren(e,
+				createElement(Event.PROPERTY_EID, m.getEid()),
+				createElement(Event.PROPERTY_DATE, m.getDate()),
+				createElement(Event.PROPERTY_DESCRIPTION, m.getDescription()),
+				createElement(Event.PROPERTY_ENDTIME, m.getEndTime()),
+				createElement(Event.PROPERTY_RESERVATIONID, m.getReservationID()),
+				createElement(Event.PROPERTY_STARTTIME, m.getStartTime()),
+				createElement(Event.PROPERTY_TYPE, m.getType().toString())
+				);
+		
+		return e;
+	}
+	
+	private Event toEvent(Element m) throws ParseException {
+		return new Event(
+				readInt(m, Event.PROPERTY_EID),
+				readString(m, Event.PROPERTY_TYPE),
+				readInt(m, Event.PROPERTY_RESERVATIONID),
+				readString(m, Event.PROPERTY_DESCRIPTION),
+				readDate(m, Event.PROPERTY_DATE),
+				readDate(m, Event.PROPERTY_STARTTIME),
+				readDate(m, Event.PROPERTY_ENDTIME)
+				);
+	}
+	
+	private String readString(Element m, String id)
+	{
+		return m.getFirstChildElement(id).getValue();
+	}
+	
+	private int readInt(Element m, String id)
+	{
+		return Integer.parseInt(readString(m, id));
+	}
+	
+	private Date readDate(Element m, String id) throws ParseException
+	{
+		return format.parse(readString(m, id));
+	}
+	
+	private Element createElement(String key, String value)
+	{
+		Element e = new Element(key);
+		e.appendChild(value);
+		return e;
+	}
+	
+	private Element createElement(String key, int value)
+	{
+		Element e = new Element(key);
+		e.appendChild(Integer.toString(value));
+		return e;
+	}
+	
+	private Element createElement(String key, Date value)
+	{
+		Element e = new Element(key);
+		e.appendChild(format.format(value));
+		return e;
+	}
 
+	private void appendChildren(Element e, Element...elements)
+	{
+		for(Element child:elements)
+			e.appendChild(child);
+	}
 }
 

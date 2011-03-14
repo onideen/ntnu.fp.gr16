@@ -1,1 +1,4 @@
 *.class
+build/classes/
+build/test
+Log/
