@@ -12,8 +12,8 @@ public class Room {
 	
 	private PropertyChangeSupport propChangeSupp;
 	
-	public final static String PROPERTY_NAME = "name";
-	public final static String PROPERTY_SIZE = "size";
+	public final static String PROPERTY_NAME = "roomname";
+	public final static String PROPERTY_SIZE = "roomsize";
 	
 	public Room(String n, int s)
 	{

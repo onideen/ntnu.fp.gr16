@@ -64,20 +64,6 @@ public class XmlSerializer {
 	return assemblePerson(doc.getRootElement());
     }
 	
-	private Element personToXml(Person aPerson) {
-		Element element = new Element("person");
-		Element name = new Element("name");
-		name.appendChild(aPerson.getName());
-		Element email = new Element("email");
-		email.appendChild(aPerson.getEmail());
-		Element dateOfBirth = new Element("date-of-birth");
-		dateOfBirth.appendChild(format.format(aPerson.getDateOfBirth()));
-		element.appendChild(name);
-		element.appendChild(email);
-		element.appendChild(dateOfBirth);
-		return element;
-	}
-	
 	private Person assemblePerson(Element personElement) throws ParseException {
 		String name = null, email = null;
 		Date date = null;
@@ -107,8 +93,52 @@ public class XmlSerializer {
 		return (Date) format.parse(date);
 	}
 	
+	public static Element createDataXml(String type, Element contents)
+	{
+		Element e = new Element("data");
+		appendChildren(e, 
+				createElement("type", type),
+				contents
+		);
+		
+		return e;
+	}
+	
+	public static String getTypeFromDataXml(Element e)
+	{
+		return readString(e, "type");
+	}
+	
+	public static Element getContentsFromDataXml(Element e)
+	{
+		return e.getFirstChildElement("contents");
+	}
+	
+	public static Element personToXml(Person p)
+	{
+		Element e = new Element("contents");
+		
+		appendChildren(e,
+				createElement(Person.NAME_PROPERTY_NAME, p.getName()),
+				createElement(Person.EMAIL_PROPERTY_NAME, p.getEmail()),
+				createElement(Person.PASSWORD_PROPERTY_NAME, p.getPassword())
+				);
+		
+		return createDataXml("Person", e);
+	}
+	
+	public static Person toPerson(Element e)
+	{
+		e = getContentsFromDataXml(e);
+		return new Person(
+				readString(e, Person.NAME_PROPERTY_NAME),
+				readString(e, Person.EMAIL_PROPERTY_NAME),
+				readString(e, Person.PASSWORD_PROPERTY_NAME)
+				);
+	}
+	
 	public static Element messageToXml(Message m) {
-		Element e = new Element("message");
+		Element e = new Element("contents");
 		
 		appendChildren(e,
 				createElement(Message.PROPERTY_MID, m.getMid()),
@@ -120,10 +150,11 @@ public class XmlSerializer {
 
 				);
 		
-		return e;
+		return createDataXml("Message", e);
 	}
 	
 	public static Message toMessage(Element m) throws ParseException {
+		m = getContentsFromDataXml(m);
 		return new Message(
 				readInt(m, Message.PROPERTY_MID),
 				readString(m, Message.PROPERTY_CONTENT),
@@ -135,7 +166,7 @@ public class XmlSerializer {
 	}
 	
 	public static Element eventToXml(Event m) {
-		Element e = new Element("event");
+		Element e = new Element("contents");
 		
 		appendChildren(e,
 				createElement(Event.PROPERTY_EID, m.getEid()),
@@ -149,10 +180,11 @@ public class XmlSerializer {
 				createElement(Room.PROPERTY_NAME, m.getRoom())
 				);
 		
-		return e;
+		return createDataXml("Event", e);
 	}
 	
 	public static Event toEvent(Element m) throws ParseException {
+		m = getContentsFromDataXml(m);
 		return new Event(
 				readInt(m, Event.PROPERTY_EID),
 				readString(m, Event.PROPERTY_TYPE),
@@ -166,44 +198,19 @@ public class XmlSerializer {
 				);
 	}
 	
-	public static Element reservationToXml(Reservation m) {
-		Element e = new Element("event");
-		
-		appendChildren(e,
-				createElement(Event.PROPERTY_EID, m.getEventID()),
-				createElement(Event.PROPERTY_RESPONSIBLE, m.getResponsible()),
-				createElement(Room.PROPERTY_NAME, m.getRoomName()),
-				createElement(Event.PROPERTY_DATE, m.getDate()),
-				createElement(Event.PROPERTY_STARTTIME, m.getStartTime()),
-				createElement(Event.PROPERTY_ENDTIME, m.getEndTime())
-				);
-		
-		return e;
-	}
-
-	public static Reservation toReservation(Element m) throws ParseException {
-		return new Reservation(
-				readInt(m,Event.PROPERTY_EID),
-				readString(m, Event.PROPERTY_RESPONSIBLE),
-				readString(m, Room.PROPERTY_NAME),
-				readDate(m, Event.PROPERTY_DATE),
-				readDate(m, Event.PROPERTY_STARTTIME),
-				readDate(m, Event.PROPERTY_ENDTIME)
-				);
-	}
-	
 	public static Element roomToXml(Room m) {
-		Element e = new Element("event");
+		Element e = new Element("contents");
 		
 		appendChildren(e,
 				createElement(Room.PROPERTY_NAME, m.getName()),
 				createElement(Room.PROPERTY_SIZE, m.getSize())
 				);
 		
-		return e;
+		return createDataXml("Room", e);
 	}
 	
 	public static Room toRoom(Element m) throws ParseException {
+		m = getContentsFromDataXml(m);
 		return new Room(
 				readString(m, Room.PROPERTY_NAME),
 				readInt(m, Room.PROPERTY_SIZE)
@@ -212,6 +219,8 @@ public class XmlSerializer {
 	
 	public static String readString(Element m, String id)
 	{
+		System.out.println(m.toXML());
+		System.out.println(id);
 		return m.getFirstChildElement(id).getValue();
 	}
 	
@@ -228,9 +237,9 @@ public class XmlSerializer {
 		return a;
 	}
 	
-	public static Date readDate(Element m, String id) throws ParseException
+	public static java.sql.Date readDate(Element m, String id) throws ParseException
 	{
-		return (Date) format.parse(readString(m, id));
+		return new java.sql.Date(Long.parseLong(readString(m, id)));
 	}
 	
 	public static Timestamp readTimestamp(Element m, String id) throws ParseException
@@ -278,7 +287,7 @@ public class XmlSerializer {
 	public static Element createElement(String key, java.sql.Date value)
 	{
 		Element e = new Element(key);
-		e.appendChild(format.format(value));
+		e.appendChild(Long.toString(value.getTime()));
 		return e;
 	}
 	
@@ -307,5 +316,34 @@ public class XmlSerializer {
 	{
 		for(Element child:elements)
 			e.appendChild(child);
+	}
+	
+	public static Element createElementFromList(String key, ArrayList list)
+	{
+		Element e = new Element(key);
+		if(list.size()==0)
+			return e;
+		
+		for(Object o : list)
+			try {
+				e.appendChild(ServerRequest.createElementFromObject(o));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			
+		return e;
+	}
+	
+	public static ArrayList readListFromElement(Element e) throws ParseException
+	{
+		ArrayList a = new ArrayList();
+		
+		for (int i = 0; i < e.getChildElements().size(); i++) {
+			Element child = e.getChildElements().get(i);
+			
+			a.add(ServerRequest.createObjectFromElement(child));
+		}
+		
+		return a;
 	}
 }

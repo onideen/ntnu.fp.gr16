@@ -1,5 +1,8 @@
 package no.ntnu.fp.model;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
@@ -13,7 +16,7 @@ public class ServerResponse {
 	
 	public ServerResponse(Element e)
 	{
-		success = XmlSerializer.readString(e, "success") == "true";
+		success = e.getFirstChildElement("success").getValue().equals("true");
 		returnData = e.getFirstChildElement("returnData");
 	}
 	
@@ -24,4 +27,21 @@ public class ServerResponse {
 	public final Element getReturnData() {
 		return returnData;
 	}	
+
+	public Object[] getParameters() {
+		
+		ArrayList<Object> objects = new ArrayList<Object>();
+		
+		for (int i = 0; i < returnData.getChildElements().size(); i++) {
+			Element e = returnData.getChildElements().get(i);
+			
+			try {
+				objects.add(ServerRequest.createObjectFromElement(e));
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+		return objects.toArray();
+	}
 }

@@ -1,5 +1,10 @@
 package no.ntnu.fp.model;
 
+import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import nu.xom.Builder;
 import nu.xom.Document;
@@ -17,52 +22,111 @@ public class ServerRequest {
 		Element e = new Element(function);
 		for(Object o : parameters)
 			try {
-				e.appendChild(createElement(o));
+				e.appendChild(createElementFromObject(o));
 			} catch (Exception e1) {}
 		
 		this.function = function;
 		requestData = e;
 	}
 	
-	private Element createElement(Object o) throws Exception
+	public static Element createElementFromObject(Object o) throws Exception
 	{
-		if(o.getClass().equals(Integer.TYPE))
+		if(o==null)
+			return XmlSerializer.createDataXml("null", XmlSerializer.createElement("contents", ""));
+		
+		if(o.getClass().equals(Integer.TYPE) || o.getClass().equals(int.class) || o.getClass().equals(Integer.class))
 		{
-			return XmlSerializer.createElement("int", (int)((Integer)o));
+			return XmlSerializer.createDataXml("int", XmlSerializer.createElement("contents", (int)((Integer)o)));
+		}
+		
+		if(o.getClass().equals(java.util.ArrayList.class))
+		{			
+			return XmlSerializer.createDataXml("list", XmlSerializer.createElementFromList("contents", (ArrayList)o));
 		}
 		
 		if(o.getClass().equals(String.class))
 		{
-			return XmlSerializer.createElement("string", (String)o);
+			return XmlSerializer.createDataXml("string", XmlSerializer.createElement("contents", (String)o));
 		}
 		
 		if(o.getClass().equals(Message.class))
 		{
-			return XmlSerializer.createElement("Message", XmlSerializer.messageToXml((Message)o));
+			return XmlSerializer.messageToXml((Message)o);
 		}
 		
 		if(o.getClass().equals(Event.class))
 		{
-			return XmlSerializer.createElement("Event", XmlSerializer.eventToXml((Event)o));
-		}
-		
-		if(o.getClass().equals(Reservation.class))
-		{
-			return XmlSerializer.createElement("Reservation", XmlSerializer.reservationToXml((Reservation)o));
+			return XmlSerializer.eventToXml((Event)o);
 		}
 		
 		if(o.getClass().equals(Room.class))
 		{
-			return XmlSerializer.createElement("Room", XmlSerializer.roomToXml((Room)o));
+			return XmlSerializer.roomToXml((Room)o);
+		}
+		
+		if(o.getClass().equals(Person.class))
+		{
+			return XmlSerializer.personToXml((Person)o);
 		}
 		
 		throw new Exception(o.getClass() + " is not supported.");
 	}
 	
+	public static Object createObjectFromElement(Element e) throws ParseException
+	{
+		String type = XmlSerializer.getTypeFromDataXml(e);
+		Element xml = XmlSerializer.getContentsFromDataXml(e);
+		
+		if(type.equals("int"))
+		{
+			System.out.println("FEBFIEB     INT" + e.toXML());
+		}
+		
+		if(type.equals("list"))
+		{			
+			return XmlSerializer.readListFromElement(xml);
+		}
+		
+		if(type.equals("string"))
+		{
+			System.out.println("XNOIEOA    STRING" + e.toXML());
+		}
+		
+		if(type.equals("Message"))
+		{
+			return XmlSerializer.toMessage(e);
+		}
+		
+		if(type.equals("Event"))
+		{
+			return XmlSerializer.toEvent(e);
+		}
+		
+		if(type.equals("Room"))
+		{
+			return XmlSerializer.toRoom(e);
+		}
+		
+		if(type.equals("Person"))
+		{
+			return XmlSerializer.toPerson(e);
+		}
+		
+		throw new NotImplementedException();
+	}
+	
 	public ServerResponse sendRequest()
 	{
-		//TODO: Magic
-		throw new NotImplementedException();
+		//TODO: Putt Aleksander her.
+		CalendarService c = new CalendarService();
+		
+		try {
+			return c.receiveData(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	public String getFunction() {
@@ -70,7 +134,20 @@ public class ServerRequest {
 	}
 
 	public Object[] getParameters() {
-		throw new NotImplementedException();
+		
+		ArrayList<Object> objects = new ArrayList<Object>();
+		
+		for (int i = 0; i < requestData.getChildElements().size(); i++) {
+			Element e = requestData.getChildElements().get(i);
+			
+			try {
+				objects.add(createObjectFromElement(e));
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+		return objects.toArray();
 	}
 	
 }

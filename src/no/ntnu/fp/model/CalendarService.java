@@ -7,18 +7,37 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.lang.reflect.*;
+import nu.xom.Builder;
+import nu.xom.Document;
+import nu.xom.Element;
+import nu.xom.Elements;
+import nu.xom.ParsingException;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class CalendarService {
 
-	public void receiveData(ServerRequest sr) throws IllegalArgumentException,
-			IllegalAccessException, InvocationTargetException {
+	public ServerResponse receiveData(ServerRequest sr){
+		
 		for (Method method : this.getClass().getMethods()) {
 			if (method.getName().equals(sr.getFunction())) {
-				Object result = method.invoke(this, sr.getParameters());
+				try {
+					Object o = method.invoke(this, sr.getParameters());
+					
+					Element returnData = new Element("data");
+					XmlSerializer.appendChildren(returnData,
+							XmlSerializer.createElement("success", "true"),
+							XmlSerializer.createElement("returnData", ServerRequest.createElementFromObject(o))
+							);
+					return new ServerResponse(returnData);
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
+		
+		return null; 
 	}
 	
 	private static Connection getConnection()
@@ -74,37 +93,6 @@ public class CalendarService {
 			e.printStackTrace();
 		}
 	}
-	
-	private static Date createDate(int y, int m, int d)
-	{
-		Calendar c = new GregorianCalendar(y,m-1,d);
-		java.sql.Date dd = new Date(c.getTimeInMillis());
-		return dd;
-	}
-	
-	public static void main(String[] args) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException
-	{
-		CalendarService c = new CalendarService();
-		
-		Date d = createDate(2011, 3, 15);
-		Time t1 = new Time(14,00,00);
-		Time t2 = new Time(16,00,00);
-		Event e = new Event("Ultraviktig møte.", Event.Type.Appointment, "tor@grfs.com22", d, t1, t2, "Grupperom3");
-		
-		e.addAttendee("bolle@bool.com");
-		e.addAttendee("Trollkjerringa@tull.no");
-		e.addAttendee("svulstig@gmail.com");
-		e.addAttendee("mothersday@monday.com");
-		
-		//for(Person p:c.getEmployees())
-		//	System.out.println(p.getEmail());
-		
-		//e = c.getEvent(44);
-		//c.updateEvent(e);
-		
-		//Message m = getMessage(34);
-		//c.answerMessage(m, true);
-	}
 
 	public void startListening() {
 		throw new NotImplementedException();
@@ -115,7 +103,7 @@ public class CalendarService {
 	}
 
 	public List<Person> getEmployees() {
-
+		
 		try {
 			
 			Connection c = getConnection();
@@ -183,7 +171,7 @@ public class CalendarService {
 		
 	}
 
-	public void saveEvent(Event e) {
+	public int saveEvent(Event e) {
 		
 		try {
 			
@@ -229,9 +217,13 @@ public class CalendarService {
 			
 			p.close();
 			
+			return e.getEid();
+			
 		} catch (Exception e2) {
 			e2.printStackTrace();
 		}
+		
+		return -1;
 	}
 
 	public void saveMessage(Message m) {
