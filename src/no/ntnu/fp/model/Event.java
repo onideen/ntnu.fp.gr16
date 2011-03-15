@@ -2,7 +2,9 @@ package no.ntnu.fp.model;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeSupport;
-import java.util.Date;
+import java.sql.Time;
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -10,13 +12,15 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class Event {
 
 	int eid;
-	int reservationID;
+	String roomName;
 	Date date;
-	Date startTime;
-	Date endTime;
+	Time startTime;
+	Time endTime;
 	String description;
 	Type type;
 	String responsible;
+	
+	List<String> attendees = new ArrayList<String>();
 	
 	public enum Type{
 		Meeting,
@@ -26,25 +30,55 @@ public class Event {
 	private PropertyChangeSupport propChangeSupp;
 
 	public final static String PROPERTY_EID = "eid";
-	public final static String PROPERTY_RESERVATIONID = "reservationid";
 	public final static String PROPERTY_DATE = "date";
 	public final static String PROPERTY_STARTTIME = "starttime";
 	public final static String PROPERTY_ENDTIME = "endtime";
 	public final static String PROPERTY_DESCRIPTION = "description";
 	public final static String PROPERTY_TYPE = "type";
 	public final static String PROPERTY_RESPONSIBLE = "responsible";
+	public final static String PROPERTY_ATTENDEE = "attendee";
 
+	public Event(String desc, Type type, String owner, Date date, Time start, Time end, String room){
+		this.description=desc;
+		this.type=type;
+		this.responsible=owner;
+		this.date=date;
+		this.startTime=start;
+		this.endTime=end;
+		this.roomName=room;
+		propChangeSupp = new PropertyChangeSupport(this);
+	}
 	
-	public Event(int eid, String type, int resID, String desc, Date date, Date start, Date end, String responsible)
+	public Event(int eid, String type, String desc, Date date, Time start, Time end, String responsible, List<String> attendees, String room)
 	{
 		this.eid=eid;
 		this.type=Type.valueOf(type);
-		this.reservationID=resID;
 		this.description=desc;
 		this.date=date;
 		this.startTime=start;
 		this.endTime=end;
 		this.responsible=responsible;
+		this.attendees=attendees;
+		this.roomName=room;
+		
+		propChangeSupp = new PropertyChangeSupport(this);
+	}
+	
+	public String getDateString()
+	{
+		return date.toString() + ", kl " + startTime.toString() + " - " + endTime.toString();
+	}
+	
+	public void addAttendee(String email)
+	{
+		attendees.add(email);
+		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_ATTENDEE, null, email);
+		propChangeSupp.firePropertyChange(event);
+	}
+	
+	public List<String> getAttendees()
+	{
+		return attendees;
 	}
 	
 	public int getEid() {
@@ -58,14 +92,14 @@ public class Event {
 		propChangeSupp.firePropertyChange(event);
 	}
 	
-	public int getReservationID() {
-		return reservationID;
+	public String getRoom() {
+		return roomName;
 	}
 	
-	public void setReservationID(int reservationID) {
-		int old = this.reservationID;
-		this.reservationID = reservationID;
-		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_RESERVATIONID, old, reservationID);
+	public void setRoom(String room) {
+		String old = this.roomName;
+		this.roomName=room;
+		PropertyChangeEvent event = new PropertyChangeEvent(this, Room.PROPERTY_NAME, old, room);
 		propChangeSupp.firePropertyChange(event);
 	}
 	
@@ -80,23 +114,23 @@ public class Event {
 		propChangeSupp.firePropertyChange(event);
 	}
 	
-	public Date getStartTime() {
+	public Time getStartTime() {
 		return startTime;
 	}
 	
-	public void setStartTime(Date startTime) {
-		Date old = this.startTime;
+	public void setStartTime(Time startTime) {
+		Time old = this.startTime;
 		this.startTime = startTime;
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_STARTTIME, old, startTime);
 		propChangeSupp.firePropertyChange(event);
 	}
 	
-	public Date getEndTime() {
+	public Time getEndTime() {
 		return endTime;
 	}
 	
-	public void setEndTime(Date endTime) {
-		Date old = this.endTime;
+	public void setEndTime(Time endTime) {
+		Time old = this.endTime;
 		this.endTime = endTime;
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_ENDTIME, old, endTime);
 		propChangeSupp.firePropertyChange(event);

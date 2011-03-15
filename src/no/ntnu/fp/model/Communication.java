@@ -73,14 +73,6 @@ public class Communication {
 		return sr.isSuccess();
 	}
 	
-	public static boolean saveReservation(Reservation r)
-	{
-		ServerResponse sr = sendData("saveReservation", r);
-		if(sr.isSuccess())
-			r.setReservationID(XmlSerializer.readInt(sr.returnData, Event.PROPERTY_RESERVATIONID));
-		return sr.isSuccess();
-	}
-	
 	public static boolean deleteMessage(Message m)
 	{
 		return sendData("deleteMessage", m.getMid()).isSuccess();
@@ -91,19 +83,9 @@ public class Communication {
 		return sendData("deleteEvent", e.getEid()).isSuccess();
 	}
 	
-	public static boolean deleteReservation(Reservation r)
-	{
-		return sendData("deleteReservation", r.getReservationID()).isSuccess();
-	}
-	
 	public static boolean updateEvent(Event e)
 	{
 		return sendData("updateEvent", XmlSerializer.eventToXml(e)).isSuccess();
-	}
-	
-	public static boolean updateReservation(Reservation r)
-	{
-		return sendData("updateReservation", r).isSuccess();
 	}
 	
 	public static List<Room> getFreeRooms(Reservation r)

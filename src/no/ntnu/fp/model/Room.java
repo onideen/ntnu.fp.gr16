@@ -2,7 +2,7 @@ package no.ntnu.fp.model;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeSupport;
-import java.util.Date;
+import java.sql.Date;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 

@@ -2,13 +2,13 @@ package no.ntnu.fp.model;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeSupport;
-import java.util.Date;
+import java.sql.Timestamp;;
 
 public class Message {
 
 	int mid;
 	String content;
-	Date timeSent;
+	Timestamp timeSent;
 	Type type;
 	String receiver;
 	int event;
@@ -28,7 +28,7 @@ public class Message {
 		Information
 	}
 	
-	public Message(int mid, String content, Date timeSent, String type, String receiver, int event)
+	public Message(int mid, String content, Timestamp timeSent, String type, String receiver, int event)
 	{
 		this.mid=mid;
 		this.content=content;
@@ -36,6 +36,8 @@ public class Message {
 		this.type=Type.valueOf(type);
 		this.receiver=receiver;
 		this.event=event;
+		
+		propChangeSupp = new PropertyChangeSupport(this);
 	}
 	
 	
@@ -45,6 +47,8 @@ public class Message {
 		this.type=type;
 		this.receiver=receiver;
 		this.event=event;
+		
+		propChangeSupp = new PropertyChangeSupport(this);
 	}
 
 	public int getMid() {
@@ -69,11 +73,11 @@ public class Message {
 		propChangeSupp.firePropertyChange(event);
 	}
 
-	public Date getTimeSent() {
+	public Timestamp getTimeSent() {
 		return timeSent;
 	}
 
-	public void setTimeSent(Date timeSent) {
+	public void setTimeSent(Timestamp timeSent) {
 		Object old = this.timeSent;
 		this.timeSent = timeSent;
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_TIMESENT, old, timeSent);

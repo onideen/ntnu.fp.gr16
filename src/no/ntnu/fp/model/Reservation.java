@@ -2,7 +2,7 @@ package no.ntnu.fp.model;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeSupport;
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 import no.ntnu.fp.model.Event.Type;
@@ -18,7 +18,7 @@ public class Reservation {
 	Date startTime;
 	Date endTime;
 	
-	public Reservation(int reservationID, int eventID, String responsible, String roomName, Date date, Date start, Date end)
+	public Reservation(int eventID, String responsible, String roomName, Date date, Date start, Date end)
 	{
 		this.reservationID=reservationID;
 		this.eventID=eventID;

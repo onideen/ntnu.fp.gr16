@@ -7,10 +7,14 @@
 package no.ntnu.fp.model;
 
 import java.io.IOException;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.Date;
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import nu.xom.Builder;
 import nu.xom.Document;
@@ -100,7 +104,7 @@ public class XmlSerializer {
 	 * @throws ParseException
 	 */
 	private Date parseDate(String date) throws ParseException {
-		return format.parse(date);
+		return (Date) format.parse(date);
 	}
 	
 	public static Element messageToXml(Message m) {
@@ -123,7 +127,7 @@ public class XmlSerializer {
 		return new Message(
 				readInt(m, Message.PROPERTY_MID),
 				readString(m, Message.PROPERTY_CONTENT),
-				readDate(m, Message.PROPERTY_TIMESENT),
+				readTimestamp(m, Message.PROPERTY_TIMESENT),
 				readString(m, Message.PROPERTY_TYPE),
 				readString(m, Message.PROPERTY_RECEIVER),
 				readInt(m, Message.PROPERTY_EVENT)
@@ -138,10 +142,11 @@ public class XmlSerializer {
 				createElement(Event.PROPERTY_DATE, m.getDate()),
 				createElement(Event.PROPERTY_DESCRIPTION, m.getDescription()),
 				createElement(Event.PROPERTY_ENDTIME, m.getEndTime()),
-				createElement(Event.PROPERTY_RESERVATIONID, m.getReservationID()),
 				createElement(Event.PROPERTY_STARTTIME, m.getStartTime()),
 				createElement(Event.PROPERTY_TYPE, m.getType().toString()),
-				createElement(Event.PROPERTY_RESPONSIBLE, m.getResponsible())
+				createElement(Event.PROPERTY_RESPONSIBLE, m.getResponsible()),
+				createElement(Event.PROPERTY_ATTENDEE, m.getAttendees()),
+				createElement(Room.PROPERTY_NAME, m.getRoom())
 				);
 		
 		return e;
@@ -151,13 +156,13 @@ public class XmlSerializer {
 		return new Event(
 				readInt(m, Event.PROPERTY_EID),
 				readString(m, Event.PROPERTY_TYPE),
-				readInt(m, Event.PROPERTY_RESERVATIONID),
 				readString(m, Event.PROPERTY_DESCRIPTION),
 				readDate(m, Event.PROPERTY_DATE),
-				readDate(m, Event.PROPERTY_STARTTIME),
-				readDate(m, Event.PROPERTY_ENDTIME),
-				readString(m, Event.PROPERTY_RESPONSIBLE)
-
+				readTime(m, Event.PROPERTY_STARTTIME),
+				readTime(m, Event.PROPERTY_ENDTIME),
+				readString(m, Event.PROPERTY_RESPONSIBLE),
+				readStringList(m, Event.PROPERTY_ATTENDEE),
+				readString(m, Room.PROPERTY_NAME)
 				);
 	}
 	
@@ -165,7 +170,6 @@ public class XmlSerializer {
 		Element e = new Element("event");
 		
 		appendChildren(e,
-				createElement(Event.PROPERTY_RESERVATIONID, m.getReservationID()),
 				createElement(Event.PROPERTY_EID, m.getEventID()),
 				createElement(Event.PROPERTY_RESPONSIBLE, m.getResponsible()),
 				createElement(Room.PROPERTY_NAME, m.getRoomName()),
@@ -176,10 +180,9 @@ public class XmlSerializer {
 		
 		return e;
 	}
-	
+
 	public static Reservation toReservation(Element m) throws ParseException {
 		return new Reservation(
-				readInt(m, Event.PROPERTY_RESERVATIONID),
 				readInt(m,Event.PROPERTY_EID),
 				readString(m, Event.PROPERTY_RESPONSIBLE),
 				readString(m, Room.PROPERTY_NAME),
@@ -217,15 +220,51 @@ public class XmlSerializer {
 		return Integer.parseInt(readString(m, id));
 	}
 	
+	public static List<String> readStringList(Element m, String id)
+	{
+		ArrayList<String> a = new ArrayList<String>();
+		for(String s : readString(m, id).split("µ"))
+			a.add(s);
+		return a;
+	}
+	
 	public static Date readDate(Element m, String id) throws ParseException
 	{
-		return format.parse(readString(m, id));
+		return (Date) format.parse(readString(m, id));
+	}
+	
+	public static Timestamp readTimestamp(Element m, String id) throws ParseException
+	{
+		String s = readString(m, id);
+		long t = Long.parseLong(s);
+		
+		return new Timestamp(t);
+	}
+	
+	public static Time readTime(Element m, String id) throws ParseException
+	{
+		String s = readString(m, id);
+		long t = Long.parseLong(s);
+		
+		return new Time(t);
 	}
 	
 	public static Element createElement(String key, String value)
 	{
 		Element e = new Element(key);
 		e.appendChild(value);
+		return e;
+	}
+	
+	public static Element createElement(String key, List<String> value)
+	{
+		Element e = new Element(key);
+		
+		String s = "";
+		for(String p : value)
+			s += (s=="" ? "" : "µ") + p;
+		
+		e.appendChild(s);
 		return e;
 	}
 	
@@ -236,10 +275,24 @@ public class XmlSerializer {
 		return e;
 	}
 	
-	public static Element createElement(String key, Date value)
+	public static Element createElement(String key, java.sql.Date value)
 	{
 		Element e = new Element(key);
 		e.appendChild(format.format(value));
+		return e;
+	}
+	
+	public static Element createElement(String key, java.sql.Timestamp value)
+	{
+		Element e = new Element(key);
+		e.appendChild(Long.toString(value.getTime()));
+		return e;
+	}
+	
+	public static Element createElement(String key, java.sql.Time value)
+	{
+		Element e = new Element(key);
+		e.appendChild(Long.toString(value.getTime()));
 		return e;
 	}
 	
