@@ -288,8 +288,6 @@ public abstract class AbstractConnection implements Connection {
     
         KtnDatagram ackToSend = constructInternalPacket(synAck ? Flag.SYN_ACK : Flag.ACK);
         ackToSend.setAck(packetToAck.getSeq_nr());
-        ackToSend.setDest_addr(packetToAck.getSrc_addr());
-        ackToSend.setDest_port(packetToAck.getSrc_port());
     
         // Send the ack, trying at most `tries' times.
         Log.writeToLog(ackToSend, "Sending Ack: " + ackToSend.getAck(), "AbstractConnection");
