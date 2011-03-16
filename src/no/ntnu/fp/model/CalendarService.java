@@ -134,9 +134,24 @@ public class CalendarService {
 		executeUpdate(s);
 	}
 
-	public void deleteEvent(Event e) {
-		String s = "DELETE FROM Hendelse WHERE id = " + e.getEid() + ";";
+	public void deleteEvent(int eId) throws SQLException {
+		Event e = getEvent(eId);
+		Connection c = getConnection();
+		
+		PreparedStatement p = c.prepareStatement("DELETE FROM Melding WHERE relatertmote = ?;");
+		p.setInt(1, e.getEid());
+		p.executeUpdate();
+		
+		List<String> attendees = e.getAttendees();
+		
+		String s = "DELETE FROM Hendelse WHERE id = " + eId + ";";
 		executeUpdate(s);
+		
+		for(String attendee : attendees)
+		{
+			Message m = new Message(e.getResponsible() + " har avlyst møtet den: " + e.getDateString(), Message.Type.Information, attendee, eId);
+			saveMessage(m);
+		}
 	}
 
 	public void updateEvent(Event e) {
@@ -366,6 +381,27 @@ public class CalendarService {
 		
 		return null;
 	}
+	
+	public List<Event> getEvents(String email) throws SQLException {
+		ArrayList<Event> events = new ArrayList<Event>();
+		Connection c = getConnection();
+		Statement s = c.createStatement();
+		ResultSet rs = s.executeQuery("SELECT id FROM Hendelse WHERE `ansvarlig` = '" + email + "';");
+		
+		while(rs.next()){
+			Event e = getEvent(rs.getInt("id"));
+			events.add(e);
+		}
+		
+		
+		rs = s.executeQuery("SELECT Hid FROM Deltaker WHERE `e-mail` = '" + email + "';");
+		while(rs.next()){
+			Event e = getEvent(rs.getInt("hid"));
+			events.add(e);
+		}
+		
+		return events;
+	}
 
 	public Event getEvent(int eventId) {
 
@@ -427,13 +463,11 @@ public class CalendarService {
 		
 		while(rs.next()){
 			Event e = getEvent(rs.getInt("id"));
-			System.out.println(e.getEid());
 			long a = e.getStartTime().getTime();
 			long b = e.getEndTime().getTime();
 			long ss = r.getStartTime().getTime();
 			long ee =  r.getEndTime().getTime();
 			if(((a >= ss && a < ee) || (b > ss && b < ee)) || ((ss > a && ss < b) || (ee > a && ee <= b))){
-					System.out.println(e.getStartTime() + "-- " + e.getEndTime() + "---" + r.getStartTime() + "---" + r.getEndTime());
 					if(hashRooms.containsKey(e.getRoom())){
 						hashRooms.remove(e.getRoom());
 					}
@@ -452,15 +486,27 @@ public class CalendarService {
 
 	}
 	
-	public static void main(String[] args) throws SQLException {
-		List<Room> lol = new ArrayList<Room>();
-		CalendarService kake = new CalendarService();
-		Reservation res = new Reservation(createDate(2011, 3, 17), new Time(14,00,00), new Time(16,00,00));
-		lol = kake.getFreeRooms(res);
+	public boolean login(String user, String password) throws SQLException {
+		Connection c = getConnection();
+		Statement s = c.createStatement();
+		ResultSet rs = s.executeQuery("SELECT * FROM Person WHERE `e-mail` = '" + user + "' AND `passord` = '" + password + "';" );
 		
-		for(Room r: lol){
-			System.out.println(r.getName() + " --" + r.getSize());
+		if(rs.next())
+		{
+			 return true;
 		}
+		return false;
+	}
+	
+	public static void main(String[] args) throws SQLException {
+//		List<Event> lol = new ArrayList<Event>();
+//		CalendarService kake = new CalendarService();
+//		//Reservation res = new Reservation(createDate(2011, 3, 17), new Time(14,00,00), new Time(16,00,00));
+//		lol = kake.getEvents("bolle@bool.com");
+//		
+//		for(Event r: lol){
+//			System.out.println(r.getDescription() + " --" + r.getResponsible() + "-.--- id=" + r.getEid());
+//		}
 		
 	}
 	

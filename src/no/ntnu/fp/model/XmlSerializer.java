@@ -262,8 +262,6 @@ public class XmlSerializer {
 	 */
 	public static String readString(Element m, String id)
 	{
-		System.out.println(m.toXML());
-		System.out.println(id);
 		return m.getFirstChildElement(id).getValue();
 	}
 
