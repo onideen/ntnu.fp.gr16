@@ -3,8 +3,11 @@ package no.ntnu.fp.model;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.lang.reflect.*;
 import nu.xom.Builder;
@@ -13,6 +16,7 @@ import nu.xom.Element;
 import nu.xom.Elements;
 import nu.xom.ParsingException;
 
+import sun.awt.SunHints.Value;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class CalendarService {
@@ -288,7 +292,6 @@ public class CalendarService {
 	public List<Person> getAttendees(int eventId) {
 
 		try {
-			
 			Connection c = getConnection();
 			Statement s = c.createStatement();
 			ResultSet rs = s.executeQuery("SELECT `e-mail` FROM Deltaker WHERE `hid` = " + eventId + ";");
@@ -297,6 +300,9 @@ public class CalendarService {
 			
 			while(rs.next())
 				persons.add(getPerson(rs.getString("e-mail")));
+			
+			rs.close();
+			c.close();
 			
 			return persons;
 			
@@ -396,20 +402,72 @@ public class CalendarService {
 		}
 		
 		return null;
+	}
+	
+	public List<Room> getFreeRooms(Reservation r) throws SQLException
+	{
+		HashMap<String, Room> hashRooms = new HashMap<String, Room>();
+		List<Room> freeRooms = new ArrayList<Room>();
+		Connection c = getConnection();
+		Statement s = c.createStatement();
+		ResultSet rs = s.executeQuery("SELECT * from Rom;");
+		
+		while(rs.next())
+		{
+			Room room = new Room(
+					rs.getString("navn"), 
+					rs.getInt("størrelse"));
+					hashRooms.put(rs.getString("navn"), room);
+		}
+		
+		//rs = s.executeQuery("SELECT id from Hendelse WHERE dato =" + r.getDate() );
+		PreparedStatement p = c.prepareStatement("SELECT id from Hendelse WHERE dato = ?;");
+		p.setDate(1, r.getDate());
+		rs = p.executeQuery();
+		
+		while(rs.next()){
+			Event e = getEvent(rs.getInt("id"));
+			System.out.println(e.getEid());
+			long a = e.getStartTime().getTime();
+			long b = e.getEndTime().getTime();
+			long ss = r.getStartTime().getTime();
+			long ee =  r.getEndTime().getTime();
+			if(((a >= ss && a < ee) || (b > ss && b < ee)) || ((ss > a && ss < b) || (ee > a && ee <= b))){
+					System.out.println(e.getStartTime() + "-- " + e.getEndTime() + "---" + r.getStartTime() + "---" + r.getEndTime());
+					if(hashRooms.containsKey(e.getRoom())){
+						hashRooms.remove(e.getRoom());
+					}
+				}
+			}
+			
+			s.close();
+			
+			for(Room room : hashRooms.values())
+			{
+				freeRooms.add(room);
+			}
+					
+			return freeRooms;
+		
+
+	}
+	
+	public static void main(String[] args) throws SQLException {
+		List<Room> lol = new ArrayList<Room>();
+		CalendarService kake = new CalendarService();
+		Reservation res = new Reservation(createDate(2011, 3, 17), new Time(14,00,00), new Time(16,00,00));
+		lol = kake.getFreeRooms(res);
+		
+		for(Room r: lol){
+			System.out.println(r.getName() + " --" + r.getSize());
+		}
 		
 	}
-
-	public void saveReservation(Reservation r) {
-		String s = "INSERT INTO Romreservasjon(hid, e-mail, navn) values("
-				+ r.getEventID() + ", '" + r.getResponsible() + "', '"
-				+ r.getRoomName() + "');";
-
-		executeUpdate(s);
-	}
-
-	public void deleteReservation(Reservation r) {
-		String s = "DELETE FROM Romreservasjon WHERE id = "
-				+ r.getReservationID() + ";";
-		executeUpdate(s);
+	
+	private static Date createDate(int y, int m, int d)
+	{
+		Calendar c = new GregorianCalendar(y,m-1,d);
+		java.sql.Date dd = new Date(c.getTimeInMillis());
+		return dd;
 	}
 }
