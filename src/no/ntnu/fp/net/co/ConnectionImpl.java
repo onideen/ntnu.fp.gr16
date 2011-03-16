@@ -39,6 +39,7 @@ public class ConnectionImpl extends AbstractConnection {
 
     /** Keeps track of the used ports for each server port. */
     private static Map<Integer, Boolean> usedPorts = Collections.synchronizedMap(new HashMap<Integer, Boolean>());
+    private static int newtPort = 10000;
 
     /**
      * Initialise initial sequence number and setup state machine.
@@ -95,8 +96,8 @@ public class ConnectionImpl extends AbstractConnection {
         {
             sendAck(synAck, false);
             state = State.ESTABLISHED;
-            this.remoteAddress = remoteAddress.getHostAddress();
-            this.remotePort = remotePort;
+            this.remoteAddress = synAck.getSrc_addr();
+            this.remotePort = synAck.getSrc_port();
         }
     }
 
@@ -121,6 +122,7 @@ public class ConnectionImpl extends AbstractConnection {
         if(packet.getFlag() != Flag.SYN)
             throw new IOException("Did not receive SYN.");
 
+        packet.setDest_port(newtPort++);
         sendAck(packet, true);
 
         /*receiver = new InternalReceiver(myPort);
@@ -135,7 +137,7 @@ public class ConnectionImpl extends AbstractConnection {
         if(packet.getFlag() != Flag.ACK)
             throw new IOException("Did not receive ACK after SYN_ACK.");*/
 
-        ConnectionImpl connection = new ConnectionImpl(myPort);
+        ConnectionImpl connection = new ConnectionImpl(packet.getDest_port());
         connection.state = State.ESTABLISHED;
         connection.remoteAddress = packet.getSrc_addr();
         connection.remotePort = packet.getSrc_port();
