@@ -56,14 +56,14 @@ public class Communication {
 		
 		//System.out.println(deleteEvent(82));
 		
-		login("pelle", "fdsfsd");
+		//System.out.println(login("bolle@bool.com", "passord"));
 	}
 	
 	public static boolean login(String user, String password) throws SQLException {
 		ServerResponse sr = sendData("login", user, password);
 		if(sr.isSuccess())
 		{
-			System.out.println(sr.getParameters()[0]);
+			return (Boolean)sr.getParameters()[0];
 		}
 		
 		return false;

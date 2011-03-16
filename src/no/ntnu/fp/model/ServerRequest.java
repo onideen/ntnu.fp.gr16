@@ -111,7 +111,7 @@ public class ServerRequest {
 		
 		if(type.equals("bool"))
 		{
-			return XmlSerializer.readString(e, "contents") == "true";
+			return XmlSerializer.readString(e, "contents").equals("true");
 		}
 		
 		if(type.equals("list"))

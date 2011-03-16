@@ -1,5 +1,7 @@
 package no.ntnu.fp.model;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,6 +12,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.lang.reflect.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import no.ntnu.fp.net.MessageListener;
+import no.ntnu.fp.net.co.ConnectionImpl;
+import no.ntnu.fp.net.co.ReceiveConnectionWorker;
+import no.ntnu.fp.net.co.ReceiveConnectionWorker.ConnectionListener;
+import no.ntnu.fp.net.co.ReceiveMessageWorker;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
@@ -19,114 +28,140 @@ import nu.xom.ParsingException;
 import sun.awt.SunHints.Value;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class CalendarService {
+public class CalendarService implements ConnectionListener,
+		ReceiveMessageWorker.MessageListener {
 
-	public ServerResponse receiveData(ServerRequest sr){
-		
+	public ServerResponse receiveData(ServerRequest sr) {
+
 		for (Method method : this.getClass().getMethods()) {
 			if (method.getName().equals(sr.getFunction())) {
 				try {
 					Object o = method.invoke(this, sr.getParameters());
-					
+
 					Element returnData = new Element("data");
-					XmlSerializer.appendChildren(returnData,
-							XmlSerializer.createElement("success", "true"),
-							XmlSerializer.createElement("returnData", ServerRequest.createElementFromObject(o))
-							);
+					XmlSerializer.appendChildren(returnData, XmlSerializer
+							.createElement("success", "true"), XmlSerializer
+							.createElement("returnData",
+									ServerRequest.createElementFromObject(o)));
 					return new ServerResponse(returnData);
-					
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		
-		return null; 
-	}
-	
-	private static Connection getConnection()
-	{
-		try {
-			Class.forName ("com.mysql.jdbc.Driver").newInstance ();
-			String userName = "erlendd_felles";
-	        String password = "fpfpfp";
-	        String url = "jdbc:mysql://mydb11.surftown.no/erlendd_qamerat";
-	        Connection conn = DriverManager.getConnection (url, userName, password);
-	        
-	        return conn;
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		
+
 		return null;
 	}
 
-	public ResultSet executeQuery(String s)
-	{		
+	private static Connection getConnection() {
 		try {
-            Connection conn = getConnection();
-			
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			String userName = "erlendd_felles";
+			String password = "fpfpfp";
+			String url = "jdbc:mysql://mydb11.surftown.no/erlendd_qamerat";
+			Connection conn = DriverManager.getConnection(url, userName,
+					password);
+
+			return conn;
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		return null;
+	}
+
+	public ResultSet executeQuery(String s) {
+		try {
+			Connection conn = getConnection();
+
 			Statement q = conn.createStatement();
 			ResultSet rs = q.executeQuery(s);
-			
+
 			conn.close();
-			
+
 			return rs;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
-	public void executeUpdate(String s)
-	{		
+	public void executeUpdate(String s) {
 		try {
-            Class.forName ("com.mysql.jdbc.Driver").newInstance ();
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			String userName = "erlendd_felles";
-            String password = "fpfpfp";
-            String url = "jdbc:mysql://mydb11.surftown.no/erlendd_qamerat";
-            Connection conn = DriverManager.getConnection (url, userName, password);
-			
+			String password = "fpfpfp";
+			String url = "jdbc:mysql://mydb11.surftown.no/erlendd_qamerat";
+			Connection conn = DriverManager.getConnection(url, userName,
+					password);
+
 			Statement q = conn.createStatement();
 			q.executeUpdate(s);
-			
+
 			conn.close();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+	private ReceiveConnectionWorker receiver;
+
 	public void startListening() {
-		throw new NotImplementedException();
+		try {
+			no.ntnu.fp.net.co.Connection conn = new ConnectionImpl(1010);
+			receiver = new ReceiveConnectionWorker(conn, this);
+			receiver.start();
+		} catch (Throwable t) {
+			startListening();
+		}
+	}
+
+	public void connectionClosed(no.ntnu.fp.net.co.Connection conn) {
+		try {
+			conn.close();
+		} catch (IOException ex) {
+			Logger.getLogger(CalendarService.class.getName()).log(Level.SEVERE,
+					null, ex);
+		}
+	}
+
+	public void connectionReceived(no.ntnu.fp.net.co.Connection connection) {
+		ReceiveMessageWorker worker = new ReceiveMessageWorker(connection);
+		worker.addMessageListener(this);
+	}
+
+	public void messageReceived(String message) {
+		System.out.println("Mottok: " + message);
 	}
 
 	public void stopListening() {
-		throw new NotImplementedException();
+		receiver.stopRunning();
 	}
 
 	public List<Person> getEmployees() {
-		
+
 		try {
-			
+
 			Connection c = getConnection();
 			Statement s = c.createStatement();
 			ResultSet rs = s.executeQuery("SELECT `e-mail` FROM Person;");
-			
+
 			List<Person> persons = new ArrayList<Person>();
 
-			while(rs.next())
+			while (rs.next())
 				persons.add(getPerson(rs.getString("e-mail")));
-			
+
 			return persons;
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
-		
+
 	}
 
 	public void deleteMessage(Message m) {
@@ -137,19 +172,21 @@ public class CalendarService {
 	public void deleteEvent(int eId) throws SQLException {
 		Event e = getEvent(eId);
 		Connection c = getConnection();
-		
-		PreparedStatement p = c.prepareStatement("DELETE FROM Melding WHERE relatertmote = ?;");
+
+		PreparedStatement p = c
+				.prepareStatement("DELETE FROM Melding WHERE relatertmote = ?;");
 		p.setInt(1, e.getEid());
 		p.executeUpdate();
-		
+
 		List<String> attendees = e.getAttendees();
-		
+
 		String s = "DELETE FROM Hendelse WHERE id = " + eId + ";";
 		executeUpdate(s);
-		
-		for(String attendee : attendees)
-		{
-			Message m = new Message(e.getResponsible() + " har avlyst møtet den: " + e.getDateString(), Message.Type.Information, attendee, eId);
+
+		for (String attendee : attendees) {
+			Message m = new Message(e.getResponsible()
+					+ " har avlyst møtet den: " + e.getDateString(),
+					Message.Type.Information, attendee, eId);
 			saveMessage(m);
 		}
 	}
@@ -157,11 +194,13 @@ public class CalendarService {
 	public void updateEvent(Event e) {
 
 		try {
-			
+
 			Connection c = getConnection();
-			PreparedStatement p = c.prepareStatement("UPDATE Hendelse SET dato = ?, starttid = ?, sluttid = ?, " + 
-					"beskrivelse = ?, type = ?, ansvarlig = ?, reservertrom = ? WHERE id = " + e.getEid() + ";");
-			
+			PreparedStatement p = c
+					.prepareStatement("UPDATE Hendelse SET dato = ?, starttid = ?, sluttid = ?, "
+							+ "beskrivelse = ?, type = ?, ansvarlig = ?, reservertrom = ? WHERE id = "
+							+ e.getEid() + ";");
+
 			p.setDate(1, e.getDate());
 			p.setTime(2, e.getStartTime());
 			p.setTime(3, e.getEndTime());
@@ -169,35 +208,37 @@ public class CalendarService {
 			p.setString(5, e.getType().toString());
 			p.setString(6, e.getResponsible());
 			p.setString(7, e.getRoom());
-			
+
 			p.executeUpdate();
 
 			p = c.prepareStatement("DELETE FROM Melding WHERE relatertmote = ?;");
 			p.setInt(1, e.getEid());
 			p.executeUpdate();
-			
-			for(String attendee : e.getAttendees())
-			{
+
+			for (String attendee : e.getAttendees()) {
 				Person boss = getPerson(e.getResponsible());
-				Message m = new Message(boss.getName() + " har endret møtet. Møtet er nå " + e.getDateString() + ". Møtet gjelder: " + e.getDescription(), Message.Type.Invitation, attendee, e.getEid());
+				Message m = new Message(boss.getName()
+						+ " har endret møtet. Møtet er nå " + e.getDateString()
+						+ ". Møtet gjelder: " + e.getDescription(),
+						Message.Type.Invitation, attendee, e.getEid());
 				saveMessage(m);
 			}
-			
+
 		} catch (Exception e2) {
 			e2.printStackTrace();
 		}
-		
-		
+
 	}
 
 	public int saveEvent(Event e) {
-		
+
 		try {
-			
+
 			Connection c = getConnection();
-			PreparedStatement p = c.prepareStatement("INSERT INTO Hendelse(dato, starttid, sluttid, beskrivelse, type, ansvarlig, reservertrom) " + 
-					"VALUES(?, ?, ?, ?, ?, ?, ?);");
-			
+			PreparedStatement p = c
+					.prepareStatement("INSERT INTO Hendelse(dato, starttid, sluttid, beskrivelse, type, ansvarlig, reservertrom) "
+							+ "VALUES(?, ?, ?, ?, ?, ?, ?);");
+
 			p.setDate(1, e.getDate());
 			p.setTime(2, e.getStartTime());
 			p.setTime(3, e.getEndTime());
@@ -205,9 +246,9 @@ public class CalendarService {
 			p.setString(5, e.getType().toString());
 			p.setString(6, e.getResponsible());
 			p.setString(7, e.getRoom());
-			
+
 			p.executeUpdate();
-			
+
 			p = c.prepareStatement("SELECT id FROM Hendelse WHERE dato = ? AND starttid = ? AND sluttid = ? AND ansvarlig = ? AND beskrivelse = ?;");
 
 			p.setDate(1, e.getDate());
@@ -215,47 +256,50 @@ public class CalendarService {
 			p.setTime(3, e.getEndTime());
 			p.setString(4, e.getResponsible());
 			p.setString(5, e.getDescription());
-			
+
 			ResultSet rs = p.executeQuery();
-			if(rs.next())
+			if (rs.next())
 				e.setEid(rs.getInt(1));
-			
-			for(String attendee : e.getAttendees())
-			{
+
+			for (String attendee : e.getAttendees()) {
 				p = c.prepareStatement("INSERT INTO Deltaker(`hid`, `e-mail`, `status`) VALUES(?, ?, ?);");
 				p.setInt(1, e.getEid());
 				p.setString(2, attendee);
 				p.setString(3, "venter");
-				
+
 				p.executeUpdate();
-				
+
 				Person boss = getPerson(e.getResponsible());
-				Message m = new Message(boss.getName() + " har kalt inn til møte " + e.getDateString() + ". Møtet gjelder: " + e.getDescription(), Message.Type.Invitation, attendee, e.getEid());
+				Message m = new Message(boss.getName()
+						+ " har kalt inn til møte " + e.getDateString()
+						+ ". Møtet gjelder: " + e.getDescription(),
+						Message.Type.Invitation, attendee, e.getEid());
 				saveMessage(m);
 			}
-			
+
 			p.close();
-			
+
 			return e.getEid();
-			
+
 		} catch (Exception e2) {
 			e2.printStackTrace();
 		}
-		
+
 		return -1;
 	}
 
 	public void saveMessage(Message m) {
-		
+
 		try {
-			
+
 			Connection c = getConnection();
-			PreparedStatement p = c.prepareStatement("INSERT INTO Melding(innhold, tidsendt, type, mottaker, relatertmote) " + 
-					"VALUES(?, ?, ?, ?, ?);");
-			
+			PreparedStatement p = c
+					.prepareStatement("INSERT INTO Melding(innhold, tidsendt, type, mottaker, relatertmote) "
+							+ "VALUES(?, ?, ?, ?, ?);");
+
 			Calendar cal = Calendar.getInstance();
 			Timestamp t = new Timestamp(cal.getTimeInMillis());
-			
+
 			p.setString(1, m.getContent());
 			p.setTimestamp(2, t);
 			p.setString(3, m.getType().toString());
@@ -263,18 +307,19 @@ public class CalendarService {
 			p.setInt(5, m.getEvent());
 
 			p.executeUpdate();
-					
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void answerMessage(Message m, boolean answer) {
-		
+
 		if (m.getType() == Message.Type.Invitation) {
 
 			String s = "UPDATE Deltaker SET status = '"
-					+ Boolean.toString(answer) + "' WHERE `e-mail` = '" + m.getReceiver() + "';";
+					+ Boolean.toString(answer) + "' WHERE `e-mail` = '"
+					+ m.getReceiver() + "';";
 			executeUpdate(s);
 
 			if (answer == false) {
@@ -309,43 +354,46 @@ public class CalendarService {
 		try {
 			Connection c = getConnection();
 			Statement s = c.createStatement();
-			ResultSet rs = s.executeQuery("SELECT `e-mail` FROM Deltaker WHERE `hid` = " + eventId + ";");
-			
+			ResultSet rs = s
+					.executeQuery("SELECT `e-mail` FROM Deltaker WHERE `hid` = "
+							+ eventId + ";");
+
 			List<Person> persons = new ArrayList<Person>();
-			
-			while(rs.next())
+
+			while (rs.next())
 				persons.add(getPerson(rs.getString("e-mail")));
-			
+
 			rs.close();
 			c.close();
-			
+
 			return persons;
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
-		
+
 	}
 
 	public Person getPerson(String email) {
-		
+
 		try {
 			Connection c = getConnection();
 			Statement s = c.createStatement();
-			ResultSet rs = s.executeQuery("SELECT * FROM Person WHERE `e-mail` = '" + email + "';");
-			
-			if(rs.next())
-			{
+			ResultSet rs = s
+					.executeQuery("SELECT * FROM Person WHERE `e-mail` = '"
+							+ email + "';");
+
+			if (rs.next()) {
 				Person p = new Person();
 				p.setEmail(rs.getString("e-mail"));
 				p.setName(rs.getString("navn"));
 				p.setPassword(rs.getString("passord"));
-				
+
 				return p;
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -354,165 +402,158 @@ public class CalendarService {
 	}
 
 	public static Message getMessage(int id) {
-		
+
 		try {
-			
+
 			Connection c = getConnection();
 			Statement s = c.createStatement();
-			ResultSet rs = s.executeQuery("SELECT * FROM Melding WHERE id = " + id + ";");
-			
-			if(rs.next())
-			{
-				Message m = new Message(
-						rs.getString("innhold"),
+			ResultSet rs = s.executeQuery("SELECT * FROM Melding WHERE id = "
+					+ id + ";");
+
+			if (rs.next()) {
+				Message m = new Message(rs.getString("innhold"),
 						Message.Type.valueOf(rs.getString("type")),
-						rs.getString("mottaker"),
-						rs.getInt("relatertmote")
-						);
+						rs.getString("mottaker"), rs.getInt("relatertmote"));
 				m.setMid(rs.getInt("id"));
 				m.setTimeSent(rs.getTimestamp("tidsendt"));
-				
+
 				return m;
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
+
 	public List<Event> getEvents(String email) throws SQLException {
 		ArrayList<Event> events = new ArrayList<Event>();
 		Connection c = getConnection();
 		Statement s = c.createStatement();
-		ResultSet rs = s.executeQuery("SELECT id FROM Hendelse WHERE `ansvarlig` = '" + email + "';");
-		
-		while(rs.next()){
+		ResultSet rs = s
+				.executeQuery("SELECT id FROM Hendelse WHERE `ansvarlig` = '"
+						+ email + "';");
+
+		while (rs.next()) {
 			Event e = getEvent(rs.getInt("id"));
 			events.add(e);
 		}
-		
-		
-		rs = s.executeQuery("SELECT Hid FROM Deltaker WHERE `e-mail` = '" + email + "';");
-		while(rs.next()){
+
+		rs = s.executeQuery("SELECT Hid FROM Deltaker WHERE `e-mail` = '"
+				+ email + "';");
+		while (rs.next()) {
 			Event e = getEvent(rs.getInt("hid"));
 			events.add(e);
 		}
-		
+
 		return events;
 	}
 
 	public Event getEvent(int eventId) {
 
 		try {
-			
+
 			Connection c = getConnection();
 			Statement s = c.createStatement();
-			ResultSet rs = s.executeQuery("SELECT * FROM Hendelse WHERE `id` = " + eventId + ";");
-			
-			if(rs.next())
-			{
-				Event e = new Event(
-						rs.getString("beskrivelse"), 
-						Event.Type.valueOf(rs.getString("type")), 
-						rs.getString("ansvarlig"), 
-						rs.getDate("dato"), 
-						rs.getTime("starttid"), 
-						rs.getTime("sluttid"),
-						rs.getString("reservertrom")
-						);
+			ResultSet rs = s
+					.executeQuery("SELECT * FROM Hendelse WHERE `id` = "
+							+ eventId + ";");
+
+			if (rs.next()) {
+				Event e = new Event(rs.getString("beskrivelse"),
+						Event.Type.valueOf(rs.getString("type")),
+						rs.getString("ansvarlig"), rs.getDate("dato"),
+						rs.getTime("starttid"), rs.getTime("sluttid"),
+						rs.getString("reservertrom"));
 				e.setEid(eventId);
-				
-				for(Person p : getAttendees(eventId))
+
+				for (Person p : getAttendees(eventId))
 					e.addAttendee(p.getEmail());
 
-				
 				s.close();
-				
+
 				return e;
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
-	public List<Room> getFreeRooms(Reservation r) throws SQLException
-	{
+
+	public List<Room> getFreeRooms(Reservation r) throws SQLException {
 		HashMap<String, Room> hashRooms = new HashMap<String, Room>();
 		List<Room> freeRooms = new ArrayList<Room>();
 		Connection c = getConnection();
 		Statement s = c.createStatement();
 		ResultSet rs = s.executeQuery("SELECT * from Rom;");
-		
-		while(rs.next())
-		{
-			Room room = new Room(
-					rs.getString("navn"), 
-					rs.getInt("størrelse"));
-					hashRooms.put(rs.getString("navn"), room);
+
+		while (rs.next()) {
+			Room room = new Room(rs.getString("navn"), rs.getInt("størrelse"));
+			hashRooms.put(rs.getString("navn"), room);
 		}
-		
-		//rs = s.executeQuery("SELECT id from Hendelse WHERE dato =" + r.getDate() );
-		PreparedStatement p = c.prepareStatement("SELECT id from Hendelse WHERE dato = ?;");
+
+		// rs = s.executeQuery("SELECT id from Hendelse WHERE dato =" +
+		// r.getDate() );
+		PreparedStatement p = c
+				.prepareStatement("SELECT id from Hendelse WHERE dato = ?;");
 		p.setDate(1, r.getDate());
 		rs = p.executeQuery();
-		
-		while(rs.next()){
+
+		while (rs.next()) {
 			Event e = getEvent(rs.getInt("id"));
 			long a = e.getStartTime().getTime();
 			long b = e.getEndTime().getTime();
 			long ss = r.getStartTime().getTime();
-			long ee =  r.getEndTime().getTime();
-			if(((a >= ss && a < ee) || (b > ss && b < ee)) || ((ss > a && ss < b) || (ee > a && ee <= b))){
-					if(hashRooms.containsKey(e.getRoom())){
-						hashRooms.remove(e.getRoom());
-					}
+			long ee = r.getEndTime().getTime();
+			if (((a >= ss && a < ee) || (b > ss && b < ee))
+					|| ((ss > a && ss < b) || (ee > a && ee <= b))) {
+				if (hashRooms.containsKey(e.getRoom())) {
+					hashRooms.remove(e.getRoom());
 				}
 			}
-			
-			s.close();
-			
-			for(Room room : hashRooms.values())
-			{
-				freeRooms.add(room);
-			}
-					
-			return freeRooms;
-		
+		}
+
+		s.close();
+
+		for (Room room : hashRooms.values()) {
+			freeRooms.add(room);
+		}
+
+		return freeRooms;
 
 	}
-	
+
 	public boolean login(String user, String password) throws SQLException {
 		Connection c = getConnection();
 		Statement s = c.createStatement();
-		ResultSet rs = s.executeQuery("SELECT * FROM Person WHERE `e-mail` = '" + user + "' AND `passord` = '" + password + "';" );
-		
-		if(rs.next())
-		{
-			 return true;
+		ResultSet rs = s.executeQuery("SELECT * FROM Person WHERE `e-mail` = '"
+				+ user + "' AND `passord` = '" + password + "';");
+
+		if (rs.next()) {
+			return true;
 		}
 		return false;
 	}
-	
+
 	public static void main(String[] args) throws SQLException {
-//		List<Event> lol = new ArrayList<Event>();
-//		CalendarService kake = new CalendarService();
-//		//Reservation res = new Reservation(createDate(2011, 3, 17), new Time(14,00,00), new Time(16,00,00));
-//		lol = kake.getEvents("bolle@bool.com");
-//		
-//		for(Event r: lol){
-//			System.out.println(r.getDescription() + " --" + r.getResponsible() + "-.--- id=" + r.getEid());
-//		}
-		
+		// List<Event> lol = new ArrayList<Event>();
+		// CalendarService kake = new CalendarService();
+		// //Reservation res = new Reservation(createDate(2011, 3, 17), new
+		// Time(14,00,00), new Time(16,00,00));
+		// lol = kake.getEvents("bolle@bool.com");
+		//
+		// for(Event r: lol){
+		// System.out.println(r.getDescription() + " --" + r.getResponsible() +
+		// "-.--- id=" + r.getEid());
+		// }
+
 	}
-	
-	private static Date createDate(int y, int m, int d)
-	{
-		Calendar c = new GregorianCalendar(y,m-1,d);
+
+	private static Date createDate(int y, int m, int d) {
+		Calendar c = new GregorianCalendar(y, m - 1, d);
 		java.sql.Date dd = new Date(c.getTimeInMillis());
 		return dd;
 	}
