@@ -12,7 +12,7 @@ import java.net.UnknownHostException;
 import no.ntnu.fp.net.admin.Log;
 import no.ntnu.fp.net.co.Connection;
 import no.ntnu.fp.net.co.Connection;
-import no.ntnu.fp.net.co.ConnectionImplOld;
+import no.ntnu.fp.net.co.ConnectionImpl;
 
 /**
  * Simplest possible test application, client part.
