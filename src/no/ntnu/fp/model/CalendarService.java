@@ -1,32 +1,20 @@
 package no.ntnu.fp.model;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.lang.reflect.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import no.ntnu.fp.net.MessageListener;
 import no.ntnu.fp.net.co.ConnectionImpl;
 import no.ntnu.fp.net.co.ReceiveConnectionWorker;
 import no.ntnu.fp.net.co.ReceiveConnectionWorker.ConnectionListener;
 import no.ntnu.fp.net.co.ReceiveMessageWorker;
-import nu.xom.Builder;
-import nu.xom.Document;
 import nu.xom.Element;
-import nu.xom.Elements;
-import nu.xom.ParsingException;
-
-import sun.awt.SunHints.Value;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class CalendarService implements ConnectionListener,
 		ReceiveMessageWorker.MessageListener {
@@ -133,8 +121,10 @@ public class CalendarService implements ConnectionListener,
 		worker.addMessageListener(this);
 	}
 
-	public void messageReceived(String message) {
-		System.out.println("Mottok: " + message);
+	public void messageReceived(String message, no.ntnu.fp.net.co.Connection connection) {
+		//TODO: Fix this.
+		//Send til ReceiveData og returner svaret.
+		System.out.println("RECEIVED DATA: " + message);
 	}
 
 	public void stopListening() {
