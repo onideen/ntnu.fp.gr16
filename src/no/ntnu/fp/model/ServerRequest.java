@@ -80,6 +80,11 @@ public class ServerRequest {
 			return XmlSerializer.personToXml((Person)o);
 		}
 		
+		if(o.getClass().equals(Reservation.class))
+		{
+			return XmlSerializer.reservationToXml((Reservation)o);
+		}
+		
 		throw new Exception(o.getClass() + " is not supported.");
 	}
 	
@@ -127,6 +132,11 @@ public class ServerRequest {
 		if(type.equals("Person"))
 		{
 			return XmlSerializer.toPerson(e);
+		}
+		
+		if(type.equals("Reservation"))
+		{
+			return XmlSerializer.toReservation(e);
 		}
 		
 		throw new NotImplementedException();

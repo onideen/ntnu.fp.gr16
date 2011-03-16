@@ -182,6 +182,37 @@ public class XmlSerializer {
 	}
 	
 	/**
+	 * Creates a DataXml block containing the given reservation.
+	 * @param p
+	 * @return
+	 */
+	public static Element reservationToXml(Reservation m) {
+		Element e = new Element("contents");
+		
+		appendChildren(e,
+				createElement(Event.PROPERTY_DATE, m.getDate()),
+				createElement(Event.PROPERTY_ENDTIME, m.getEndTime()),
+				createElement(Event.PROPERTY_STARTTIME, m.getStartTime())
+				);
+		
+		return createDataXml("Reservation", e);
+	}
+
+	/**
+	 * Reads a event from the given DataXml block.
+	 * @param p
+	 * @return
+	 */
+	public static Reservation toReservation(Element m) throws ParseException {
+		m = getContentsFromDataXml(m);
+		return new Reservation(
+				readDate(m, Event.PROPERTY_DATE),
+				readTime(m, Event.PROPERTY_STARTTIME),
+				readTime(m, Event.PROPERTY_ENDTIME)
+				);
+	}
+	
+	/**
 	 * Creates a DataXml block containing the given room.
 	 * @param p
 	 * @return
