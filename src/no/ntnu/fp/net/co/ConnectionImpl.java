@@ -1,10 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Created on Oct 27, 2004
  */
-
 package no.ntnu.fp.net.co;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
@@ -12,363 +11,44 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Timer;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import no.ntnu.fp.net.admin.Log;
 import no.ntnu.fp.net.cl.ClException;
 import no.ntnu.fp.net.cl.ClSocket;
 import no.ntnu.fp.net.cl.KtnDatagram;
 import no.ntnu.fp.net.cl.KtnDatagram.Flag;
 
 /**
- *
- * @author alxandr
+ * Implementation of the Connection-interface. <br>
+ * <br>
+ * This class implements the behaviour in the methods specified in the interface
+ * {@link Connection} over the unreliable, connectionless network realised in
+ * {@link ClSocket}. The base class, {@link AbstractConnection} implements some
+ * of the functionality, leaving message passing and error handling to this
+ * implementation.
+ * 
+ * @author Sebj�rn Birkeland and Stein Jakob Nordb�
+ * @see no.ntnu.fp.net.co.Connection
+ * @see no.ntnu.fp.net.cl.ClSocket
  */
-public class ConnectionImpl implements Connection
-{
+public class ConnectionImpl extends AbstractConnection {
+
     /** Keeps track of the used ports for each server port. */
     private static Map<Integer, Boolean> usedPorts = Collections.synchronizedMap(new HashMap<Integer, Boolean>());
-    private State state;
-    private int packetNumber = 0;
-    private final List<KtnDatagram> outBuffer = new LinkedList<KtnDatagram>();
-    private final List<KtnDatagram> transmitBuffer = new LinkedList<KtnDatagram>();
-
-    private final List<String> inBuffer = new LinkedList<String>();
-    private int nextPacketNumber = 1;
-
-    private Map<Integer, AutoResetEvent> packetWait = new HashMap<Integer, AutoResetEvent>();
-
-    private final AutoResetEvent connectionReceiveWait = new AutoResetEvent(false);
-    private final AutoResetEvent outBufferWait = new AutoResetEvent(false);
-    private final MultiAutoResetEvent transmitBufferWait = new MultiAutoResetEvent(false);
-    private final AutoResetEvent dataWait = new AutoResetEvent(false);
-    private void handleSyn(KtnDatagram packet) {
-        if(state != State.CONNECTION_WAIT) {
-            SendResponse(packet, Flag.FIN, null);
-        } else {
-            state = State.SYN_RECEIVED;
-            SendResponse(packet, Flag.SYN_ACK, null);
-            remoteAddress = packet.getSrc_addr();
-            remotePort = packet.getSrc_port();
-            connectionReceiveWait.Set();
-        }
-    }
-
-    private void handleSynAck(KtnDatagram packet) {
-        if(state != State.SYN_SENT) {
-            SendResponse(packet, Flag.FIN, null);
-        } else {
-            state = State.ESTABLISHED;
-            SendAck(packet);
-            remoteAddress = packet.getSrc_addr();
-            remotePort = packet.getSrc_port();
-            connectionReceiveWait.Set();
-        }
-    }
-
-    private void handleFin(KtnDatagram packet) {
-        if(state != State.ESTABLISHED) return;
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    private void handleAck(KtnDatagram packet) {
-        AutoResetEvent are = null;
-        synchronized(outBuffer) {
-            if(!packetWait.containsKey(packet.getAck()))
-                return;
-            are = packetWait.get(packet.getAck());
-            for(int i = 0, l = transmitBuffer.size(); i < l; i++)
-            {
-                KtnDatagram buff = transmitBuffer.get(i);
-                int seq = buff.getSeq_nr();
-                if(seq == packet.getAck())
-                {
-                    transmitBuffer.remove(i);
-                    break;
-                }
-            }
-        }
-        if(are != null)
-            are.Set();
-    }
-
-    private void handleData(KtnDatagram packet) {
-        if(state != State.ESTABLISHED) return;
-        if(packet.getChecksum() == packet.calculateChecksum() && packet.getSeq_nr() == nextPacketNumber) {
-            synchronized(inBuffer) {
-                nextPacketNumber++;
-                inBuffer.add(packet.getPayload().toString());
-            }
-            SendAck(packet);
-            dataWait.Set();
-        }
-    }
-
-    private void SendResponse(KtnDatagram packet, Flag flag, String data) {
-        KtnDatagram toSend = new KtnDatagram();
-        toSend.setDest_addr(packet.getSrc_addr());
-        toSend.setDest_port(packet.getSrc_port());
-        toSend.setSrc_addr(myAddress);
-        toSend.setSrc_port(myPort);
-        toSend.setFlag(flag);
-        toSend.setPayload(data);
-        toSend.setSeq_nr(packetNumber++);
-
-        try {
-            new ClSocket().send(toSend);
-        } catch (IOException ex) {
-            Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClException ex) {
-            Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private AutoResetEvent SendPacket(Flag flag, String data, boolean awaitAck) {
-        KtnDatagram toSend = new KtnDatagram();
-        toSend.setDest_addr(remoteAddress);
-        toSend.setDest_port(remotePort);
-        toSend.setSrc_addr(myAddress);
-        toSend.setSrc_port(myPort);
-        toSend.setFlag(flag);
-        toSend.setPayload(data);
-        toSend.setSeq_nr(packetNumber++);
-        if(awaitAck) {
-            AutoResetEvent are = new AutoResetEvent(false);
-            synchronized(outBuffer) {
-                outBuffer.add(toSend);
-                packetWait.put(toSend.getSeq_nr(), are);
-            }
-            outBufferWait.Set();
-            return are;
-        } else {
-            try {
-                new ClSocket().send(toSend);
-            } catch (IOException ex) {
-                Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClException ex) {
-                Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            return null;
-        }
-    }
-
-    private void SendAck(KtnDatagram packet) {
-        KtnDatagram toSend = new KtnDatagram();
-        toSend.setDest_addr(remoteAddress);
-        toSend.setDest_port(remotePort);
-        toSend.setSrc_addr(myAddress);
-        toSend.setSrc_port(myPort);
-        toSend.setFlag(Flag.ACK);
-        toSend.setAck(packet.getSeq_nr());
-        System.out.println(toSend.toString());
-
-        synchronized(outBuffer) {
-            outBuffer.add(toSend);
-            outBufferWait.Set();
-        }
-    }
-
-    public enum State {
-        CLOSED,
-        SYN_RECEIVED,
-        SYN_SENT,
-        ESTABLISHED,
-        CONNECTION_WAIT
-    }
-
-    private class Retransmittor extends Thread {
-        /** Connection to listen on. */
-        private ClSocket connection;
-
-        private boolean sending = true;
-
-        public Retransmittor()
-        {
-            setName("RetransmitDeamon for ConnectionImpl");
-        }
-
-        @Override
-        public void run() {
-            while(sending) {
-                connection = new ClSocket();
-                try {
-                    transmitBufferWait.WaitOne();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                AutoResetEvent waiter = new AutoResetEvent(false);
-                try {
-                    waiter.WaitOne(TIMEOUT, TimeUnit.MILLISECONDS);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                synchronized(outBuffer) {
-                    if(!transmitBuffer.isEmpty()) {
-                        KtnDatagram toSend = transmitBuffer.remove(0);
-                        try {
-                            new ClSocket().send(toSend);
-                            transmitBuffer.add(toSend);
-                        } catch (IOException ex) {
-                            Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-                        } catch (ClException ex) {
-                            Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private class Sender extends Thread {
-        /** Connection to listen on. */
-        private ClSocket connection;
-
-        private boolean sending = true;
-
-        public Sender()
-        {
-            setName("SendDeamon for ConnectionImpl");
-        }
-
-        @Override
-        public void run() {
-            while(sending) {
-                connection = new ClSocket();
-                try {
-                    outBufferWait.WaitOne();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                List<KtnDatagram> myOutBuffer = new LinkedList<KtnDatagram>();
-                synchronized(outBuffer) {
-                    while(!outBuffer.isEmpty()) {
-                        myOutBuffer.add(outBuffer.remove(0));
-                    }
-                }
-                while(!myOutBuffer.isEmpty()) {
-                    KtnDatagram toSend = myOutBuffer.remove(0);
-                    try {
-                        connection.send(toSend);
-                        if(toSend.getFlag() == Flag.NONE) {
-                            synchronized(outBuffer) {
-                                transmitBuffer.add(toSend);
-                            }
-                            transmitBufferWait.Set();
-                        }
-                    } catch (IOException ex) {
-                        Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (ClException ex) {
-                        Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
-        }
-    }
-
-    private class Receiver extends Thread {
-        /** Connection to listen on. */
-        private ClSocket connection;
-
-        private boolean receiving = true;
-
-        public Receiver()
-        {
-            setName("ReceiveDeamon for ConnectionImpl");
-        }
-
-        @Override
-        @SuppressWarnings("WaitWhileNotSynced")
-        public void run()
-        {
-            while(receiving) {
-                connection = new ClSocket();
-                final KtnDatagram[] packet = new KtnDatagram[] {null};
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            packet[0] = connection.receive(myPort);
-                        } catch (IOException ex) {
-                            Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                });
-                thread.start();
-                try {
-                    thread.join(TIMEOUT * 5);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                try {
-                    connection.cancelReceive();
-                } catch (IOException ex) {
-                    Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                if(packet[0] != null) {
-                    try { handlePacket(packet[0]); }
-                    catch (Throwable ex) {
-                        Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
-        }
-    }
-
-    private void handlePacket(KtnDatagram packet) {
-        if(packet.getDest_addr().equals(myAddress) && packet.getDest_port() == myPort) {
-            if(packet.getFlag() != Flag.NONE) {
-                if(packet.getFlag() == Flag.SYN)
-                {
-                    handleSyn(packet);
-                } else if(packet.getFlag() == Flag.SYN_ACK) {
-                    handleSynAck(packet);
-                } else if(packet.getFlag() == Flag.FIN) {
-                    handleFin(packet);
-                } else if(packet.getFlag() == Flag.ACK) {
-                    handleAck(packet);
-                }
-            } else {
-                handleData(packet);
-            }
-        }
-    }
 
     /**
-     * Time between retransmissions. When setting this, also consider setting
-     * {@link #TIMEOUT}: There has to be time for a few retransmissions within
-     * the timeout. Setting RETRANSMIT too low will result in a lot of traffic
-     * and duplicate packets because of the delays in A2. Note: Low values of
-     * RETRANSMIT will generate duplicate packets independently of the setting
-     * for duplicate packets in the configuration for A2!
+     * Initialise initial sequence number and setup state machine.
+     * 
+     * @param myPort
+     *            - the local port to associate with this connection
      */
-    protected final static int RETRANSMIT = 800;
-
-    /**
-     * Timeout for receives. Setting this too high can cause slow operation in
-     * the case of many errors, while setting it too low can cause failure of
-     * operation because of the delays in A2. It is now set to three times the
-     * {@link #RETRANSMIT} value, for a total of 4 possible transmissions before
-     * timing out.
-     */
-    protected static int TIMEOUT = 3 * RETRANSMIT + (RETRANSMIT / 2);
-
-
-    private int myPort = -1;
-    private String myAddress;
-    private int remotePort = -1;
-    private String remoteAddress;
-
-    private Receiver receiver;
-    private Sender sender;
-    private Retransmittor retransmittor;
-
-    public ConnectionImpl(int port) {
-        myPort = port;
-        myAddress = getIPv4Address();
-        state = State.CLOSED;
+    public ConnectionImpl(int myPort) {
+        this.myPort = myPort;
+        this.myAddress = getIPv4Address();
     }
 
     private String getIPv4Address() {
@@ -380,113 +60,178 @@ public class ConnectionImpl implements Connection
         }
     }
 
-    public void connect(InetAddress remoteAddress, int remotePort) throws IOException, SocketTimeoutException {
-        if(state != state.CLOSED)
-            throw new IOException("Not a closed socket.");
-        state = State.SYN_SENT;
-        this.remoteAddress = remoteAddress.getHostAddress();
-        this.remotePort = remotePort;
-        if(sender == null) {
-            sender = new Sender();
-            sender.start();
+    /**
+     * Establish a connection to a remote location.
+     * 
+     * @param remoteAddress
+     *            - the remote IP-address to connect to
+     * @param remotePort
+     *            - the remote portnumber to connect to
+     * @throws IOException
+     *             If there's an I/O error.
+     * @throws java.net.SocketTimeoutException
+     *             If timeout expires before connection is completed.
+     * @see Connection#connect(InetAddress, int)
+     */
+    public void connect(InetAddress remoteAddress, int remotePort) throws IOException,
+            SocketTimeoutException {
+        if(state != State.CLOSED) return;
+        KtnDatagram datagram = constructInternalPacket(Flag.SYN);
+        datagram.setDest_addr(remoteAddress.getHostAddress());
+        datagram.setDest_port(remotePort);
+        try { simplySendPacket(datagram); }
+        catch (Exception e) {
+            throw new IOException(e);
         }
-        if(receiver == null) {
-            receiver = new Receiver();
-            receiver.start();
+        
+        state = State.CLOSED.SYN_SENT;
+
+        KtnDatagram synAck = receivePacket(true);
+        if(synAck.getFlag() == Flag.FIN)
+        {
+            state = State.CLOSED;
+            return;
+        } else if(synAck.getFlag() == Flag.SYN_ACK)
+        {
+            sendAck(synAck, false);
+            state = State.ESTABLISHED;
+            this.remoteAddress = remoteAddress.getHostAddress();
+            this.remotePort = remotePort;
         }
-        if(retransmittor == null) {
-            retransmittor = new Retransmittor();
-            retransmittor.start();
-        }
-        SendPacket(Flag.SYN, null, false);
-        try {
-            connectionReceiveWait.WaitOne();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        state = State.ESTABLISHED;
     }
 
+    /**
+     * Listen for, and accept, incoming connections.
+     * 
+     * @return A new ConnectionImpl-object representing the new connection.
+     * @see Connection#accept()
+     */
     public Connection accept() throws IOException, SocketTimeoutException {
-        if(state != state.CLOSED)
-            throw new IOException("Not a closed socket.");
-        state = State.CONNECTION_WAIT;
-        if(sender == null) {
-            sender = new Sender();
-            sender.start();
-        }
-        if(receiver == null) {
-            receiver = new Receiver();
-            receiver.start();
-        }
-        if(retransmittor == null) {
-            retransmittor = new Retransmittor();
-            retransmittor.start();
-        }
+        InternalReceiver receiver = new InternalReceiver(myPort);
+        receiver.start();
+        long timeout = CONNECT_TIMEOUT;
         try {
-            connectionReceiveWait.WaitOne();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        state = State.ESTABLISHED;
-        return this;
+            receiver.join(Math.max(timeout, 1));
+        } catch (InterruptedException e) { /* do nothing */ }
+
+        receiver.stopReceive();
+        KtnDatagram packet = receiver.getPacket();
+        if(packet == null)
+            throw new SocketTimeoutException();
+        if(packet.getFlag() != Flag.SYN)
+            throw new IOException("Did not receive SYN.");
+
+        sendAck(packet, true);
+
+        /*receiver = new InternalReceiver(myPort);
+        receiver.start();
+        try {
+            receiver.join(Math.max(timeout, 1));
+        } catch (InterruptedException e) { }
+
+        packet = receiver.getPacket();
+        if(packet == null)
+            throw new SocketTimeoutException();
+        if(packet.getFlag() != Flag.ACK)
+            throw new IOException("Did not receive ACK after SYN_ACK.");*/
+
+        ConnectionImpl connection = new ConnectionImpl(myPort);
+        connection.state = State.ESTABLISHED;
+        connection.remoteAddress = packet.getSrc_addr();
+        connection.remotePort = packet.getSrc_port();
+
+        return connection;
     }
 
-    public void send(String msg) throws ConnectException, IOException {
-        try {
-            SendPacket(Flag.NONE, msg, true).WaitOne();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    /**
+     * Send a message from the application.
+     * 
+     * @param msg
+     *            - the String to be sent.
+     * @throws ConnectException
+     *             If no connection exists.
+     * @throws IOException
+     *             If no ACK was received.
+     * @see AbstractConnection#sendDataPacketWithRetransmit(KtnDatagram)
+     * @see no.ntnu.fp.net.co.Connection#send(String)
+     */
+    public synchronized void send(String msg) throws ConnectException, IOException {
+        if(state != State.ESTABLISHED) throw new ConnectException("Not connected");
+        KtnDatagram datagram = constructDataPacket(msg);
+        datagram.setDest_addr(remoteAddress);
+        datagram.setDest_port(remotePort);
+
+        sendDataPacketWithRetransmit(datagram);
     }
 
+    /**
+     * Wait for incoming data.
+     * 
+     * @return The received data's payload as a String.
+     * @see Connection#receive()
+     * @see AbstractConnection#receivePacket(boolean)
+     * @see AbstractConnection#sendAck(KtnDatagram, boolean)
+     */
     public String receive() throws ConnectException, IOException {
-        synchronized(inBuffer) {
-            if(!inBuffer.isEmpty()) {
-                return inBuffer.remove(0);
+        if(state != State.ESTABLISHED) throw new ConnectException("Not connected");
+        for(;;) {
+            KtnDatagram datagram = receivePacket(false);
+            if(datagram == null) {
+                throw new IOException("No data came.");
+            }
+            if(isValid(datagram))
+            {
+               sendAck(datagram, false);
+               return datagram.getPayload().toString();
+            } else {
+                System.out.println("Bad packet received.");
             }
         }
-        try {
-            dataWait.WaitOne();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return receive();
+
     }
 
+    /**
+     * Close the connection.
+     * 
+     * @see Connection#close()
+     */
     public void close() throws IOException {
-        if(state == State.ESTABLISHED) {
-            SendPacket(Flag.FIN, null, true);
-            SendPacket(Flag.FIN, null, true);
-            SendPacket(Flag.FIN, null, true);
-
-            AutoResetEvent are = new AutoResetEvent(false);
-            try {
-                are.WaitOne(TIMEOUT, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        if(disconnectRequest == null) {
+            KtnDatagram datagram = constructInternalPacket(Flag.FIN);
+            try {sendFin(datagram);}
+            catch (IllegalMonitorStateException e3) {}
         }
-
-        sender.sending = false;
-        retransmittor.sending = false;
-        receiver.receiving = false;
-        outBufferWait.Set();
-        transmitBufferWait.Set();
-
-
-        AutoResetEvent are2 = new AutoResetEvent(false);
-        try {
-            are2.WaitOne(TIMEOUT, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ConnectionImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-
-        /*receiver.interrupt();
-        retransmittor.interrupt();
-        sender.interrupt();*/
-
+        remoteAddress = null;
+        remotePort = -1;
+        state = State.CLOSED;
     }
 
+    private KtnDatagram sendFin(KtnDatagram packet) throws IOException
+    {
+        // Create a timer that sends the packet and retransmits every
+        // RETRANSMIT milliseconds until cancelled.
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new SendTimer(new ClSocket(), packet), 0, RETRANSMIT);
+
+        KtnDatagram ack = receiveAck();
+        timer.cancel();
+
+        return ack;
+    }
+
+    /**
+     * Test a packet for transmission errors. This function should only called
+     * with data or ACK packets in the ESTABLISHED state.
+     * 
+     * @param packet
+     *            Packet to test.
+     * @return true if packet is free of errors, false otherwise.
+     */
+    protected boolean isValid(KtnDatagram packet) {
+        return packet.getChecksum() == packet.calculateChecksum()
+                && packet.getDest_addr().equals(myAddress)
+                && packet.getDest_port() == myPort
+                && packet.getSrc_addr().equals(remoteAddress)
+                && packet.getSrc_port() == remotePort;
+    }
 }
