@@ -126,6 +126,16 @@ public class Communication {
 		
 		return new ArrayList<Event>();
 	}
+
+	
+	public static Event getEvent(int eid)
+	{
+		ServerResponse sr = sendData("getEvent", eid);
+		if(sr.isSuccess())
+			return (Event)sr.getParameters()[0];
+		
+		return null;
+	}
 	
 	public static boolean saveMessage(Message m)
 	{
