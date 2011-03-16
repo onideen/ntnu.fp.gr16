@@ -107,7 +107,7 @@ public class ConnectionImpl extends AbstractConnection {
      * @return A new ConnectionImpl-object representing the new connection.
      * @see Connection#accept()
      */
-    public Connection accept() throws IOException, SocketTimeoutException {
+    public synchronized Connection accept() throws IOException, SocketTimeoutException {
         InternalReceiver receiver = new InternalReceiver(myPort);
         receiver.start();
         long timeout = CONNECT_TIMEOUT;
@@ -122,8 +122,13 @@ public class ConnectionImpl extends AbstractConnection {
         if(packet.getFlag() != Flag.SYN)
             throw new IOException("Did not receive SYN.");
 
-        packet.setDest_port(newtPort++);
+        remoteAddress = packet.getSrc_addr();
+        remotePort = packet.getSrc_port();
+        int mPort = myPort;
+        myPort = newtPort++;
         sendAck(packet, true);
+        myPort = mPort;
+        mPort = newtPort;
 
         /*receiver = new InternalReceiver(myPort);
         receiver.start();
@@ -137,7 +142,7 @@ public class ConnectionImpl extends AbstractConnection {
         if(packet.getFlag() != Flag.ACK)
             throw new IOException("Did not receive ACK after SYN_ACK.");*/
 
-        ConnectionImpl connection = new ConnectionImpl(packet.getDest_port());
+        ConnectionImpl connection = new ConnectionImpl(mPort);
         connection.state = State.ESTABLISHED;
         connection.remoteAddress = packet.getSrc_addr();
         connection.remotePort = packet.getSrc_port();

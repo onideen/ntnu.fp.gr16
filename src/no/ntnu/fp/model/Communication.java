@@ -1,5 +1,9 @@
 package no.ntnu.fp.model;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -13,6 +17,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import no.ntnu.fp.net.co.ConnectionImpl;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
@@ -56,14 +61,14 @@ public class Communication {
 		
 		//System.out.println(deleteEvent(82));
 		
-		login("pelle", "fdsfsd");
+		System.out.println(login("bolle@bool.com", "passord"));
 	}
 	
 	public static boolean login(String user, String password) throws SQLException {
 		ServerResponse sr = sendData("login", user, password);
 		if(sr.isSuccess())
 		{
-			System.out.println(sr.getParameters()[0]);
+			return (Boolean)sr.getParameters()[0];
 		}
 		
 		return false;

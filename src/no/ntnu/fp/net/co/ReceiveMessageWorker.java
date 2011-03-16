@@ -70,7 +70,7 @@ public class ReceiveMessageWorker extends Thread {
                 Iterator<MessageListener> iterator = messageListenerList.iterator();
                 while (iterator.hasNext()) {
                     MessageListener listener = iterator.next();
-                    listener.messageReceived(message);
+                    listener.messageReceived(message, aConnection);
                 }
             }
         }
@@ -100,7 +100,7 @@ public class ReceiveMessageWorker extends Thread {
      */
     public interface MessageListener {
 
-        public void messageReceived(String message);
+        public void messageReceived(String message, Connection conn);
 
         public void connectionClosed(Connection conn);
 
