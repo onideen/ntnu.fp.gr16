@@ -20,7 +20,6 @@ public class Communication {
 
 	public static void main(String[] args) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
-		CalendarService c = new CalendarService();
 		
 		Date d = createDate(2011, 3, 15);
 		Time t1 = new Time(14,00,00);
@@ -96,15 +95,11 @@ public class Communication {
 		ServerResponse sr = sendData("getEvents", XmlSerializer.createElement("email", email));
 		if(sr.isSuccess())
 		{
-			ArrayList<Event> events = new ArrayList<Event>();
-			for(int i = 0; i<sr.returnData.getChildElements().size(); i++){
-				try {
-					events.add(XmlSerializer.toEvent(sr.returnData.getChildElements().get(i)));
-				} catch (Exception e) {
-					// TODO: handle exception
-				}
+			try {
+				return (List<Event>) ServerRequest.createObjectFromElement(sr.returnData.getChildElements().get(0));
+			} catch (ParseException e) {
+				e.printStackTrace();
 			}
-			return events;
 		}
 		
 		return new ArrayList<Event>();
@@ -114,7 +109,7 @@ public class Communication {
 	{
 		ServerResponse sr = sendData("saveMessage", m);
 		if(sr.isSuccess())
-			m.setMid(XmlSerializer.readInt(sr.returnData, Message.PROPERTY_MID));
+			m.setMid((int)(Integer)sr.getParameters()[0]);
 		return sr.isSuccess();
 	
 	}
@@ -139,7 +134,7 @@ public class Communication {
 	
 	public static boolean updateEvent(Event e)
 	{
-		return sendData("updateEvent", XmlSerializer.eventToXml(e)).isSuccess();
+		return sendData("updateEvent", e).isSuccess();
 	}
 	
 	public static List<Room> getFreeRooms(Reservation r)
@@ -147,15 +142,11 @@ public class Communication {
 		ServerResponse sr = sendData("getFreeRooms", r);
 		if(sr.isSuccess())
 		{
-			ArrayList<Room> rooms = new ArrayList<Room>();
-			for(int i = 0; i<sr.returnData.getChildElements().size(); i++){
-				try {
-					rooms.add(XmlSerializer.toRoom(sr.returnData.getChildElements().get(i)));
-				} catch (Exception e) {
-					// TODO: handle exception
-				}
+			try {
+				return (List<Room>) ServerRequest.createObjectFromElement(sr.returnData.getChildElements().get(0));
+			} catch (ParseException e) {
+				e.printStackTrace();
 			}
-			return rooms;
 		}
 		
 		return new ArrayList<Room>();
@@ -164,12 +155,21 @@ public class Communication {
 	public static boolean answerMessage(Message m, boolean answer)
 	{
 		ServerResponse sr = sendData("answerMessage", m.getMid(), answer);
-		
 		return sr.isSuccess();
 	}
 	
-	public static List<Person> getAttendees()
+	public static List<Person> getAttendees(int eventID)
 	{
-		throw new NotImplementedException();
+		ServerResponse sr = sendData("getAttendees", eventID);
+		if(sr.isSuccess())
+		{
+			try {
+				return (List<Person>) ServerRequest.createObjectFromElement(sr.returnData.getChildElements().get(0));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return new ArrayList<Person>();
 	}
 }

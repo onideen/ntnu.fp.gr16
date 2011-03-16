@@ -17,6 +17,11 @@ public class ServerRequest {
 	String function;
 	Element requestData;
 	
+	/**
+	 * Creates a server request to the given function with the given parameters
+	 * @param function
+	 * @param parameters
+	 */
 	public ServerRequest(String function, Object...parameters){
 		
 		Element e = new Element(function);
@@ -29,6 +34,12 @@ public class ServerRequest {
 		requestData = e;
 	}
 	
+	/**
+	 * Converts an object to an Xml element.
+	 * @param o
+	 * @return
+	 * @throws Exception
+	 */
 	public static Element createElementFromObject(Object o) throws Exception
 	{
 		if(o==null)
@@ -72,6 +83,12 @@ public class ServerRequest {
 		throw new Exception(o.getClass() + " is not supported.");
 	}
 	
+	/**
+	 * Converts a Xml element to an object.
+	 * @param e
+	 * @return
+	 * @throws ParseException
+	 */
 	public static Object createObjectFromElement(Element e) throws ParseException
 	{
 		String type = XmlSerializer.getTypeFromDataXml(e);
@@ -79,7 +96,7 @@ public class ServerRequest {
 		
 		if(type.equals("int"))
 		{
-			System.out.println("FEBFIEB     INT" + e.toXML());
+			return XmlSerializer.readInt(e, "contents");
 		}
 		
 		if(type.equals("list"))
@@ -89,7 +106,7 @@ public class ServerRequest {
 		
 		if(type.equals("string"))
 		{
-			System.out.println("XNOIEOA    STRING" + e.toXML());
+			return XmlSerializer.readString(e, "contents");
 		}
 		
 		if(type.equals("Message"))
@@ -115,7 +132,11 @@ public class ServerRequest {
 		throw new NotImplementedException();
 	}
 	
-	public ServerResponse sendRequest()
+	/**
+	 * Sends this server request to the server.
+	 * @return
+	 */
+	public ServerResponse sendRequest() 
 	{
 		//TODO: Putt Aleksander her.
 		CalendarService c = new CalendarService();
@@ -129,10 +150,18 @@ public class ServerRequest {
 		return null;
 	}
 	
+	/**
+	 *  
+	 * @return This server request's function name.
+	 */
 	public String getFunction() {
 		return function;
 	}
 
+	/**
+	 * Returns this server request's parameters.
+	 * @return A list of objects containing the parameters.
+	 */
 	public Object[] getParameters() {
 		
 		ArrayList<Object> objects = new ArrayList<Object>();
