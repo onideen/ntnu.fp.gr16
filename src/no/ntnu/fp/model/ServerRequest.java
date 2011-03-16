@@ -85,6 +85,11 @@ public class ServerRequest {
 			return XmlSerializer.reservationToXml((Reservation)o);
 		}
 		
+		if(o.getClass().equals(Boolean.class))
+		{
+			return XmlSerializer.createDataXml("bool", XmlSerializer.createElement("contents", Boolean.toString((Boolean)o)));
+		}
+		
 		throw new Exception(o.getClass() + " is not supported.");
 	}
 	
@@ -102,6 +107,11 @@ public class ServerRequest {
 		if(type.equals("int"))
 		{
 			return XmlSerializer.readInt(e, "contents");
+		}
+		
+		if(type.equals("bool"))
+		{
+			return XmlSerializer.readString(e, "contents") == "true";
 		}
 		
 		if(type.equals("list"))
