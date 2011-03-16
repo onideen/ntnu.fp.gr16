@@ -42,9 +42,4 @@ public class Room {
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_SIZE, old, size);
 		propChangeSupp.firePropertyChange(event);
 	}
-	
-	public boolean hasReservation(Date date, Date startTime, Date endTime)
-	{
-		throw new NotImplementedException();
-	}
 }

@@ -1,7 +1,10 @@
 package no.ntnu.fp.model;
 
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Time;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -31,7 +34,7 @@ public class Communication {
 		e.addAttendee("svulstig@gmail.com");
 		e.addAttendee("mothersday@monday.com");
 		
-		System.out.println(saveEvent(e));
+		//System.out.println(saveEvent(e));
 		
 		/*for(Message p : getMessages("bolle@bool.com"))
 		{
@@ -46,6 +49,24 @@ public class Communication {
 		
 		//Message m = getMessage(34);
 		//c.answerMessage(m, true);
+		
+//		for(Event r: getEvents("bolle@bool.com")){
+//			System.out.println(r.getDescription() + " --" + r.getResponsible() + "-.--- id=" + r.getEid());
+//		}
+		
+		//System.out.println(deleteEvent(82));
+		
+		login("pelle", "fdsfsd");
+	}
+	
+	public static boolean login(String user, String password) throws SQLException {
+		ServerResponse sr = sendData("login", user, password);
+		if(sr.isSuccess())
+		{
+			System.out.println(sr.getParameters()[0]);
+		}
+		
+		return false;
 	}
 	
 	private static Date createDate(int y, int m, int d)
@@ -89,10 +110,11 @@ public class Communication {
 		
 		return null;
 	}
+
 	
 	public static List<Event> getEvents(String email)
 	{
-		ServerResponse sr = sendData("getEvents", XmlSerializer.createElement("email", email));
+		ServerResponse sr = sendData("getEvents", email);
 		if(sr.isSuccess())
 		{
 			try {
@@ -121,15 +143,11 @@ public class Communication {
 			e.setEid((int)(Integer)sr.getParameters()[0]);
 		return sr.isSuccess();
 	}
+
 	
-	public static boolean deleteMessage(Message m)
+	public static boolean deleteEvent(int eId)
 	{
-		return sendData("deleteMessage", m.getMid()).isSuccess();
-	}
-	
-	public static boolean deleteEvent(Event e)
-	{
-		return sendData("deleteEvent", e.getEid()).isSuccess();
+		return sendData("deleteEvent", eId).isSuccess();
 	}
 	
 	public static boolean updateEvent(Event e)
