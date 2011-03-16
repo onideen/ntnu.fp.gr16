@@ -52,6 +52,11 @@ public abstract class AbstractConnection implements Connection {
     protected static int TIMEOUT = 3 * RETRANSMIT + (RETRANSMIT / 2);
 
     /**
+     * Connection timeout
+     */
+    protected static int CONNECT_TIMEOUT = 5 * TIMEOUT;
+
+    /**
      * To prevent more than one thread to concurrently execute certain parts of
      * doReceive(). DO NOT alter the value of this variable unless you KNOW what
      * you are doing, as this may hang the implementation or cause
@@ -283,6 +288,8 @@ public abstract class AbstractConnection implements Connection {
     
         KtnDatagram ackToSend = constructInternalPacket(synAck ? Flag.SYN_ACK : Flag.ACK);
         ackToSend.setAck(packetToAck.getSeq_nr());
+        ackToSend.setDest_addr(packetToAck.getSrc_addr());
+        ackToSend.setDest_port(packetToAck.getSrc_port());
     
         // Send the ack, trying at most `tries' times.
         Log.writeToLog(ackToSend, "Sending Ack: " + ackToSend.getAck(), "AbstractConnection");

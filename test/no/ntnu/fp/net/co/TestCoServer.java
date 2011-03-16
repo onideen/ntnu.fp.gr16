@@ -12,7 +12,7 @@ import java.io.IOException;
 import no.ntnu.fp.net.admin.Log;
 import no.ntnu.fp.net.co.Connection;
 import no.ntnu.fp.net.co.Connection;
-import no.ntnu.fp.net.co.ConnectionImpl;
+import no.ntnu.fp.net.co.ConnectionImplOld;
 
 /**
  * Simplest possible test application, server part.
