@@ -8,6 +8,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
@@ -29,6 +31,8 @@ import javax.swing.JToggleButton;
 import javax.swing.ListModel;
 import javax.swing.SpinnerListModel;
 import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
@@ -85,7 +89,12 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	private ButtonGroup meeting_agreement;
 	private JToggleButton agreement_toggle;
 	private JDateChooser calendar;
-
+	private DefaultListModel selected_users_listModel;
+	private DefaultListModel all_users_listModel;
+	
+	
+	private Event event;
+	
 	/**
 	* Auto-generated main method to display this 
 	* JPanel inside a new JFrame.
@@ -100,6 +109,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	
 	public CreateMeetingPanel() {
 		super();
+		event = Communication.getEvent(73);
 		initGUI();
 	}
 	
@@ -142,8 +152,25 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		addEmployees();
 	}
 	
+	private void addEmployees() {
+		if (event != null) {
+			List<Person> attendees = Communication.getAttendees(event.getEid()); 
+		
+			for (Person person : attendees) 
+				selected_users_listModel.addElement(person);
+		}
+		
+		List<Person> employees = Communication.getEmployees();
+		for (Person person : employees) {
+			if ( event != null && ! selected_users_listModel.contains(person))
+				all_users_listModel.addElement(person);
+		}
+		
+	}
+
 	private ButtonGroup getMeeting_agreement() {
 		if(meeting_agreement == null) {
 			meeting_agreement = new ButtonGroup();
@@ -277,10 +304,10 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 			all_usersLayout.columnWeights = new double[] {0.0, 0.0, 0.0};
 			all_usersLayout.columnWidths = new int[] {245, 50, 257};
 			all_users.setLayout(all_usersLayout);
-			all_users.add(getAll_users_label(), new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-			all_users.add(getJScrollPane1(), new GridBagConstraints(0, 1, 1, 3, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-			all_users.add(getSelected_users_scroll(), new GridBagConstraints(2, 1, 1, 3, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 			all_users.add(getButtons_select_unselect_panel(), new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+			all_users.add(getAll_users_label(), new GridBagConstraints(-1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+			all_users.add(getSelected_users_scroll(), new GridBagConstraints(2, 1, 1, 3, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+			all_users.add(getAllEmployeeScroll(), new GridBagConstraints(0, 1, 1, 3, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 			all_users.add(getSelected_users_label(), new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		}
 		return all_users;
@@ -296,22 +323,16 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	
 	private JList getAll_users_list() {
 
-		DefaultListModel all_users_listModel = new DefaultListModel();
-		List<Person> employees = Communication.getEmployees();
+		all_users_listModel = new PersonListModel();
 		all_users_list = new JList();
 		all_users_list.setCellRenderer(new AllEmployeesListRenderer());
-		
-		for (Person person : employees) {
-			all_users_listModel.addElement(person);
-			System.out.println(person);
-		}
-		
 		all_users_list.setModel(all_users_listModel);
-		all_users_list.setPreferredSize(new java.awt.Dimension(60, 70));
+		all_users_list.setPreferredSize(new java.awt.Dimension(60, 70)); 
 		return all_users_list;
+		
 	}
 	
-	private JScrollPane getJScrollPane1() {
+	private JScrollPane getAllEmployeeScroll() {
 		if(jScrollPane1 == null) {
 			jScrollPane1 = new JScrollPane();
 			jScrollPane1.setPreferredSize(new java.awt.Dimension(100, 387));
@@ -332,10 +353,9 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	
 	private JList getSelected_users_list() {
 		if(selected_users_list == null) {
-			ListModel selected_users_listModel = 
-				new DefaultComboBoxModel(
-						new String[] { "Item One", "Item Two" });
+			selected_users_listModel = new PersonListModel();
 			selected_users_list = new JList();
+			selected_users_list.setCellRenderer(new AllEmployeesListRenderer());
 			selected_users_list.setModel(selected_users_listModel);
 			selected_users_list.setPreferredSize(new java.awt.Dimension(60, 70));
 			selected_users_list.setSize(177, 385);
@@ -365,20 +385,51 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 			select.setText("-->");
 			select.setSize(40, 40);
 			select.setPreferredSize(new java.awt.Dimension(40, 40));
+			select.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					addSelectedEmployees();	
+				}
+			});
 		}
 		return select;
 	}
 	
+	protected void addSelectedEmployees() {
+		
+		for (Object person : all_users_list.getSelectedValues()) {
+			all_users_listModel.removeElement(person);
+			selected_users_listModel.addElement(person);
+		}
+		
+	}
+
 	private JButton getUnselect() {
 		if(unselect == null) {
 			unselect = new JButton();
 			unselect.setText("<--");
 			unselect.setPreferredSize(new java.awt.Dimension(40, 40));
 			unselect.setSize(40, 40);
+			unselect.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					unselectEmployees();
+				}
+			});
 		}
 		return unselect;
 	}
 	
+	protected void unselectEmployees() {
+		for (Object person : selected_users_list.getSelectedValues()) {
+			selected_users_listModel.removeElement(person);
+			all_users_listModel.addElement(person);
+		}
+		
+	}
+
 	private JLabel getSelected_users_label() {
 		if(selected_users_label == null) {
 			selected_users_label = new JLabel();
