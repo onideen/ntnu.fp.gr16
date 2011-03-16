@@ -161,7 +161,9 @@ public class ConnectionImpl extends AbstractConnection {
         datagram.setDest_addr(remoteAddress);
         datagram.setDest_port(remotePort);
 
-        sendDataPacketWithRetransmit(datagram);
+        KtnDatagram ack = sendDataPacketWithRetransmit(datagram);
+        if(ack == null)
+            throw new IOException("No ack received.");
     }
 
     /**
@@ -196,6 +198,7 @@ public class ConnectionImpl extends AbstractConnection {
      * @see Connection#close()
      */
     public void close() throws IOException {
+        state = State.FIN_WAIT_2;
         if(disconnectRequest == null) {
             KtnDatagram datagram = constructInternalPacket(Flag.FIN);
             try {sendFin(datagram);}
