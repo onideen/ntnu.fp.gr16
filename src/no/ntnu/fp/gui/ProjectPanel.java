@@ -7,7 +7,6 @@ import java.awt.*;
 import no.ntnu.fp.model.Person;
 import no.ntnu.fp.model.Project;
 
-import no.ntnu.fp.storage.FileStorage;
 
 /**
  * GroupPanel is JPanel for presenting the hierarhical Group structure and editing its contents.
@@ -21,7 +20,7 @@ import no.ntnu.fp.storage.FileStorage;
  * 
  * GroupPanel implements main logic connecting the three panes, by listening to selection events.
  * 
- * @author Hallvard Tr¾tteberg
+ * @author Hallvard Trï¿½tteberg
  * @author Thomas &Oslash;sterlie
  * 
  * @version $Revision: 1.7 $ - $Date: 2005/02/22 08:45:46 $
@@ -140,6 +139,11 @@ public class ProjectPanel extends JPanel implements ListSelectionListener, ListD
      */
     public static void main(String args[]) {
         JFrame frame = new JFrame(args.length > 0 ? args[0] : "Project panel example");
+        try
+        {
+            UIManager.setLookAndFeel(
+                UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch(Throwable t) {}
 
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
