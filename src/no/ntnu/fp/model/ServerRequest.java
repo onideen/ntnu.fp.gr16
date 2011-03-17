@@ -154,23 +154,11 @@ public class ServerRequest {
 	 */
 	public ServerResponse sendRequest() {
 
-		CalendarService c = new CalendarService();
-		c.startListening();
-		
 		try {
 
-			no.ntnu.fp.net.co.ConnectionImpl conn = new ConnectionImpl(1009);
-			conn.connect(InetAddress.getByName("127.0.0.1"), 1010);
-			
-			conn.send("HEI");
+			ServerConnection.connect();
+                        String ans = ServerConnection.proxyRequest("HEI");
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-
-		try {
-			return c.receiveData(this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
