@@ -94,10 +94,11 @@ public class ConnectionImpl extends AbstractConnection {
             return;
         } else if(synAck.getFlag() == Flag.SYN_ACK)
         {
-            sendAck(synAck, false);
-            state = State.ESTABLISHED;
             this.remoteAddress = synAck.getSrc_addr();
             this.remotePort = synAck.getSrc_port();
+            sendAck(synAck, false);
+            state = State.ESTABLISHED;
+            
         }
     }
 
@@ -112,25 +113,25 @@ public class ConnectionImpl extends AbstractConnection {
         receiver.start();
         long timeout = CONNECT_TIMEOUT;
         try {
-            receiver.join(Math.max(timeout, 1));
+            receiver.join();
         } catch (InterruptedException e) { /* do nothing */ }
 
         receiver.stopReceive();
         KtnDatagram packet = receiver.getPacket();
         if(packet == null)
-            throw new SocketTimeoutException();
+            throw new SocketTimeoutException("Didn't receive the SYN. Timeout.");
         if(packet.getFlag() != Flag.SYN)
             throw new IOException("Did not receive SYN.");
 
         remoteAddress = packet.getSrc_addr();
         remotePort = packet.getSrc_port();
         int mPort = myPort;
-        myPort = newtPort++;
+        myPort = ++newtPort;
         sendAck(packet, true);
         myPort = mPort;
         mPort = newtPort;
 
-        /*receiver = new InternalReceiver(myPort);
+        /*receiver = new InternalReceiver(mPort);
         receiver.start();
         try {
             receiver.join(Math.max(timeout, 1));
@@ -146,6 +147,8 @@ public class ConnectionImpl extends AbstractConnection {
         connection.state = State.ESTABLISHED;
         connection.remoteAddress = packet.getSrc_addr();
         connection.remotePort = packet.getSrc_port();
+        if(connection.receivePacket(true).getFlag() != Flag.ACK)
+            throw new IOException("Did not receive ACK after SYN_ACK.");
 
         return connection;
     }
