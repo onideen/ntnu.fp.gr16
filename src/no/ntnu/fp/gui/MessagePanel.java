@@ -11,10 +11,6 @@
 
 package no.ntnu.fp.gui;
 
-import com.sun.xml.internal.messaging.saaj.soap.ver1_1.Message1_1Impl;
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
-
 import no.ntnu.fp.model.*;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.GroupLayout;
