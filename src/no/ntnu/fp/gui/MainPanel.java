@@ -44,6 +44,7 @@ public class MainPanel extends javax.swing.JPanel {
 	}
 	private static final int CALENDAR = 1;
 	private static final int AGREEMENT = 2;
+	private static final int MESSAGES = 3;
 	private JPanel menu;
 	private JPanel maincontainer;
 	private JButton new_agreement_button;
@@ -112,7 +113,6 @@ public class MainPanel extends javax.swing.JPanel {
 					calendar_button.setSize(50, 50);
 					calendar_button.setPreferredSize(new java.awt.Dimension(50, 50));
 					calendar_button.addActionListener(new ActionListener() {
-	
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							changeMain(CALENDAR);
@@ -128,6 +128,12 @@ public class MainPanel extends javax.swing.JPanel {
 					message_button.setVerticalTextPosition(SwingConstants.BOTTOM);
 					message_button.setSize(50, 50);
 					message_button.setPreferredSize(new java.awt.Dimension(50, 50));
+					message_button.addActionListener(new ActionListener() {	
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							changeMain(MESSAGES);
+						}
+					});
 				}
 				{
 					employee_button = new JButton();
@@ -169,6 +175,12 @@ public class MainPanel extends javax.swing.JPanel {
 			break;
 		case AGREEMENT:
 			maincontainer.add(new CreateMeetingPanel(),BorderLayout.CENTER);
+			break;
+		case MESSAGES:
+			MessageListPanel message = new MessageListPanel();
+			maincontainer.add(message,BorderLayout.CENTER);
+			message.readMessages("mothersday@monday.com");
+			//TODO legge til pålogget bruker over
 			break;
 		}
 		updateUI();
