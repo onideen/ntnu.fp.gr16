@@ -95,6 +95,17 @@ public class Event {
 	public String getRoom() {
 		return roomName;
 	}
+
+        Room roomObject = null;
+        public Room getRoomObject()
+        {
+            if(roomObject!=null)
+                if(roomObject.getName().equals(getRoom()))
+                    return roomObject;
+
+            roomObject = Communication.getARoom(getRoom());
+            return roomObject;
+        }
 	
 	public void setRoom(String room) {
 		String old = this.roomName;
