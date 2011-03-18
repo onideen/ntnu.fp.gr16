@@ -19,6 +19,7 @@ import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
@@ -425,7 +426,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	private JButton getSelect() {
 		if(select == null) {
 			select = new JButton();
-			select.setText("-->");
+			select.setIcon(new ImageIcon(getClass().getResource("/frontArrow.png")));
 			select.setSize(40, 40);
 			select.setPreferredSize(new java.awt.Dimension(40, 40));
 			select.addActionListener(new ActionListener() {
@@ -450,7 +451,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	private JButton getUnselect() {
 		if(unselect == null) {
 			unselect = new JButton();
-			unselect.setText("<--");
+			unselect.setIcon(new ImageIcon(getClass().getResource("/backArrow.png")));
 			unselect.setPreferredSize(new java.awt.Dimension(40, 40));
 			unselect.setSize(40, 40);
 			unselect.addActionListener(new ActionListener() {
