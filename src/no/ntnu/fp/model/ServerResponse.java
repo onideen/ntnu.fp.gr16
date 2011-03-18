@@ -13,16 +13,29 @@ public class ServerResponse {
 
 	boolean success;
 	Element returnData;
-	
+
+        Element fullXml;
 	/**
 	 * Creates a server response with a success and return data.
 	 * @param e
 	 */
 	public ServerResponse(Element e)
 	{
-		success = e.getFirstChildElement("success").getValue().equals("true");
+            //System.out.println("DATA SOM SKAL SENDAST, OG SOM BØR INNEHOLDE SUCCESS: " + e.toXML());
+            try {
+                fullXml=e;
+                success = e.getFirstChildElement("success").getValue().equals("true");
 		returnData = e.getFirstChildElement("returnData");
+            } catch (Exception e1) {
+                e1.printStackTrace();
+                System.out.println(e.toXML());
+            }
 	}
+
+        public String getXmlForSending()
+        {
+            return fullXml.toXML();
+        }
 	
 	/**
 	 * 
