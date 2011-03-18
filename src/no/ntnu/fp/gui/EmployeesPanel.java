@@ -11,8 +11,11 @@
 
 package no.ntnu.fp.gui;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 import no.ntnu.fp.model.Communication;
+import no.ntnu.fp.model.IPersonListener;
 import no.ntnu.fp.model.Person;
 
 /**
@@ -22,6 +25,7 @@ import no.ntnu.fp.model.Person;
 public class EmployeesPanel extends javax.swing.JPanel {
 
     DefaultListModel dlm = new DefaultListModel();
+    List<IPersonListener> personListeners = new ArrayList<IPersonListener>();
 
     /** Creates new form EmployeesPanel */
     public EmployeesPanel() {
@@ -30,6 +34,11 @@ public class EmployeesPanel extends javax.swing.JPanel {
         lstEmployees.setModel(dlm);
         for(Person p : Communication.getEmployees())
             dlm.addElement(p);
+    }
+
+    public void addListener(IPersonListener ipl)
+    {
+        personListeners.add(ipl);
     }
 
     /** This method is called from within the constructor to
@@ -61,6 +70,11 @@ public class EmployeesPanel extends javax.swing.JPanel {
 
         btnShowCalendar.setText("Vis kalender");
         btnShowCalendar.setEnabled(false);
+        btnShowCalendar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnShowCalendarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -83,6 +97,11 @@ public class EmployeesPanel extends javax.swing.JPanel {
     private void lstEmployeesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstEmployeesValueChanged
         btnShowCalendar.setEnabled(lstEmployees.getSelectedIndex()>-1);
     }//GEN-LAST:event_lstEmployeesValueChanged
+
+    private void btnShowCalendarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowCalendarActionPerformed
+        for(IPersonListener ipl : personListeners)
+            ipl.personAction((Person)dlm.getElementAt(lstEmployees.getSelectedIndex()));
+    }//GEN-LAST:event_btnShowCalendarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
