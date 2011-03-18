@@ -255,6 +255,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	private JButton getSave_button() {
 		if(save_button == null) {
 			save_button = new JButton();
+			save_button.setIcon(new ImageIcon(getClass().getResource("/Save.png")));
 			save_button.setText("Lagre");
 			save_button.addActionListener(new ActionListener() {
 				
