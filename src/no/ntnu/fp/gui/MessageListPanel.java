@@ -14,7 +14,10 @@ package no.ntnu.fp.gui;
 import java.util.List;
 import javax.swing.DefaultListModel;
 import no.ntnu.fp.model.*;
+
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 /**
@@ -57,13 +60,19 @@ public class MessageListPanel extends javax.swing.JPanel {
         jScrollPane1.setViewportView(jList1);
 
         btnYes.setText("Yes");
+        btnYes.setIcon(new ImageIcon(getClass().getResource("/accept.png")));
+        btnYes.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnYes.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnYes.setEnabled(false);
         btnYes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnYesActionPerformed(evt);
             }
         });
-
+        
+        btnNo.setIcon(new ImageIcon(getClass().getResource("/no.png")));
+        btnNo.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnNo.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnNo.setText("No");
         btnNo.setEnabled(false);
         btnNo.addActionListener(new java.awt.event.ActionListener() {
