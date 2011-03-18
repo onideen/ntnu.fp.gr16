@@ -42,4 +42,9 @@ public class Room {
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_SIZE, old, size);
 		propChangeSupp.firePropertyChange(event);
 	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }
