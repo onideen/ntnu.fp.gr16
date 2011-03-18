@@ -26,7 +26,7 @@ public class ServerConnection {
             if(connection != null)
                 return;
             connection = new ConnectionImpl(1011);
-            connection.connect(InetAddress.getByName("205.186.183.117"), 1010);
+            connection.connect(InetAddress.getByName("alxandr.me"), 1010);
         }
     }
 

@@ -110,7 +110,7 @@ public class ServerRequest {
 	 * @throws ParseException
 	 */
 	public static Object createObjectFromElement(Element e)
-			throws ParseException {
+			throws ParseException, Exception {
 		String type = XmlSerializer.getTypeFromDataXml(e);
 		Element xml = XmlSerializer.getContentsFromDataXml(e);
 
@@ -150,7 +150,10 @@ public class ServerRequest {
 			return XmlSerializer.toReservation(e);
 		}
 
-		throw new NotImplementedException();
+                if(type.equals("null"))
+                    return null;
+
+		throw new Exception(type + " is not supported.");
 	}
 
 	/**
@@ -207,7 +210,7 @@ public class ServerRequest {
 
 			try {
 				objects.add(createObjectFromElement(e));
-			} catch (ParseException e1) {
+			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		}
