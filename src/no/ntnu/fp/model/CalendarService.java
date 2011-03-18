@@ -524,6 +524,19 @@ public class CalendarService implements ConnectionListener,
 
     }
 
+    public Room getRoom(String roomName) throws SQLException {
+        Connection c = getConnection();
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery("SELECT * from Rom WHERE navn = '" + roomName + "';");
+
+        if (rs.next()) {
+            return new Room(rs.getString("navn"), rs.getInt("størrelse"));
+        }
+
+        s.close();
+        return null;
+    }
+
     public boolean login(String user, String password) throws SQLException {
         Connection c = getConnection();
         Statement s = c.createStatement();
@@ -531,8 +544,10 @@ public class CalendarService implements ConnectionListener,
                 + user + "' AND `passord` = '" + password + "';");
 
         if (rs.next()) {
+            rs.close();
             return true;
         }
+        rs.close();
         return false;
     }
 
