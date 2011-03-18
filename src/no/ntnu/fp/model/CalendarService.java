@@ -53,7 +53,7 @@ public class CalendarService implements ConnectionListener,
 
 			return conn;
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 
 		return null;
@@ -175,7 +175,7 @@ public class CalendarService implements ConnectionListener,
 
 		for (String attendee : attendees) {
 			Message m = new Message(e.getResponsible()
-					+ " har avlyst møtet den: " + e.getDateString(),
+					+ " har avlyst mï¿½tet den: " + e.getDateString(),
 					Message.Type.Information, attendee, eId);
 			saveMessage(m);
 		}
@@ -208,8 +208,8 @@ public class CalendarService implements ConnectionListener,
 			for (String attendee : e.getAttendees()) {
 				Person boss = getPerson(e.getResponsible());
 				Message m = new Message(boss.getName()
-						+ " har endret møtet. Møtet er nå " + e.getDateString()
-						+ ". Møtet gjelder: " + e.getDescription(),
+						+ " har endret mï¿½tet. Mï¿½tet er nï¿½ " + e.getDateString()
+						+ ". Mï¿½tet gjelder: " + e.getDescription(),
 						Message.Type.Invitation, attendee, e.getEid());
 				saveMessage(m);
 			}
@@ -261,8 +261,8 @@ public class CalendarService implements ConnectionListener,
 
 				Person boss = getPerson(e.getResponsible());
 				Message m = new Message(boss.getName()
-						+ " har kalt inn til møte " + e.getDateString()
-						+ ". Møtet gjelder: " + e.getDescription(),
+						+ " har kalt inn til mï¿½te " + e.getDateString()
+						+ ". Mï¿½tet gjelder: " + e.getDescription(),
 						Message.Type.Invitation, attendee, e.getEid());
 				saveMessage(m);
 			}
@@ -303,8 +303,8 @@ public class CalendarService implements ConnectionListener,
 		}
 	}
 
-	public void answerMessage(Message m, boolean answer) {
-
+	public void answerMessage(int mid, boolean answer) {
+                Message m = getMessage(mid);
 		if (m.getType() == Message.Type.Invitation) {
 
 			String s = "UPDATE Deltaker SET status = '"
@@ -323,7 +323,7 @@ public class CalendarService implements ConnectionListener,
 				for (Person person : attendees) {
 					if (!sender.getEmail().equals(person.getEmail())) {
 						Message message = new Message(sender.getName()
-								+ " har avslått møtet til " + creator.getName()
+								+ " har avslï¿½tt mï¿½tet til " + creator.getName()
 								+ " den " + relatedEvent.getDate() + " kl "
 								+ relatedEvent.getStartTime() + ".",
 								Message.Type.Information, person.getEmail(),
@@ -391,11 +391,13 @@ public class CalendarService implements ConnectionListener,
 		return null;
 	}
 
-	public static Message getMessage(int id) {
+	public Message getMessage(int id) {
 
 		try {
-
 			Connection c = getConnection();
+
+                        //System.out.println(c==null?"null":c.toString());
+
 			Statement s = c.createStatement();
 			ResultSet rs = s.executeQuery("SELECT * FROM Melding WHERE id = "
 					+ id + ";");
@@ -415,6 +417,37 @@ public class CalendarService implements ConnectionListener,
 		}
 
 		return null;
+	}
+
+        public Room getRoom(String roomName) {
+
+		try {
+        		Connection c = getConnection();
+        		Statement s = c.createStatement();
+                        ResultSet rs = s.executeQuery("SELECT * from Rom WHERE navn = '" + roomName + "';");
+
+		if (rs.next())
+                        return new Room(rs.getString("navn"), rs.getInt("stÃ¸rrelse"));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	
+	public List<Message> getMessages(String person) throws SQLException {
+		List<Message> messages = new ArrayList<Message>();
+		Connection c = getConnection();
+		Statement s = c.createStatement();
+		ResultSet rs = s.executeQuery("SELECT * FROM Melding WHERE `mottaker` = '" + person + "';");
+
+		while (rs.next()) {
+			Message m = getMessage(rs.getInt("id"));
+			messages.add(m);
+		}
+		
+		return messages;
 	}
 
 	public List<Event> getEvents(String email) throws SQLException {
@@ -481,7 +514,7 @@ public class CalendarService implements ConnectionListener,
 		ResultSet rs = s.executeQuery("SELECT * from Rom;");
 
 		while (rs.next()) {
-			Room room = new Room(rs.getString("navn"), rs.getInt("størrelse"));
+			Room room = new Room(rs.getString("navn"), rs.getInt("stï¿½rrelse"));
 			hashRooms.put(rs.getString("navn"), room);
 		}
 

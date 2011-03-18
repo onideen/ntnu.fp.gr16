@@ -1,7 +1,10 @@
 package no.ntnu.fp.model;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -155,19 +158,18 @@ public class ServerRequest {
 	public ServerResponse sendRequest() {
 
 		CalendarService c = new CalendarService();
-		c.startListening();
+		//c.startListening();
 		
-		try {
-
-			no.ntnu.fp.net.co.ConnectionImpl conn = new ConnectionImpl(1009);
-			conn.connect(InetAddress.getByName("127.0.0.1"), 1010);
-			
-			conn.send("HEI");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		//no.ntnu.fp.net.co.Connection conn = new ConnectionImpl(1009);
+		//try {
+		//
+		//	conn.connect(InetAddress.getByName("127.0.0.1"), 1010);
+		//	conn.send("HEI");
+		//
+		//} catch (Exception e1) {
+	//	e1.printStackTrace();
+	//	}
+		
 
 		try {
 			return c.receiveData(this);
