@@ -301,7 +301,7 @@ public class XmlSerializer {
 		
 		String s = "";
 		for(String p : value)
-			s += (s=="" ? "" : "µ") + p;
+			s += (s=="" ? "" : "Âµ") + p;
 		
 		e.appendChild(s);
 		return e;
@@ -316,7 +316,7 @@ public class XmlSerializer {
 	public static List<String> readStringList(Element m, String id)
 	{
 		ArrayList<String> a = new ArrayList<String>();
-		for(String s : readString(m, id).split("µ"))
+		for(String s : readString(m, id).split("Âµ"))
 			a.add(s);
 		return a;
 	}

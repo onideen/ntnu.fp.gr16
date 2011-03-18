@@ -2,6 +2,7 @@ package no.ntnu.fp.model;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.ConnectException;
 import java.sql.*;
 import java.util.ArrayList;
@@ -19,7 +20,10 @@ import no.ntnu.fp.net.co.ConnectionImpl;
 import no.ntnu.fp.net.co.ReceiveConnectionWorker;
 import no.ntnu.fp.net.co.ReceiveConnectionWorker.ConnectionListener;
 import no.ntnu.fp.net.co.ReceiveMessageWorker;
+import nu.xom.Builder;
+import nu.xom.Document;
 import nu.xom.Element;
+import nu.xom.ParsingException;
 
 public class CalendarService implements ConnectionListener,
         ReceiveMessageWorker.MessageListener {
@@ -32,15 +36,23 @@ public class CalendarService implements ConnectionListener,
                 foundMethod = true;
 
                 try {
-                    Object o = method.invoke(this, sr.getParameters());
+                    Object o = null;
+
+                    try {
+                        o=method.invoke(this, sr.getParameters());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     Element returnData = new Element("data");
                     XmlSerializer.appendChildren(returnData, XmlSerializer.createElement("success", "true"), XmlSerializer.createElement("returnData",
                             ServerRequest.createElementFromObject(o)));
+
                     return new ServerResponse(returnData);
 
                 } catch (Exception e) {
                     e.printStackTrace();
+                    System.out.println(sr.getFunction());
                 }
             }
         }
@@ -134,13 +146,14 @@ public class CalendarService implements ConnectionListener,
     }
 
     public void messageReceived(String message, no.ntnu.fp.net.co.Connection connection) {
-        //TODO: Fix this.
-        //Send til ReceiveData og returner svaret.
-        // ALLTID(!!!!) send svar her, elles så krasjer klienten (nullpointerexception)
-        System.out.println("RECEIVED DATA: " + message);
         try {
-            connection.send("RECEIVED DATA: " + message);
-        } catch (ConnectException ex) {
+            Document doc = new Builder().build(new StringReader(message));
+
+            ServerRequest req = new ServerRequest(doc.getRootElement());
+            ServerResponse resp = receiveData(req);
+
+            connection.send(resp.getXmlForSending());
+        } catch (ParsingException ex) {
             Logger.getLogger(CalendarService.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(CalendarService.class.getName()).log(Level.SEVERE, null, ex);
@@ -195,7 +208,7 @@ public class CalendarService implements ConnectionListener,
 
         for (String attendee : attendees) {
             Message m = new Message(e.getResponsible()
-                    + " har avlyst m�tet den: " + e.getDateString(),
+                    + " har avlyst møtet den: " + e.getDateString(),
                     Message.Type.Information, attendee, eId);
             saveMessage(m);
         }
@@ -227,8 +240,8 @@ public class CalendarService implements ConnectionListener,
             for (String attendee : e.getAttendees()) {
                 Person boss = getPerson(e.getResponsible());
                 Message m = new Message(boss.getName()
-                        + " har endret m�tet. M�tet er n� " + e.getDateString()
-                        + ". M�tet gjelder: " + e.getDescription(),
+                        + " har endret møtet. Møtet er nå " + e.getDateString()
+                        + ". Møtet gjelder: " + e.getDescription(),
                         Message.Type.Invitation, attendee, e.getEid());
                 saveMessage(m);
             }
@@ -280,8 +293,8 @@ public class CalendarService implements ConnectionListener,
 
                 Person boss = getPerson(e.getResponsible());
                 Message m = new Message(boss.getName()
-                        + " har kalt inn til m�te " + e.getDateString()
-                        + ". M�tet gjelder: " + e.getDescription(),
+                        + " har kalt inn til møte " + e.getDateString()
+                        + ". Møtet gjelder: " + e.getDescription(),
                         Message.Type.Invitation, attendee, e.getEid());
                 saveMessage(m);
             }
@@ -341,7 +354,7 @@ public class CalendarService implements ConnectionListener,
                 for (Person person : attendees) {
                     if (!sender.getEmail().equals(person.getEmail())) {
                         Message message = new Message(sender.getName()
-                                + " har avsl�tt m�tet til " + creator.getName()
+                                + " har avslått møtet til " + creator.getName()
                                 + " den " + relatedEvent.getDate() + " kl "
                                 + relatedEvent.getStartTime() + ".",
                                 Message.Type.Information, person.getEmail(),
@@ -511,7 +524,7 @@ public class CalendarService implements ConnectionListener,
         ResultSet rs = s.executeQuery("SELECT * from Rom;");
 
         while (rs.next()) {
-            Room room = new Room(rs.getString("navn"), rs.getInt("storrelse"));
+            Room room = new Room(rs.getString("navn"), rs.getInt("størrelse"));
             hashRooms.put(rs.getString("navn"), room);
         }
 
@@ -546,6 +559,7 @@ public class CalendarService implements ConnectionListener,
     }
 
     public Room getRoom(String roomName) throws SQLException {
+
         Connection c = getConnection();
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * from Rom WHERE navn = '" + roomName + "';");

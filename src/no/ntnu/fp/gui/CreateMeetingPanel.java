@@ -94,7 +94,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	
 	public CreateMeetingPanel() {
 		super();
-		event = Communication.getEvent(73);
+//		event = Communication.getEvent(73);
 		initGUI();
 	}
 	
@@ -258,6 +258,8 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	private JButton getSave_button() {
 		if(save_button == null) {
 			save_button = new JButton();
+			save_button.setIcon(new ImageIcon(getClass().getResource("/Save.png")));
+			save_button.setIconTextGap(10);
 			save_button.setText("Lagre");
 			save_button.addActionListener(new ActionListener() {
 				
@@ -528,6 +530,8 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	private JButton getAdd_users() {
 		if(add_users == null) {
 			add_users = new JButton();
+			add_users.setIcon(new ImageIcon(getClass().getResource("/addusers.png")));
+			add_users.setIconTextGap(10);
 			add_users.setText("Legg til deltakere");
 			add_users.addActionListener(new ActionListener() {
 				

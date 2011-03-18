@@ -1,5 +1,6 @@
 package no.ntnu.fp.model;
 
+import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.text.ParseException;
@@ -37,6 +38,11 @@ public class ServerRequest {
 		this.function = function;
 		requestData = e;
 	}
+
+        public ServerRequest(Element element) {
+            this.function = element.getQualifiedName();
+            this.requestData = element;
+        }
 
 	/**
 	 * Converts an object to an Xml element.
@@ -154,23 +160,27 @@ public class ServerRequest {
 	 */
 	public ServerResponse sendRequest() {
 
-                CalendarService c = new CalendarService();
-                //c.startListening();
+                //CalendarService c = new CalendarService();
 
-		try {
+		/*try {
 			return c.receiveData(this);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 
-                /*try {
+                try {
 
 			ServerConnection.connect();
-                        String ans = ServerConnection.proxyRequest("HEI");
+                        String ans = ServerConnection.proxyRequest(requestData.toXML());
+
+                        Document doc = new Builder().build(new StringReader(ans));
+
+                        ServerResponse sr = new ServerResponse(doc.getRootElement());
+                        return sr;
 
 		} catch (Exception e) {
 			e.printStackTrace();
-		}*/
+		}
 
 		return null;
 	}
