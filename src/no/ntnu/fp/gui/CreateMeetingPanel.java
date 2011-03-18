@@ -94,7 +94,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	
 	public CreateMeetingPanel() {
 		super();
-//		event = Communication.getEvent(73);
+		event = Communication.getEvent(73);
 		initGUI();
 	}
 	
@@ -145,7 +145,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 			calendar.setDate(event.getDate());
 			start_time.setSelectedItem(event.getStartTime());
 			end_time.setSelectedItem(event.getEndTime());
-			room_chooser.setSelectedItem(event.getRoomObject());
+			//room_chooser.setSelectedItem(event.getRoomObject());
 			description.setText(event.getDescription());
 			addEmployees();
 		}
@@ -269,8 +269,16 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	
 	protected void saveEvent() {
 		if (event != null){
-			event.setDate((java.sql.Date)calendar.getCalendar().getTime());
-			//event.setStartTime();
+			event.setDate(new java.sql.Date(calendar.getCalendar().getTimeInMillis()));
+			event.setStartTime((java.sql.Time)start_time.getSelectedItem());
+			event.setEndTime((java.sql.Time)end_time.getSelectedItem());
+			//event.setRoom(((Room)room_chooser.getSelectedItem()).getName());
+			
+//			for ( Object person: (List<Object>)selected_users_listModel.elements()) {
+//				event.addAttendee(((Person)person).getEmail());
+//			}
+//			
+			Communication.updateEvent(event);
 		}
 	}
 
