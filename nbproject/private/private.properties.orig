@@ -1,0 +1,15 @@
+<<<<<<< HEAD
+compile.on.save=true
+do.depend=false
+do.jar=true
+javac.debug=true
+javadoc.preview=true
+user.properties.file=/home/alxandr/.netbeans/6.9/build.properties
+=======
+compile.on.save=true
+do.depend=false
+do.jar=true
+javac.debug=true
+javadoc.preview=true
+user.properties.file=C:\\Users\\Erlend Dahl\\.netbeans\\6.9\\build.properties
+>>>>>>> 32fcaeeb0bf13118596892adb3ebff4ab8ff6603

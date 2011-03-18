@@ -32,6 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import com.toedter.calendar.JDateChooser;
+import javax.swing.UIManager;
 
 
 public class CreateMeetingPanel extends javax.swing.JPanel {
@@ -39,7 +40,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	{
 		//Set Look & Feel
 		try {
-			javax.swing.UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
