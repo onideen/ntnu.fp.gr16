@@ -15,38 +15,22 @@ import no.ntnu.fp.model.Person;
 public class AllEmployeesListRenderer implements ListCellRenderer  {
 
 	@Override
-	public Component getListCellRendererComponent(JList list, Object person,
+	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) 
 	{
-		JPanel panel = new JPanel(new GridBagLayout());
-		JLabel name = new JLabel(((Person)person).getName());
-		JLabel email = new JLabel(((Person)person).getEmail());
-		
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.gridx = 0;
-		c.gridy = 0;
-		panel.add(name, c);
+            Person person = (Person)value;
 
-		c.fill = GridBagConstraints.BOTH;
-		c.gridx = 0;
-		c.gridy = 1;
-		panel.add(email, c);
+		EmployeePanel p = new EmployeePanel();
+                p.readPerson(person);
 
-		name.setHorizontalTextPosition(JLabel.LEFT);
-		email.setHorizontalTextPosition(JLabel.RIGHT);
-		
-		if (isSelected) {
-			panel.setBackground(list.getSelectionBackground());
-			name.setForeground(list.getSelectionForeground());
-			email.setForeground(list.getSelectionForeground());
+                if (isSelected) {
+			p.setBackground(list.getSelectionBackground());
 		}
 		else {
-			panel.setBackground(list.getBackground());
-			name.setForeground(list.getForeground());
-			email.setForeground(list.getForeground());
+			p.setBackground(list.getBackground());
 		}
-		return panel;
+
+                return p;
 	}
 	
 }

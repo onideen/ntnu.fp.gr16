@@ -135,8 +135,13 @@ public class MessageListPanel extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
    DefaultListModel dlm = new DefaultListModel();
-   public void readMessages(List<Message> messages)
+   /**
+    * Reads all the messages with the given email as receiver.
+    * @param email
+    */
+   public void readMessages(String email)
    {
+       List<Message> messages = Communication.getMessages(email);
        jList1.setModel(dlm);
        jList1.setCellRenderer(new MessageRenderer());
        for(Message m:messages)
@@ -149,17 +154,13 @@ public class MessageListPanel extends javax.swing.JPanel {
            jList1.setSelectedIndex(0);
    }
 
-   public static void main(String[] args) {
-
-        MessageListPanel p = new MessageListPanel();
-        p.readMessages(Communication.getMessages("' OR ''='"));
-
-    	JFrame frame = new JFrame();
-        frame.getContentPane().add(p);
-        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.setSize(490, 700);
-        frame.setVisible(true);
-
+    /**
+    * Reads all the messages with the given user as receiver.
+    * @param email
+    */
+   public void readMessages(Person p)
+    {
+        readMessages(p.getEmail());
     }
 
    private void answerAndRemoveSelectedMessage(boolean answer)
