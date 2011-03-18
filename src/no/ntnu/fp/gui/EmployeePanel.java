@@ -41,7 +41,7 @@ public class EmployeePanel extends javax.swing.JPanel {
         lblEmail = new javax.swing.JLabel();
 
         pnlImage.setBackground(new java.awt.Color(255, 51, 51));
-        pnlImage.setIcon(new ImageIcon(getClass().getResource("/calendar.png")));
+        pnlImage.setIcon(new ImageIcon(getClass().getResource("/user.png")));
         javax.swing.GroupLayout pnlImageLayout = new javax.swing.GroupLayout(pnlImage);
         pnlImage.setLayout(pnlImageLayout);
         pnlImage.setIcon(new ImageIcon(getClass().getResource("/ansatte.png")));
