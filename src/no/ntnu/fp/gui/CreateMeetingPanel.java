@@ -36,6 +36,7 @@ import javax.swing.event.ListSelectionListener;
 
 import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
+import javax.swing.UIManager;
 
 /**
 * This code was edited or generated using CloudGarden's Jigloo
@@ -54,7 +55,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	{
 		//Set Look & Feel
 		try {
-			javax.swing.UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

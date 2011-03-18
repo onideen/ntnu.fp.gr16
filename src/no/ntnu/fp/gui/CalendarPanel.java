@@ -30,7 +30,7 @@ import javax.swing.JPanel;
 * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
-public class CalendarPanel extends javax.swing.JPanel {
+public class CalendarPanel extends BaseCalendarView {
 	private JPanel Calendar;
 	private JLabel day2_label;
 	private JLabel day3_label;
@@ -74,7 +74,8 @@ public class CalendarPanel extends javax.swing.JPanel {
 	}
 	
 	private void initGUI() {
-		try {
+
+		/*try {
 			BorderLayout thisLayout = new BorderLayout();
 			this.setLayout(thisLayout);
 			this.setPreferredSize(new java.awt.Dimension(809, 455));
@@ -124,11 +125,11 @@ public class CalendarPanel extends javax.swing.JPanel {
 				
 					day6_label = new JLabel();
 					panels[6][0].add(day6_label);
-					day6_label.setText("Lørdag");
+					day6_label.setText("Lï¿½rdag");
 				
 					day7_label = new JLabel();
 					panels[7][0].add(day7_label);
-					day7_label.setText("Søndag");
+					day7_label.setText("Sï¿½ndag");
 				
 					time_label = new JLabel();
 					panels[0][0].add(time_label);
@@ -180,7 +181,8 @@ public class CalendarPanel extends javax.swing.JPanel {
 			}
 			}} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
+        
 	}
 
 
