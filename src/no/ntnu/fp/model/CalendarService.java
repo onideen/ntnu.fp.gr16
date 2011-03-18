@@ -511,7 +511,7 @@ public class CalendarService implements ConnectionListener,
         ResultSet rs = s.executeQuery("SELECT * from Rom;");
 
         while (rs.next()) {
-            Room room = new Room(rs.getString("navn"), rs.getInt("st�rrelse"));
+            Room room = new Room(rs.getString("navn"), rs.getInt("storrelse"));
             hashRooms.put(rs.getString("navn"), room);
         }
 
@@ -551,7 +551,7 @@ public class CalendarService implements ConnectionListener,
         ResultSet rs = s.executeQuery("SELECT * from Rom WHERE navn = '" + roomName + "';");
 
         if (rs.next()) {
-            return new Room(rs.getString("navn"), rs.getInt("størrelse"));
+            return new Room(rs.getString("navn"), rs.getInt("storrelse"));
         }
 
         s.close();
