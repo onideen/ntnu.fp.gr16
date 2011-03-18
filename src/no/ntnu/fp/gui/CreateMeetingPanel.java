@@ -1,18 +1,21 @@
 package no.ntnu.fp.gui;
-import java.awt.BorderLayout;
 import no.ntnu.fp.model.*;
 
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.sql.Date;
+import java.sql.Time;
 import java.util.List;
 
-import javax.swing.ButtonGroup;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
@@ -26,29 +29,11 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JToggleButton;
-import javax.swing.ListModel;
-import javax.swing.SpinnerListModel;
 import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
-import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
 
-/**
-* This code was edited or generated using CloudGarden's Jigloo
-* SWT/Swing GUI Builder, which is free for non-commercial
-* use. If Jigloo is being used commercially (ie, by a corporation,
-* company or business for any purpose whatever) then you
-* should purchase a license for each developer using Jigloo.
-* Please visit www.cloudgarden.com for details.
-* Use of Jigloo implies acceptance of these licensing terms.
-* A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR
-* THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
-* LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
-*/
+
 public class CreateMeetingPanel extends javax.swing.JPanel {
 
 	{
@@ -61,13 +46,13 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	}
 
 	private JPanel meeting;
-	private JToggleButton meeting_toggle;
 	private JButton save_button;
 	private JButton add_users;
 	private JPanel buttons_panel;
 	private JLabel new_agreement_label;
 	private JLabel selected_users_label;
 	private JButton unselect;
+	private JButton room_button;
 	private JScrollPane jScrollPane1;
 	private JList selected_users_list;
 	private JButton select;
@@ -82,18 +67,16 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	private JLabel description_label;
 	private JLabel end_time_label;
 	private JLabel start_time_label;
-	private JComboBox jComboBox1;
 	private JComboBox end_time;
 	private JComboBox start_time;
 	private JLabel date_label;
-	private ButtonGroup meeting_agreement;
-	private JToggleButton agreement_toggle;
 	private JDateChooser calendar;
 	private DefaultListModel selected_users_listModel;
 	private DefaultListModel all_users_listModel;
-	
+	private DefaultComboBoxModel room_chooserModel;
 	
 	private Event event;
+	private JPanel room_chooser_panel;
 	
 	/**
 	* Auto-generated main method to display this 
@@ -144,7 +127,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 					meeting.add(end_time, new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
 					meeting.add(getDescription(), new GridBagConstraints(1, 5, 1, 2, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 10), 0, 0));
 					meeting.add(getRoom_label(), new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
-					meeting.add(getRoom_chooser(), new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
+					meeting.add(getRoomChooserPanel(), new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
 					meeting.add(getNew_agreement_label(), new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 					meeting.add(getButtons_panel(), new GridBagConstraints(1, 7, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 				}
@@ -152,9 +135,20 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		addEmployees();
+		fillCells();
 	}
 	
+	private void fillCells() {
+		if (event != null) {
+			calendar.setDate(event.getDate());
+			start_time.setSelectedItem(event.getStartTime());
+			end_time.setSelectedItem(event.getEndTime());
+			room_chooser.setSelectedItem(event.getRoom());
+			description.setText(event.getDescription());
+			addEmployees();
+		}
+	}
+
 	private void addEmployees() {
 		if (event != null) {
 			List<Person> attendees = Communication.getAttendees(event.getEid()); 
@@ -169,13 +163,6 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 				all_users_listModel.addElement(person);
 		}
 		
-	}
-
-	private ButtonGroup getMeeting_agreement() {
-		if(meeting_agreement == null) {
-			meeting_agreement = new ButtonGroup();
-		}
-		return meeting_agreement;
 	}
 	
 	private JLabel getDate_label() {
@@ -227,17 +214,15 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 			start_time.setEditable(true);
 			start_time.setRequestFocusEnabled(false);
 			start_time.setSelectedIndex(9);
+			start_time.addActionListener(new TimeListener());
 		}
 		return start_time;
 	}
 
-	private String[] hentKlokkeslett() {
-		String[] comboChoose = new String[24];
+	private Time[] hentKlokkeslett() {
+		Time[] comboChoose = new Time[24];
 		for (int i = 0; i < 24; i++){
-			if (i < 10)
-				comboChoose[i] = "0" + i + ":00"; 
-			else 
-				comboChoose[i] = i + ":00"; 
+			comboChoose[i] = new Time(i, 0, 0);
 		}
 		return comboChoose;
 		
@@ -251,6 +236,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 			end_time.setRequestFocusEnabled(false);
 			end_time.setEditable(true);
 			end_time.setSelectedIndex(10);
+			end_time.addActionListener(new TimeListener());
 		}
 		return end_time;
 	}
@@ -268,10 +254,24 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 		if(save_button == null) {
 			save_button = new JButton();
 			save_button.setText("Lagre");
+			save_button.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					saveEvent();
+				}
+			});
 		}
 		return save_button;
 	}
 	
+	protected void saveEvent() {
+		if (event != null){
+			event.setDate((java.sql.Date)calendar.getCalendar().getTime());
+			//event.setStartTime();
+		}
+	}
+
 	private JLabel getRoom_label() {
 		if(room_label == null) {
 			room_label = new JLabel();
@@ -284,9 +284,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	
 	private JComboBox getRoom_chooser() {
 		if(room_chooser == null) {
-			ComboBoxModel room_chooserModel = 
-				new DefaultComboBoxModel(
-						new String[] { "Rom 1", "Rom 2" });
+			room_chooserModel = new DefaultComboBoxModel();
 			room_chooser = new JComboBox();
 			room_chooser.setModel(room_chooserModel);
 			room_chooser.setEditable(true);
@@ -295,6 +293,50 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 		return room_chooser;
 	}
 	
+	private JPanel getRoomChooserPanel() {
+		if (room_chooser_panel == null){
+			room_chooser_panel = new JPanel(new GridBagLayout());
+			GridBagConstraints c = new GridBagConstraints();
+			c.gridx = 0;
+			c.gridy = 0;
+			c.fill = GridBagConstraints.BOTH;
+			room_chooser_panel.add(getRoom_chooser(), c);
+			c.gridx = 1;
+			room_chooser_panel.add(getRoom_button(), c);
+			
+		}
+		
+		return room_chooser_panel;
+	}
+	
+	private JButton getRoom_button() {
+		if(room_button == null) {
+			room_button = new JButton();
+			room_button.setText("Finn ledige rom");
+			room_button.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					getRooms();
+				}
+			});
+		}
+		return room_button;
+	}
+	
+	
+	protected void getRooms() {
+		
+		java.sql.Date date = new Date(calendar.getCalendar().MILLISECOND);
+		List<Room> rooms = Communication.getFreeRooms(new Reservation(date, (Time)start_time.getSelectedItem(), (Time)end_time.getSelectedItem()));
+		room_chooserModel.removeAllElements();
+		
+		for (Room room : rooms) {
+			room_chooserModel.addElement(room);
+		}
+		room_chooser.setEnabled(true);
+	}
+
 	private JPanel getAll_users() {
 		if(all_users == null) {
 			all_users = new JPanel();
@@ -402,7 +444,6 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 			all_users_listModel.removeElement(person);
 			selected_users_listModel.addElement(person);
 		}
-		
 	}
 
 	private JButton getUnselect() {
@@ -427,7 +468,6 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 			selected_users_listModel.removeElement(person);
 			all_users_listModel.addElement(person);
 		}
-		
 	}
 
 	private JLabel getSelected_users_label() {
@@ -437,7 +477,6 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 		}
 		return selected_users_label;
 	}
-	
 	private JLabel getNew_agreement_label() {
 		if(new_agreement_label == null) {
 			new_agreement_label = new JLabel();
@@ -469,4 +508,14 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 		return add_users;
 	}
 
+	public class TimeListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			System.out.println("test");
+			room_chooser.setEnabled(false);
+		}
+	}
+	
+	
 }

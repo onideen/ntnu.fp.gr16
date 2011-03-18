@@ -291,7 +291,7 @@ public abstract class AbstractConnection implements Connection {
     
         // Send the ack, trying at most `tries' times.
         Log.writeToLog(ackToSend, "Sending Ack: " + ackToSend.getAck(), "AbstractConnection");
-    
+        Exception ex = null;
         do {
             try {
                 new ClSocket().send(ackToSend);
@@ -307,15 +307,16 @@ public abstract class AbstractConnection implements Connection {
                 try {
                     Thread.sleep(100);
                 }
-                catch (InterruptedException ex) {
+                catch (InterruptedException ex2) {
                 }
+                ex = e;
             }
         }
         while (!sent && (tries-- > 0));
     
         if (!sent) {
             nextSequenceNo--;
-            throw new ConnectException("Unable to send ACK.");
+            throw new ConnectException("Unable to send ACK. " + ex.getMessage());
         }
     }
 
