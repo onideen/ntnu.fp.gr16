@@ -143,7 +143,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 			calendar.setDate(event.getDate());
 			start_time.setSelectedItem(event.getStartTime());
 			end_time.setSelectedItem(event.getEndTime());
-			room_chooser.setSelectedItem(event.getRoom());
+			room_chooser.setSelectedItem(event.getRoomObject());
 			description.setText(event.getDescription());
 			addEmployees();
 		}
@@ -289,6 +289,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 			room_chooser.setModel(room_chooserModel);
 			room_chooser.setEditable(true);
 			room_chooser.setEnabled(false);
+			room_chooser.setRenderer(new RoomRendrer());
 		}
 		return room_chooser;
 	}
@@ -507,12 +508,11 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 		}
 		return add_users;
 	}
-
+	
 	public class TimeListener implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			System.out.println("test");
 			room_chooser.setEnabled(false);
 		}
 	}
