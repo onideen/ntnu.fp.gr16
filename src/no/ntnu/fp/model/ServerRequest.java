@@ -154,14 +154,23 @@ public class ServerRequest {
 	 */
 	public ServerResponse sendRequest() {
 
+                CalendarService c = new CalendarService();
+                //c.startListening();
+
 		try {
+			return c.receiveData(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+                /*try {
 
 			ServerConnection.connect();
                         String ans = ServerConnection.proxyRequest("HEI");
 
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 
 		return null;
 	}

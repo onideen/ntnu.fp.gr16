@@ -122,6 +122,7 @@ public class MessageListPanel extends javax.swing.JPanel {
 
         btnNo.setVisible(m.getType()==Message.Type.Invitation);
         btnYes.setText(m.getType()==Message.Type.Information ? "OK" : "Yes");
+        
     }//GEN-LAST:event_jList1ValueChanged
 
 

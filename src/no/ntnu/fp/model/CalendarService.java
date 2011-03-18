@@ -1,5 +1,6 @@
 package no.ntnu.fp.model;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.sql.*;
@@ -23,10 +24,13 @@ import nu.xom.Element;
 public class CalendarService implements ConnectionListener,
         ReceiveMessageWorker.MessageListener {
 
-    public ServerResponse receiveData(ServerRequest sr) {
+    public ServerResponse receiveData(ServerRequest sr) throws FileNotFoundException {
 
+        boolean foundMethod = false;
         for (Method method : this.getClass().getMethods()) {
             if (method.getName().equals(sr.getFunction())) {
+                foundMethod = true;
+
                 try {
                     Object o = method.invoke(this, sr.getParameters());
 
@@ -40,6 +44,9 @@ public class CalendarService implements ConnectionListener,
                 }
             }
         }
+
+        if(!foundMethod)
+            throw new FileNotFoundException("The method '" + sr.getFunction() + "' could not be found.");
 
         return null;
     }
@@ -400,6 +407,20 @@ public class CalendarService implements ConnectionListener,
 
         return null;
     }
+
+    public List<Message> getMessages(String person) throws SQLException {
+		List<Message> messages = new ArrayList<Message>();
+		Connection c = getConnection();
+		Statement s = c.createStatement();
+		ResultSet rs = s.executeQuery("SELECT * FROM Melding WHERE `mottaker` = '" + person + "';");
+
+		while (rs.next()) {
+			Message m = getMessage(rs.getInt("id"));
+			messages.add(m);
+		}
+		
+		return messages;
+	}
 
     public static Message getMessage(int id) {
 

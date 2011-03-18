@@ -127,10 +127,11 @@ public class Communication {
 		return null;
 	}
 
-	public static Message getARoom(String roomname) {
+	public static Room getARoom(String roomname) {
+            System.out.println(roomname);
 		ServerResponse sr = sendData("getRoom", roomname);
 		if (sr.isSuccess()) {
-			return (Message) sr.getParameters()[0];
+			return (Room) sr.getParameters()[0];
 		}
 
 		return null;
