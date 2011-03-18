@@ -274,7 +274,6 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	
 	protected void saveEvent() {
 		if (event == null){
-			event = new Event();
 			event.setDate(new java.sql.Date(calendar.getCalendar().getTimeInMillis()));
 			event.setStartTime((java.sql.Time)start_time.getSelectedItem());
 			event.setEndTime((java.sql.Time)end_time.getSelectedItem());
