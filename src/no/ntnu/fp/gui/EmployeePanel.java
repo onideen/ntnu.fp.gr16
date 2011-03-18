@@ -11,6 +11,9 @@
 
 package no.ntnu.fp.gui;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+
 import no.ntnu.fp.model.Person;
 
 /**
@@ -33,14 +36,15 @@ public class EmployeePanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        pnlImage = new javax.swing.JPanel();
+        pnlImage = new JButton();
         lblName = new javax.swing.JLabel();
         lblEmail = new javax.swing.JLabel();
 
         pnlImage.setBackground(new java.awt.Color(255, 51, 51));
-
+        pnlImage.setIcon(new ImageIcon(getClass().getResource("/calendar.png")));
         javax.swing.GroupLayout pnlImageLayout = new javax.swing.GroupLayout(pnlImage);
         pnlImage.setLayout(pnlImageLayout);
+        pnlImage.setIcon(new ImageIcon(getClass().getResource("/ansatte.png")));
         pnlImageLayout.setHorizontalGroup(
             pnlImageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 47, Short.MAX_VALUE)
@@ -87,7 +91,7 @@ public class EmployeePanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel lblEmail;
     private javax.swing.JLabel lblName;
-    private javax.swing.JPanel pnlImage;
+    private JButton pnlImage;
     // End of variables declaration//GEN-END:variables
 
     public void readPerson(Person p)
