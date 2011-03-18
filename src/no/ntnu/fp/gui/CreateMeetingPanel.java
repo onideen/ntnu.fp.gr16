@@ -19,6 +19,7 @@ import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
@@ -144,7 +145,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 			calendar.setDate(event.getDate());
 			start_time.setSelectedItem(event.getStartTime());
 			end_time.setSelectedItem(event.getEndTime());
-			room_chooser.setSelectedItem(event.getRoom());
+			room_chooser.setSelectedItem(event.getRoomObject());
 			description.setText(event.getDescription());
 			addEmployees();
 		}
@@ -290,6 +291,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 			room_chooser.setModel(room_chooserModel);
 			room_chooser.setEditable(true);
 			room_chooser.setEnabled(false);
+			room_chooser.setRenderer(new RoomRendrer());
 		}
 		return room_chooser;
 	}
@@ -425,7 +427,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	private JButton getSelect() {
 		if(select == null) {
 			select = new JButton();
-			select.setText("-->");
+			select.setIcon(new ImageIcon(getClass().getResource("/frontArrow.png")));
 			select.setSize(40, 40);
 			select.setPreferredSize(new java.awt.Dimension(40, 40));
 			select.addActionListener(new ActionListener() {
@@ -450,7 +452,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	private JButton getUnselect() {
 		if(unselect == null) {
 			unselect = new JButton();
-			unselect.setText("<--");
+			unselect.setIcon(new ImageIcon(getClass().getResource("/backArrow.png")));
 			unselect.setPreferredSize(new java.awt.Dimension(40, 40));
 			unselect.setSize(40, 40);
 			unselect.addActionListener(new ActionListener() {
@@ -508,12 +510,11 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 		}
 		return add_users;
 	}
-
+	
 	public class TimeListener implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			System.out.println("test");
 			room_chooser.setEnabled(false);
 		}
 	}

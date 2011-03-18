@@ -7,7 +7,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+	
 import javax.swing.JButton;
 
 import javax.swing.WindowConstants;
@@ -89,7 +89,7 @@ public class MainPanel extends javax.swing.JPanel {
 					new_agreement_button = new JButton();
 					menu.add(new_agreement_button, new GridBagConstraints(1, -1, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 					new_agreement_button.setText("Ny Avtale");
-					new_agreement_button.setIcon(new ImageIcon(getClass().getResource("/gumby.gif")));					
+					new_agreement_button.setIcon(new ImageIcon(getClass().getResource("/avtale.png")));					
 					new_agreement_button.setHorizontalTextPosition(SwingConstants.CENTER);
 					new_agreement_button.setVerticalTextPosition(SwingConstants.BOTTOM);
 					new_agreement_button.setSize(50, 50);
@@ -106,7 +106,7 @@ public class MainPanel extends javax.swing.JPanel {
 					calendar_button = new JButton();
 					menu.add(calendar_button, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 					calendar_button.setText("Kalender");
-					calendar_button.setIcon(new ImageIcon(getClass().getResource("/gumby.gif")));
+					calendar_button.setIcon(new ImageIcon(getClass().getResource("/calendar.png")));
 					calendar_button.setHorizontalTextPosition(SwingConstants.CENTER);
 					calendar_button.setVerticalTextPosition(SwingConstants.BOTTOM);
 					calendar_button.setSize(50, 50);
@@ -123,7 +123,7 @@ public class MainPanel extends javax.swing.JPanel {
 					message_button = new JButton();
 					menu.add(message_button, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 					message_button.setText("Meldinger");
-					message_button.setIcon(new ImageIcon(getClass().getResource("/gumby.gif")));
+					message_button.setIcon(new ImageIcon(getClass().getResource("/Mail.png")));
 					message_button.setHorizontalTextPosition(SwingConstants.CENTER);
 					message_button.setVerticalTextPosition(SwingConstants.BOTTOM);
 					message_button.setSize(50, 50);
@@ -133,7 +133,7 @@ public class MainPanel extends javax.swing.JPanel {
 					employee_button = new JButton();
 					menu.add(employee_button, new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 					employee_button.setText("Ansatte");
-					employee_button.setIcon(new ImageIcon(getClass().getResource("/gumby.gif")));
+					employee_button.setIcon(new ImageIcon(getClass().getResource("/ansatte.png")));
 					employee_button.setHorizontalTextPosition(SwingConstants.CENTER);
 					employee_button.setVerticalTextPosition(SwingConstants.BOTTOM);
 					employee_button.setSize(78, 78);
@@ -143,7 +143,7 @@ public class MainPanel extends javax.swing.JPanel {
 					logout_button = new JButton();
 					menu.add(logout_button, new GridBagConstraints(9, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 					logout_button.setText("Logg ut");
-					logout_button.setIcon(new ImageIcon(getClass().getResource("/gumby.gif")));
+					logout_button.setIcon(new ImageIcon(getClass().getResource("/logout.png")));
 					logout_button.setHorizontalTextPosition(SwingConstants.CENTER);
 					logout_button.setVerticalTextPosition(SwingConstants.BOTTOM);
 					logout_button.setPreferredSize(new java.awt.Dimension(50, 50));
