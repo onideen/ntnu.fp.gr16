@@ -40,11 +40,10 @@ public class EmployeePanel extends javax.swing.JPanel {
         lblName = new javax.swing.JLabel();
         lblEmail = new javax.swing.JLabel();
 
-        pnlImage.setBackground(new java.awt.Color(255, 51, 51));
-        pnlImage.setIcon(new ImageIcon(getClass().getResource("/calendar.png")));
+        pnlImage.setBackground(new java.awt.Color(255, 255, 255));
         javax.swing.GroupLayout pnlImageLayout = new javax.swing.GroupLayout(pnlImage);
         pnlImage.setLayout(pnlImageLayout);
-        pnlImage.setIcon(new ImageIcon(getClass().getResource("/ansatte.png")));
+        pnlImage.setIcon(new ImageIcon(getClass().getResource("/user.png")));
         pnlImageLayout.setHorizontalGroup(
             pnlImageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 47, Short.MAX_VALUE)

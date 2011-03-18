@@ -1,22 +1,43 @@
 package no.ntnu.fp.gui;
+import com.u2d.calendar.CellResChoice;
+import com.u2d.calendar.DateTimeBounds;
+import com.u2d.type.atom.TimeEO;
+import com.u2d.type.atom.TimeInterval;
+import com.u2d.type.atom.TimeSpan;
 import java.awt.BorderLayout;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultCellEditor;
 import javax.swing.WindowConstants;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 
 /**
 * This code was edited or generated using CloudGarden's Jigloo
@@ -31,31 +52,20 @@ import javax.swing.JPanel;
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
 public class CalendarPanel extends BaseCalendarView {
-	private JPanel Calendar;
-	private JLabel day2_label;
-	private JLabel day3_label;
-	private JLabel day5_label;
-	private JLabel day7_label;
-	private JLabel day6_label;
-	private JLabel day4_label;
-	private JLabel day1_label;
-	private JLabel time_label;
-	private JLabel time1_label;
-	private JLabel time2_label;
-	private JLabel time3_label;
-	private JLabel time4_label;
-	private JLabel time5_label;
-	private JLabel time6_label;
-	private JLabel time7_label;
-	private JLabel time8_label;
-	private JLabel time9_label;
-	private JLabel time10_label;
-	private JLabel time11_label;
-	
-	private static int BORDER = 5;
-	
-	private JPanel[][] panels;
-	
+
+    private static final String[] WEEKS = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+    private static DateFormat COLHEADER_FORMATTER= new SimpleDateFormat("EEE, MMM dd");
+
+    private DateTimeBounds bounds;
+    private final TimeSpan daySpan = new TimeSpan();
+    private final TimeSpan weekSpan = new TimeSpan();
+    private WeekTableModel model;
+
+    private static int COLUMN_WIDTH = 100;
+    private static int FIRST_COLUMN_WIDTH = 65;
+    private static int WEEKEND_COLUMN_WIDTH = 85;
+
+
 	/**
 	* Auto-generated main method to display this 
 	* JPanel inside a new JFrame.
@@ -67,124 +77,157 @@ public class CalendarPanel extends BaseCalendarView {
 		frame.pack();
 		frame.setVisible(true);
 	}
+    private JTable table;
 	
 	public CalendarPanel() {
 		super();
+        bounds = new DateTimeBounds();
 		initGUI();
 	}
-	
-	private void initGUI() {
 
-		/*try {
-			BorderLayout thisLayout = new BorderLayout();
-			this.setLayout(thisLayout);
-			this.setPreferredSize(new java.awt.Dimension(809, 455));
-			{
-				Calendar = new JPanel();
-				GridBagLayout CalendarLayout = new GridBagLayout();
-				this.add(Calendar, BorderLayout.CENTER);
-				Calendar.setPreferredSize(new java.awt.Dimension(809, 455));
-				CalendarLayout.rowWeights = new double[] {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
-				CalendarLayout.rowHeights = new int[] {7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7};
-				CalendarLayout.columnWeights = new double[] {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
-				CalendarLayout.columnWidths = new int[] {7, 7, 7, 7, 7, 7, 7, 7};
-				Calendar.setBackground(Color.BLACK);
-				Calendar.setLayout(CalendarLayout);
-				
-				panels = new JPanel[8][12];
-				
-				for (int i = 0; i < panels.length; i++){
-					for (int j = 0; j < panels[0].length; j++){
-						panels[i][j] = new JPanel();
-						Calendar.add(panels[i][j], new GridBagConstraints(i, j, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(1, 1, 1, 1), 0, 0));
-					}
-				}
-				
-				Calendar.setFocusTraversalPolicyProvider(true);
-				{
-					day1_label = new JLabel();
-					panels[1][0].add(day1_label);
-					day1_label.setText("Mandag");
-				
-					day2_label = new JLabel();
-					panels[2][0].add(day2_label);
-					day2_label.setText("Tirsdag");
-				
-					day3_label = new JLabel();
-					panels[3][0].add(day3_label);
-					day3_label.setText("Onsdag");
-				
-					day4_label = new JLabel();
-					panels[4][0].add(day4_label);
-					day4_label.setText("Torsdag");
-				
-				
-					day5_label = new JLabel();
-					panels[5][0].add(day5_label);
-					day5_label.setText("Fredag");
-				
-					day6_label = new JLabel();
-					panels[6][0].add(day6_label);
-					day6_label.setText("L�rdag");
-				
-					day7_label = new JLabel();
-					panels[7][0].add(day7_label);
-					day7_label.setText("S�ndag");
-				
-					time_label = new JLabel();
-					panels[0][0].add(time_label);
-					time_label.setText("Tid");
-					
-					time1_label = new JLabel();
-					panels[0][1].add(time1_label);
-					time1_label.setText("08:00");
-					
-					time2_label = new JLabel();
-					panels[0][2].add(time2_label);
-					time2_label.setText("09:00");
-					
-					time3_label = new JLabel();
-					panels[0][3].add(time3_label);
-					time3_label.setText("10:00");
-					
-					time4_label = new JLabel();
-					panels[0][4].add(time4_label);
-					time4_label.setText("11:00");
-					
-					time5_label = new JLabel();
-					panels[0][5].add(time5_label);
-					time5_label.setText("12:00");
-					
-					time6_label = new JLabel();
-					panels[0][6].add(time6_label);
-					time6_label.setText("13:00");
-					
-					time7_label = new JLabel();
-					panels[0][7].add(time7_label);
-					time7_label.setText("14:00");
-					
-					time8_label = new JLabel();
-					panels[0][8].add(time8_label);
-					time8_label.setText("15:00");
-					
-					time9_label = new JLabel();
-					panels[0][9].add(time9_label);
-					time9_label.setText("16:00");
-					
-					time10_label = new JLabel();
-					panels[0][10].add(time10_label);
-					time10_label.setText("17:00");
-					
-					time11_label = new JLabel();
-					panels[0][11].add(time11_label);
-					time11_label.setText("18:00");
-			}
-			}} catch (Exception e) {
-			e.printStackTrace();
-		}*/
-        
+    private void initGUI()
+    {
+        adjustSpan();
+        buildTable();
+        add(table);
+    }
+	
+	private void adjustSpan() {
+        Calendar startOfWeek = Calendar.getInstance();
+        Date time = bounds.position().dateValue();
+        startOfWeek.setTime(time);
+
+        Calendar weekStartTimeCalendar = bounds.weekStartTime().calendarValue();
+
+        startOfWeek.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+
+        if(startOfWeek.getTime().after(time))
+            startOfWeek.set(Calendar.DAY_OF_WEEK, -7);
+
+        startOfWeek.set(Calendar.HOUR_OF_DAY, weekStartTimeCalendar.get(Calendar.HOUR_OF_DAY));
+        startOfWeek.set(Calendar.MINUTE, weekStartTimeCalendar.get(Calendar.MINUTE));
+        startOfWeek.set(Calendar.SECOND, weekStartTimeCalendar.get(Calendar.SECOND));
+
+        System.out.println("beginning of week is "+startOfWeek.getTime());
+
+        TimeEO startHr = new TimeEO(startOfWeek.getTimeInMillis());
+
+        Calendar dayStartTimeCalendar = bounds.dayStartTime().calendarValue();
+        startHr.set(Calendar.HOUR_OF_DAY, dayStartTimeCalendar.get(Calendar.HOUR_OF_DAY));
+
+        weekSpan.setValue(new TimeSpan(startOfWeek.getTime(), bounds.weekInterval()));
+        daySpan.setValue(new TimeSpan(startHr.dateValue(), bounds.dayInterval()));
 	}
 
+    protected void buildTable() {
+        model = new WeekTableModel();
+        table = new JTable();
 
-	
+        table.setAutoCreateColumnsFromModel(false);
+        table.setModel(model);
+
+        TableColumn column = new TableColumn(0, FIRST_COLUMN_WIDTH,
+                               new RowHeaderCellRenderer(), null);
+
+        column.setMinWidth(FIRST_COLUMN_WIDTH);
+        column.setMaxWidth(FIRST_COLUMN_WIDTH);
+        column.setIdentifier("times");
+        table.addColumn(column);
+
+        DefaultTableCellRenderer renderer = null;
+        for(int i = 1; i < model.getColumnCount(); i++) {
+            int width = (i>5) ?
+               WEEKEND_COLUMN_WIDTH : COLUMN_WIDTH;
+
+            renderer = new CalendarCellRenderer();
+            column = new TableColumn(i, width, renderer, null);
+            column.setIdentifier(""+i);
+            table.addColumn(column);
+        }
+
+        table.setGridColor(Color.lightGray);
+        table.setShowGrid(true);
+        table.setRowSelectionAllowed(false);
+        table.setColumnSelectionAllowed(true);
+        table.getTableHeader().setReorderingAllowed(false);
+        table.setSelectionBackground(Color.cyan);
+    }
+
+    protected CellResChoice cellRes() { return CellResChoice.ONE_HOUR; }
+
+	private class WeekTableModel extends AbstractTableModel {
+        private int numCellsInDay;
+        private TimeEO[] times;
+        public WeekTableModel() {
+            updateCellRes();
+        }
+
+        public void updateCellRes() {
+            numCellsInDay = daySpan.numIntervals(cellRes().timeInterval());
+            times = new TimeEO[numCellsInDay];
+
+            int i=0;
+            for(Iterator itr = daySpan.iterator(cellRes().timeInterval());
+                itr.hasNext();) {
+                times[i++] = (TimeEO)itr.next();
+            }
+            fireTableStructureChanged();
+        }
+
+        public int getRowCount() { return numCellsInDay; }
+        public int getColumnCount() { return WEEKS.length + 1; }
+
+        public String getColumnName(int column)
+        {
+            if (column == 0)
+                return " ";
+            TimeSpan span = weekSpan.add(Calendar.DATE, column-1);
+            return COLHEADER_FORMATTER.format(span.startDate());
+        }
+
+        public boolean isCellEditable(int nRow, int nCol) { return false; }
+
+        public Object getValueAt(int nRow, int nCol)
+        {
+            if (nCol > 0)
+                return null; //TODO: Make better!
+            return times[nRow].toString();
+        }
+
+        public String toString()    { return "Week View"; }
+    }
+
+    private class RowHeaderCellRenderer implements TableCellRenderer {
+        JLabel cell;
+        public RowHeaderCellRenderer() {
+            cell = new JLabel();
+            cell.setOpaque(true);
+            Color color = UIManager.getColor("TableHeader.background");
+            cell.setBackground(color);
+
+            Font font = UIManager.getFont("TableHeader.font");
+            cell.setFont(font.deriveFont(10.0f));
+            cell.setVerticalAlignment(SwingConstants.TOP);
+            cell.setHorizontalAlignment(SwingConstants.TRAILING);
+            cell.setBorder(BorderFactory.createEmptyBorder(0,2,2,2));
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value,
+            boolean isSelected, boolean hasFocus, int row, int column) {
+            cell.setText(value.toString());
+            return cell;
+        }
+    }
+
+    private static class CalendarCellRenderer extends DefaultTableCellRenderer {
+
+        public CalendarCellRenderer() {
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            this.setBackground(value == null ? table.getBackground() : Color.yellow);
+            return this;
+        }
+    }
 }
