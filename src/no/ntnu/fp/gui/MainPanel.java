@@ -17,6 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 
 /**
 * This code was edited or generated using CloudGarden's Jigloo
@@ -34,7 +35,7 @@ public class MainPanel extends javax.swing.JPanel {
 	{
 		//Set Look & Feel
 		try {
-			javax.swing.UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -43,6 +44,7 @@ public class MainPanel extends javax.swing.JPanel {
 	private static final int AGREEMENT = 2;
 	private static final int MESSAGES = 3;
 	private static final int EMPLOYEES = 4;
+	private static String user_email;
 	private JPanel menu;
 	private JPanel maincontainer;
 	private JButton new_agreement_button;
