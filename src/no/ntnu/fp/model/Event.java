@@ -5,7 +5,6 @@ import java.beans.PropertyChangeSupport;
 import java.sql.Time;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -64,11 +63,6 @@ public class Event {
 		
 		propChangeSupp = new PropertyChangeSupport(this);
 	}
-
-        public Event()
-        {
-            propChangeSupp = new PropertyChangeSupport(this);
-        }
 	
 	public String getDateString()
 	{
@@ -120,24 +114,19 @@ public class Event {
 		propChangeSupp.firePropertyChange(event);
 	}
 	
-	public Calendar getDate() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return cal;
+	public Date getDate() {
+		return date;
 	}
 	
-	public void setDate(Calendar cal) {
-        Date date = (Date) cal.getTime();
+	public void setDate(Date date) {
 		Date old = this.date;
 		this.date = date;
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_DATE, old, date);
 		propChangeSupp.firePropertyChange(event);
 	}
 	
-	public Calendar getStartTime() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(startTime);
-		return cal;
+	public Time getStartTime() {
+		return startTime;
 	}
 	
 	public void setStartTime(Time startTime) {
@@ -147,10 +136,8 @@ public class Event {
 		propChangeSupp.firePropertyChange(event);
 	}
 	
-	public Calendar getEndTime() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(endTime);
-		return cal;
+	public Time getEndTime() {
+		return endTime;
 	}
 	
 	public void setEndTime(Time endTime) {
