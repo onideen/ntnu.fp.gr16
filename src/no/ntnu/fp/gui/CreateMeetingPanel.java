@@ -351,7 +351,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 		java.sql.Date date = new Date(calendar.getCalendar().getTimeInMillis());
 		
 		List<Room> rooms = Communication.getFreeRooms(new Reservation(date, (Time)start_time.getSelectedItem(), (Time)end_time.getSelectedItem()));
-		if (event != null && ((Time)start_time.getSelectedItem()) == event.getStartTime() ){
+		if (event != null && start_time.getSelectedItem() == event.getStartTime() ){
 			room_chooserModel.addElement(event.getRoomObject());
 		}
 		
