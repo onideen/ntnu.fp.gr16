@@ -64,6 +64,11 @@ public class Event {
 		
 		propChangeSupp = new PropertyChangeSupport(this);
 	}
+
+        public Event()
+        {
+            propChangeSupp = new PropertyChangeSupport(this);
+        }
 	
 	public String getDateString()
 	{
