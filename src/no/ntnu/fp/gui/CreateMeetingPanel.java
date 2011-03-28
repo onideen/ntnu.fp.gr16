@@ -2,6 +2,7 @@ package no.ntnu.fp.gui;
 import no.ntnu.fp.model.*;
 
 
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -14,6 +15,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Date;
 import java.sql.Time;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.swing.ComboBoxModel;
@@ -94,7 +96,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	
 	public CreateMeetingPanel() {
 		super();
-		event = Communication.getEvent(73);
+//		event = Communication.getEvent(73);
 		initGUI();
 	}
 	
@@ -112,27 +114,24 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 				GridBagLayout meetingLayout = new GridBagLayout();
 				this.add(meeting, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 30));
 				this.add(getAll_users(), new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-				this.add(getEnd_time(), new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 				meetingLayout.rowWeights = new double[] {0.1, 0.1, 0.1, 0.1, 0.1, 0.0, 0.0, 0.1};
 				meetingLayout.rowHeights = new int[] {7, 7, 7, 7, 7, 25, 44, 7};
 				meetingLayout.columnWeights = new double[] {0.0, 0.1};
 				meetingLayout.columnWidths = new int[] {10, 7};
 				meeting.setLayout(meetingLayout);
-				{
-					calendar = new JDateChooser();
-					meeting.add(calendar, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
-					meeting.add(getDate_label(), new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
-					meeting.add(getStart_time_label(), new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
-					meeting.add(getEnd_time_label(), new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
-					meeting.add(getDescription_label(), new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
-					meeting.add(getStart_time(), new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
-					meeting.add(end_time, new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
-					meeting.add(getDescription(), new GridBagConstraints(1, 5, 1, 2, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 10), 0, 0));
-					meeting.add(getRoom_label(), new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
-					meeting.add(getRoomChooserPanel(), new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
-					meeting.add(getNew_agreement_label(), new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-					meeting.add(getButtons_panel(), new GridBagConstraints(1, 7, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-				}
+				meeting.add(getJDateChooser(), new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
+				meeting.add(getDate_label(), new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+				meeting.add(getStart_time_label(), new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+				meeting.add(getEnd_time(), new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+				meeting.add(getEnd_time_label(), new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+				meeting.add(getDescription_label(), new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+				meeting.add(getStart_time(), new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
+				meeting.add(end_time, new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
+				meeting.add(getDescription(), new GridBagConstraints(1, 5, 1, 2, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 10), 0, 0));
+				meeting.add(getRoom_label(), new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+				meeting.add(getRoomChooserPanel(), new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
+				meeting.add(getNew_agreement_label(), new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+				meeting.add(getButtons_panel(), new GridBagConstraints(1, 7, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -140,12 +139,21 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 		fillCells();
 	}
 	
+	private Component getJDateChooser() {
+		calendar = new JDateChooser();
+		calendar.setCalendar(new GregorianCalendar());
+		return calendar;
+	}
+
 	private void fillCells() {
+		
 		if (event != null) {
 			calendar.setDate(event.getDate().getTime());
 			start_time.setSelectedItem(event.getStartTime());
 			end_time.setSelectedItem(event.getEndTime());
+			getRooms();
 			room_chooser.setSelectedItem(event.getRoomObject());
+			room_chooser.setEnabled(false);
 			description.setText(event.getDescription());
 			addEmployees();
 		}
@@ -255,6 +263,8 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	private JButton getSave_button() {
 		if(save_button == null) {
 			save_button = new JButton();
+			save_button.setIcon(new ImageIcon(getClass().getResource("/Save.png")));
+			save_button.setIconTextGap(10);
 			save_button.setText("Lagre");
 			save_button.addActionListener(new ActionListener() {
 				
@@ -268,9 +278,17 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	}
 	
 	protected void saveEvent() {
-		if (event != null){
+		if (event == null){
 			event.setDate(calendar.getCalendar());
-			//event.setStartTime();
+			event.setStartTime((java.sql.Time)start_time.getSelectedItem());
+			event.setEndTime((java.sql.Time)end_time.getSelectedItem());
+			event.setRoom(((Room)room_chooser.getSelectedItem()).getName());
+			
+//			for ( Object person: (List<Object>)selected_users_listModel.elements()) {
+//				event.addAttendee(((Person)person).getEmail());
+//			}
+//			
+			Communication.updateEvent(event);
 		}
 	}
 
@@ -330,8 +348,13 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	
 	protected void getRooms() {
 		
-		java.sql.Date date = new Date(calendar.getCalendar().MILLISECOND);
+		java.sql.Date date = new Date(calendar.getCalendar().getTimeInMillis());
+		
 		List<Room> rooms = Communication.getFreeRooms(new Reservation(date, (Time)start_time.getSelectedItem(), (Time)end_time.getSelectedItem()));
+		if (event != null && ((Time)start_time.getSelectedItem()) == event.getStartTime() ){
+			room_chooserModel.addElement(event.getRoomObject());
+		}
+		
 		room_chooserModel.removeAllElements();
 		
 		for (Room room : rooms) {
@@ -354,6 +377,11 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 			all_users.add(getSelected_users_scroll(), new GridBagConstraints(2, 1, 1, 3, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 			all_users.add(getAllEmployeeScroll(), new GridBagConstraints(0, 1, 1, 3, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 			all_users.add(getSelected_users_label(), new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+			if( ! (event != null && event.getAttendees() != null && ! event.getAttendees().isEmpty())){
+				all_users.setVisible(false);
+			}else {
+				all_users.setVisible(true);
+			}
 		}
 		return all_users;
 	}
@@ -506,7 +534,17 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	private JButton getAdd_users() {
 		if(add_users == null) {
 			add_users = new JButton();
+			add_users.setIcon(new ImageIcon(getClass().getResource("/addusers.png")));
+			add_users.setIconTextGap(10);
 			add_users.setText("Legg til deltakere");
+			add_users.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					all_users.setVisible(true);
+					
+				}
+			});
 		}
 		return add_users;
 	}

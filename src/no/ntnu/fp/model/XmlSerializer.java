@@ -301,7 +301,7 @@ public class XmlSerializer {
 		
 		String s = "";
 		for(String p : value)
-			s += (s=="" ? "" : "�") + p;
+			s += (s=="" ? "" : "µ") + p;
 		
 		e.appendChild(s);
 		return e;
@@ -316,7 +316,7 @@ public class XmlSerializer {
 	public static List<String> readStringList(Element m, String id)
 	{
 		ArrayList<String> a = new ArrayList<String>();
-		for(String s : readString(m, id).split("�"))
+		for(String s : readString(m, id).split("µ"))
 			a.add(s);
 		return a;
 	}
@@ -459,7 +459,11 @@ public class XmlSerializer {
 		for (int i = 0; i < e.getChildElements().size(); i++) {
 			Element child = e.getChildElements().get(i);
 			
-			a.add(ServerRequest.createObjectFromElement(child));
+                     try {
+                        a.add(ServerRequest.createObjectFromElement(child));
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
 		}
 		
 		return a;

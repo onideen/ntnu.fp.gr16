@@ -102,7 +102,7 @@ public class Communication {
 			return (List<Person>) ServerRequest
 					.createObjectFromElement(sr.returnData.getChildElements()
 							.get(0));
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -143,8 +143,8 @@ public class Communication {
 			try {
 				return (List<Event>) ServerRequest
 						.createObjectFromElement(sr.returnData
-								.getChildElements().get(0));
-			} catch (ParseException e) {
+                                                .getChildElements().get(0));
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -190,7 +190,7 @@ public class Communication {
 				return (List<Room>) ServerRequest
 						.createObjectFromElement(sr.returnData
 								.getChildElements().get(0));
-			} catch (ParseException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -210,7 +210,7 @@ public class Communication {
 				return (List<Person>) ServerRequest
 						.createObjectFromElement(sr.returnData
 								.getChildElements().get(0));
-			} catch (ParseException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

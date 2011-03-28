@@ -9,12 +9,12 @@
 -->
 
 <root>
-  <errors>true</errors>
-  <loss>0.5</loss>
-  <delay>0.7</delay>
-  <ghost>0.7</ghost>
-  <payload>0.7</payload>
-  <header>0.7</header>
+  <errors>false</errors>
+  <loss>0.1</loss>
+  <delay>0.1</delay>
+  <ghost>0.1</ghost>
+  <payload>0.1</payload>
+  <header>0.1</header>
   <onlydata>true</onlydata>
   <serverAddress>localhost</serverAddress>
   <serverport>10500</serverport>

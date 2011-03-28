@@ -17,8 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-
-import com.sun.org.apache.xml.internal.security.encryption.AgreementMethod;
+import javax.swing.UIManager;
 
 /**
 * This code was edited or generated using CloudGarden's Jigloo
@@ -33,17 +32,19 @@ import com.sun.org.apache.xml.internal.security.encryption.AgreementMethod;
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
 public class MainPanel extends javax.swing.JPanel {
-
 	{
 		//Set Look & Feel
 		try {
-			javax.swing.UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 	private static final int CALENDAR = 1;
 	private static final int AGREEMENT = 2;
+	private static final int MESSAGES = 3;
+	private static final int EMPLOYEES = 4;
+	private static String user_email;
 	private JPanel menu;
 	private JPanel maincontainer;
 	private JButton new_agreement_button;
@@ -112,7 +113,6 @@ public class MainPanel extends javax.swing.JPanel {
 					calendar_button.setSize(50, 50);
 					calendar_button.setPreferredSize(new java.awt.Dimension(50, 50));
 					calendar_button.addActionListener(new ActionListener() {
-	
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							changeMain(CALENDAR);
@@ -128,6 +128,12 @@ public class MainPanel extends javax.swing.JPanel {
 					message_button.setVerticalTextPosition(SwingConstants.BOTTOM);
 					message_button.setSize(50, 50);
 					message_button.setPreferredSize(new java.awt.Dimension(50, 50));
+					message_button.addActionListener(new ActionListener() {	
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							changeMain(EMPLOYEES);
+						}
+					});
 				}
 				{
 					employee_button = new JButton();
@@ -138,6 +144,11 @@ public class MainPanel extends javax.swing.JPanel {
 					employee_button.setVerticalTextPosition(SwingConstants.BOTTOM);
 					employee_button.setSize(78, 78);
 					employee_button.setPreferredSize(new java.awt.Dimension(50, 50));
+					employee_button.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							changeMain(EMPLOYEES);
+						}
+					});
 				}
 				{
 					logout_button = new JButton();
@@ -170,6 +181,14 @@ public class MainPanel extends javax.swing.JPanel {
 		case AGREEMENT:
 			maincontainer.add(new CreateMeetingPanel(),BorderLayout.CENTER);
 			break;
+		case MESSAGES:
+			MessageListPanel message = new MessageListPanel();
+			maincontainer.add(message,BorderLayout.CENTER);
+			message.readMessages("mothersday@monday.com");
+			//TODO legge til pålogget bruker over
+			break;
+		case EMPLOYEES:
+			maincontainer.add(new EmployeesPanel(),BorderLayout.CENTER);
 		}
 		updateUI();
 		
