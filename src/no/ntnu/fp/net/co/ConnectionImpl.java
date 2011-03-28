@@ -158,7 +158,7 @@ public class ConnectionImpl extends AbstractConnection {
 				e.printStackTrace();
 			}
         }
-        if(ack.getFlag() != Flag.ACK)
+        if(ack == null || ack.getFlag() != Flag.ACK)
             throw new IOException("Did not receive ACK after SYN_ACK.");
 
         return connection;
