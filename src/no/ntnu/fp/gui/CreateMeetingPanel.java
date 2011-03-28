@@ -162,7 +162,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 		
 		model.fillCells();
 		if (event != null) {
-			calendar.setDate(event.getDate());
+			calendar.setDate(event.getDate().getTime());
 			start_time.setSelectedItem(event.getStartTime());
 			end_time.setSelectedItem(event.getEndTime());
 			getRooms();
@@ -297,7 +297,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	
 	protected void saveEvent() {
 		if (event == null){
-			event.setDate(new java.sql.Date(calendar.getCalendar().getTimeInMillis()));
+			event.setDate(calendar.getCalendar());
 			event.setStartTime((java.sql.Time)start_time.getSelectedItem());
 			event.setEndTime((java.sql.Time)end_time.getSelectedItem());
 			event.setRoom(((Room)room_chooser.getSelectedItem()).getName());
@@ -369,7 +369,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 		java.sql.Date date = new Date(calendar.getCalendar().getTimeInMillis());
 		
 		List<Room> rooms = Communication.getFreeRooms(new Reservation(date, (Time)start_time.getSelectedItem(), (Time)end_time.getSelectedItem()));
-		if (event != null && ((Time)start_time.getSelectedItem()) == event.getStartTime() ){
+		if (event != null && start_time.getSelectedItem() == event.getStartTime() ){
 			room_chooserModel.addElement(event.getRoomObject());
 		}
 		

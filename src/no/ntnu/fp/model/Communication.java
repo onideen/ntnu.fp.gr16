@@ -26,6 +26,8 @@ import nu.xom.ParsingException;
 
 public class Communication {
 
+        public static String LoggedInUserEmail = "";
+
 	public static void main(String[] args) throws SQLException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
@@ -76,11 +78,22 @@ public class Communication {
 			throws SQLException {
 		ServerResponse sr = sendData("login", user, password);
 		if (sr.isSuccess()) {
+                        LoggedInUserEmail = user;
 			return (Boolean) sr.getParameters()[0];
 		}
 
 		return false;
 	}
+        
+        public static boolean isLoggedIn()
+        {
+            return !LoggedInUserEmail.equals("");
+        }
+
+        public static void logout()
+        {
+            LoggedInUserEmail="";
+        }
 
 	private static Date createDate(int y, int m, int d) {
 		Calendar c = new GregorianCalendar(y, m - 1, d);
@@ -106,7 +119,7 @@ public class Communication {
 			e.printStackTrace();
 		}
 
-		return null;
+		return new ArrayList<Person>();
 	}
 
 	public static List<Message> getMessages(String email) {
@@ -115,7 +128,7 @@ public class Communication {
 			return (List<Message>) sr.getParameters()[0];
 		}
 
-		return null;
+		return new ArrayList<Message>();
 	}
 
 	public static Message getMessage(int mid) {

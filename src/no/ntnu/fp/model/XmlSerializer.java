@@ -148,10 +148,10 @@ public class XmlSerializer {
 		
 		appendChildren(e,
 				createElement(Event.PROPERTY_EID, m.getEid()),
-				createElement(Event.PROPERTY_DATE, m.getDate()),
+				createElement(Event.PROPERTY_DATE, (Date) m.getDate().getTime()),
 				createElement(Event.PROPERTY_DESCRIPTION, m.getDescription()),
-				createElement(Event.PROPERTY_ENDTIME, m.getEndTime()),
-				createElement(Event.PROPERTY_STARTTIME, m.getStartTime()),
+				createElement(Event.PROPERTY_ENDTIME, (Time) m.getEndTime().getTime()),
+				createElement(Event.PROPERTY_STARTTIME, (Time) m.getStartTime().getTime()),
 				createElement(Event.PROPERTY_TYPE, m.getType().toString()),
 				createElement(Event.PROPERTY_RESPONSIBLE, m.getResponsible()),
 				createElement(Event.PROPERTY_ATTENDEE, m.getAttendees()),

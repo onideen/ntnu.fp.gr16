@@ -35,6 +35,7 @@ public class ReceiveConnectionWorker extends Thread {
         }
         catch (Exception e) {
             e.printStackTrace(); // TODO: better handling of exceptions
+            System.out.println("38 RecConWor");
         }
     }
     

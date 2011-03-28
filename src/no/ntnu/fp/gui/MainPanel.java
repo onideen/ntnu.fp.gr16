@@ -18,6 +18,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import no.ntnu.fp.model.Communication;
+import no.ntnu.fp.model.ILoginListener;
 
 /**
 * This code was edited or generated using CloudGarden's Jigloo
@@ -31,7 +33,7 @@ import javax.swing.UIManager;
 * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
-public class MainPanel extends javax.swing.JPanel {
+public class MainPanel extends javax.swing.JPanel implements ILoginListener {
 	{
 		//Set Look & Feel
 		try {
@@ -44,6 +46,7 @@ public class MainPanel extends javax.swing.JPanel {
 	private static final int AGREEMENT = 2;
 	private static final int MESSAGES = 3;
 	private static final int EMPLOYEES = 4;
+        private static final int LOGIN = 5;
 	private static String user_email;
 	private JPanel menu;
 	private JPanel maincontainer;
@@ -52,7 +55,7 @@ public class MainPanel extends javax.swing.JPanel {
 	private JButton message_button;
 	private JButton logout_button;
 	private JButton employee_button;
-	
+        private LogInPanel loginPanel;
 
 	/**
 	* Auto-generated main method to display this 
@@ -68,7 +71,12 @@ public class MainPanel extends javax.swing.JPanel {
 	
 	public MainPanel() {
 		super();
+
+                loginPanel = new LogInPanel();
+                loginPanel.setLoginListener(this);
+
 		initGUI();
+                changeMain(LOGIN);
 	}
 	
 	private void initGUI() {
@@ -85,6 +93,7 @@ public class MainPanel extends javax.swing.JPanel {
 				menuLayout.columnWeights = new double[] {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
 				menuLayout.rowWeights = new double[] {0.1};
 				menu.setLayout(menuLayout);
+                                menu.setVisible(false);
 				menu.setPreferredSize(new java.awt.Dimension(737, 78));
 				{
 					new_agreement_button = new JButton();
@@ -131,7 +140,7 @@ public class MainPanel extends javax.swing.JPanel {
 					message_button.addActionListener(new ActionListener() {	
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							changeMain(EMPLOYEES);
+							changeMain(MESSAGES);
 						}
 					});
 				}
@@ -172,8 +181,20 @@ public class MainPanel extends javax.swing.JPanel {
 			e.printStackTrace();
 		}
 	}
+
+        public void loginAction(boolean isLoggedIn)
+        {
+            changeMain(CALENDAR);
+        }
+
 	private void changeMain(int panel) {
 		maincontainer.removeAll();
+                
+                if(!Communication.isLoggedIn())
+                    panel=LOGIN;
+
+                menu.setVisible(panel!=LOGIN);
+
 		switch (panel){
 		case CALENDAR:
 			maincontainer.add(new CalendarPanel(), BorderLayout.CENTER);
@@ -184,11 +205,15 @@ public class MainPanel extends javax.swing.JPanel {
 		case MESSAGES:
 			MessageListPanel message = new MessageListPanel();
 			maincontainer.add(message,BorderLayout.CENTER);
-			message.readMessages("mothersday@monday.com");
+			message.readMessages(Communication.LoggedInUserEmail);
 			//TODO legge til pålogget bruker over
 			break;
 		case EMPLOYEES:
 			maincontainer.add(new EmployeesPanel(),BorderLayout.CENTER);
+                        break;
+                    case LOGIN:
+                        maincontainer.add(loginPanel, BorderLayout.CENTER);
+                        break;
 		}
 		updateUI();
 		
