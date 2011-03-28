@@ -222,9 +222,9 @@ public class CalendarService implements ConnectionListener,
                     + "beskrivelse = ?, type = ?, ansvarlig = ?, reservertrom = ? WHERE id = "
                     + e.getEid() + ";");
 
-            p.setDate(1, e.getDate());
-            p.setTime(2, e.getStartTime());
-            p.setTime(3, e.getEndTime());
+            p.setDate(1, (Date) e.getDate().getTime());
+            p.setTime(2, (Time) e.getStartTime().getTime());
+            p.setTime(3, (Time) e.getEndTime().getTime());
             p.setString(4, e.getDescription());
             p.setString(5, e.getType().toString());
             p.setString(6, e.getResponsible());
@@ -259,9 +259,9 @@ public class CalendarService implements ConnectionListener,
             PreparedStatement p = c.prepareStatement("INSERT INTO Hendelse(dato, starttid, sluttid, beskrivelse, type, ansvarlig, reservertrom) "
                     + "VALUES(?, ?, ?, ?, ?, ?, ?);");
 
-            p.setDate(1, e.getDate());
-            p.setTime(2, e.getStartTime());
-            p.setTime(3, e.getEndTime());
+            p.setDate(1, (Date) e.getDate().getTime());
+            p.setTime(2, (Time) e.getStartTime().getTime());
+            p.setTime(3, (Time) e.getEndTime().getTime());
             p.setString(4, e.getDescription());
             p.setString(5, e.getType().toString());
             p.setString(6, e.getResponsible());
@@ -271,9 +271,9 @@ public class CalendarService implements ConnectionListener,
 
             p = c.prepareStatement("SELECT id FROM Hendelse WHERE dato = ? AND starttid = ? AND sluttid = ? AND ansvarlig = ? AND beskrivelse = ?;");
 
-            p.setDate(1, e.getDate());
-            p.setTime(2, e.getStartTime());
-            p.setTime(3, e.getEndTime());
+            p.setDate(1, (Date) e.getDate().getTime());
+            p.setTime(2, (Time) e.getStartTime().getTime());
+            p.setTime(3, (Time) e.getEndTime().getTime());
             p.setString(4, e.getResponsible());
             p.setString(5, e.getDescription());
 
@@ -535,8 +535,8 @@ public class CalendarService implements ConnectionListener,
 
         while (rs.next()) {
             Event e = getEvent(rs.getInt("id"));
-            long a = e.getStartTime().getTime();
-            long b = e.getEndTime().getTime();
+            long a = e.getStartTime().getTimeInMillis();
+            long b = e.getEndTime().getTimeInMillis();
             long ss = r.getStartTime().getTime();
             long ee = r.getEndTime().getTime();
             if (((a >= ss && a < ee) || (b > ss && b < ee))
