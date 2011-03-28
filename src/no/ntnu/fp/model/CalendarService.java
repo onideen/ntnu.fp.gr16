@@ -3,7 +3,6 @@ package no.ntnu.fp.model;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.ConnectException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,9 +38,10 @@ public class CalendarService implements ConnectionListener,
                     Object o = null;
 
                     try {
-                        o=method.invoke(this, sr.getParameters());
+                        o = method.invoke(this, sr.getParameters());
                     } catch (Exception e) {
-                        System.out.println(sr.getFunction());
+                        System.out.println(sr.getFunction() + ", " + sr.getParameters().length);
+                        System.out.println(sr.getXml());
                         e.printStackTrace();
                     }
 
@@ -55,6 +55,8 @@ public class CalendarService implements ConnectionListener,
                     e.printStackTrace();
                     System.out.println(sr.getFunction());
                 }
+
+                break;
             }
         }
 
@@ -460,25 +462,29 @@ public class CalendarService implements ConnectionListener,
     }
 
     public List<Event> getEvents(String email) throws SQLException {
-        ArrayList<Event> events = new ArrayList<Event>();
-        Connection c = getConnection();
-        Statement s = c.createStatement();
-        ResultSet rs = s.executeQuery("SELECT id FROM Hendelse WHERE `ansvarlig` = '"
-                + email + "';");
+        try {
+            ArrayList<Event> events = new ArrayList<Event>();
+            Connection c = getConnection();
+            Statement s = c.createStatement();
+            ResultSet rs = s.executeQuery("SELECT id FROM Hendelse WHERE `ansvarlig` = '"
+                    + email + "';");
 
-        while (rs.next()) {
-            Event e = getEvent(rs.getInt("id"));
-            events.add(e);
+            while (rs.next()) {
+                Event e = getEvent(rs.getInt("id"));
+                events.add(e);
+            }
+
+            rs = s.executeQuery("SELECT Hid FROM Deltaker WHERE `e-mail` = '"
+                    + email + "';");
+            while (rs.next()) {
+                Event e = getEvent(rs.getInt("hid"));
+                events.add(e);
+            }
+
+            return events;
+        } catch (Exception e) {
+            return null;
         }
-
-        rs = s.executeQuery("SELECT Hid FROM Deltaker WHERE `e-mail` = '"
-                + email + "';");
-        while (rs.next()) {
-            Event e = getEvent(rs.getInt("hid"));
-            events.add(e);
-        }
-
-        return events;
     }
 
     public Event getEvent(int eventId) {
@@ -522,7 +528,7 @@ public class CalendarService implements ConnectionListener,
         ResultSet rs = s.executeQuery("SELECT * from Rom;");
 
         while (rs.next()) {
-            Room room = new Room(rs.getString("navn"), rs.getInt("størrelse"));
+            Room room = new Room(rs.getString("navn"), rs.getInt("storrelse"));
             hashRooms.put(rs.getString("navn"), room);
         }
 

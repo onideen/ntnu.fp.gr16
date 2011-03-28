@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import no.ntnu.fp.net.co.ConnectionImpl;
@@ -19,6 +20,11 @@ public class ServerRequest {
 
 	String function;
 	Element requestData;
+
+        public String getXml()
+        {
+            return requestData.toXML();
+        }
 
 	/**
 	 * Creates a server request to the given function with the given parameters
@@ -151,7 +157,10 @@ public class ServerRequest {
 		}
 
                 if(type.equals("null"))
+                {
+                    JOptionPane.showMessageDialog(null, "Feil ved serverkommunikasjon. Vennligst prøv igjen en gang i neste uke.","Kommunikasjonsfeil",JOptionPane.ERROR_MESSAGE);
                     return null;
+                }
 
 		throw new Exception(type + " is not supported.");
 	}
@@ -203,14 +212,19 @@ public class ServerRequest {
 	 */
 	public Object[] getParameters() {
 
+                boolean verbose = true;
+
 		ArrayList<Object> objects = new ArrayList<Object>();
 
 		for (int i = 0; i < requestData.getChildElements().size(); i++) {
 			Element e = requestData.getChildElements().get(i);
 
 			try {
-				objects.add(createObjectFromElement(e));
+                                Object o = createObjectFromElement(e);
+                                if(verbose) System.out.println("Created an object of type " + o.getClass().toString() + " from " + e.toXML());
+				objects.add(o);
 			} catch (Exception e1) {
+                                if(verbose) System.out.println("Failed to create object from " + e.toXML());
 				e1.printStackTrace();
 			}
 		}
