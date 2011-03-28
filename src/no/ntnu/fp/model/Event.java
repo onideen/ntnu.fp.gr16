@@ -38,6 +38,9 @@ public class Event {
 	public final static String PROPERTY_RESPONSIBLE = "responsible";
 	public final static String PROPERTY_ATTENDEE = "attendee";
 
+	public Event() {
+	}
+	
 	public Event(String desc, Type type, String owner, Date date, Time start, Time end, String room){
 		this.description=desc;
 		this.type=type;

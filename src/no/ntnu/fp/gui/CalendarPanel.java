@@ -157,7 +157,7 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
 
     private Event getEventForTime(Calendar cal) {
         for (Event e : events) {
-            if (e.getDate().get(Calendar.YEAR) == cal.get(Calendar.YEAR)
+            if (e.getDate().get	(Calendar.YEAR) == cal.get(Calendar.YEAR)
                     && e.getDate().get(Calendar.DATE) == cal.get(Calendar.DATE)) {
                 boolean startsBefore = e.getStartTime().get(Calendar.HOUR) <= cal.get(Calendar.HOUR);
                 boolean endsAfter = e.getEndTime().get(Calendar.HOUR) > cal.get(Calendar.HOUR);
