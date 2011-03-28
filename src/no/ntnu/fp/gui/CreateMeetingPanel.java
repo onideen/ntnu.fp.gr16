@@ -142,7 +142,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	
 	private void fillCells() {
 		if (event != null) {
-			calendar.setDate(event.getDate());
+			calendar.setDate(event.getDate().getTime());
 			start_time.setSelectedItem(event.getStartTime());
 			end_time.setSelectedItem(event.getEndTime());
 			room_chooser.setSelectedItem(event.getRoomObject());
@@ -269,7 +269,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	
 	protected void saveEvent() {
 		if (event != null){
-			event.setDate((java.sql.Date)calendar.getCalendar().getTime());
+			event.setDate(calendar.getCalendar());
 			//event.setStartTime();
 		}
 	}

@@ -148,10 +148,10 @@ public class XmlSerializer {
 		
 		appendChildren(e,
 				createElement(Event.PROPERTY_EID, m.getEid()),
-				createElement(Event.PROPERTY_DATE, m.getDate()),
+				createElement(Event.PROPERTY_DATE, (Date) m.getDate().getTime()),
 				createElement(Event.PROPERTY_DESCRIPTION, m.getDescription()),
-				createElement(Event.PROPERTY_ENDTIME, m.getEndTime()),
-				createElement(Event.PROPERTY_STARTTIME, m.getStartTime()),
+				createElement(Event.PROPERTY_ENDTIME, (Time) m.getEndTime().getTime()),
+				createElement(Event.PROPERTY_STARTTIME, (Time) m.getStartTime().getTime()),
 				createElement(Event.PROPERTY_TYPE, m.getType().toString()),
 				createElement(Event.PROPERTY_RESPONSIBLE, m.getResponsible()),
 				createElement(Event.PROPERTY_ATTENDEE, m.getAttendees()),
@@ -301,7 +301,7 @@ public class XmlSerializer {
 		
 		String s = "";
 		for(String p : value)
-			s += (s=="" ? "" : "µ") + p;
+			s += (s=="" ? "" : "ï¿½") + p;
 		
 		e.appendChild(s);
 		return e;
@@ -316,7 +316,7 @@ public class XmlSerializer {
 	public static List<String> readStringList(Element m, String id)
 	{
 		ArrayList<String> a = new ArrayList<String>();
-		for(String s : readString(m, id).split("µ"))
+		for(String s : readString(m, id).split("ï¿½"))
 			a.add(s);
 		return a;
 	}
