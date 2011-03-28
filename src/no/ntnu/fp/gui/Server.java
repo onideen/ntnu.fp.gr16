@@ -22,22 +22,11 @@ public class Server extends javax.swing.JFrame {
 
     /** Creates new form Server */
     public Server() {
-        Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler());
-
         initComponents();
         jList1.setModel(dlm);
 
         StartServer();
     }
-
-  class MyUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
-      public void uncaughtException(Thread t, Throwable e) {
-          printLine("Gocha!");
-          System.err.println ("Uncaught exception by " + t + " caught:");
-          e.printStackTrace();
-      }
-  }
-
 
     private void StartServer()
     {

@@ -168,6 +168,7 @@ public class ConnectionImpl extends AbstractConnection {
 	        }
 	        catch (IOException e)
 	        {
+                    System.out.println("Bæsil!");
 	        	e.printStackTrace();
 	        }
     	}

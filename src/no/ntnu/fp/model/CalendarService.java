@@ -571,16 +571,20 @@ public class CalendarService implements ConnectionListener,
         return null;
     }
 
-    public boolean login(String user, String password) throws SQLException {
+    public boolean login(String email, String password) throws SQLException {
+
+        System.out.println("Logging in as :" + email + ", " + password);
+
         Connection c = getConnection();
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * FROM Person WHERE `e-mail` = '"
-                + user + "' AND `passord` = '" + password + "';");
+                + email + "' AND `passord` = '" + password + "';");
 
         if (rs.next()) {
             rs.close();
             return true;
         }
+        
         rs.close();
         return false;
     }

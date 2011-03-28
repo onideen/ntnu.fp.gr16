@@ -4,14 +4,19 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
 
 import javax.swing.WindowConstants;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import no.ntnu.fp.model.Communication;
+import no.ntnu.fp.model.ILoginListener;
 
 /**
 * This code was edited or generated using CloudGarden's Jigloo
@@ -86,6 +91,12 @@ public class LogInPanel extends javax.swing.JPanel {
 					logInButton = new JButton();
 					logInPanel.add(logInButton, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 					logInButton.setText("Logg inn");
+                                        logInButton.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							LogIn();
+						}
+					});
 				}
 			}
 		} catch (Exception e) {
@@ -93,4 +104,21 @@ public class LogInPanel extends javax.swing.JPanel {
 		}
 	}
 
+        ILoginListener Listener = null;
+        public void setLoginListener(ILoginListener l)
+        {
+            Listener = l;
+        }
+
+        private void LogIn()
+        {
+            try {
+                if(Communication.login(usernameTextField.getText(), passwordField.getText()))
+                    if(Listener!=null){
+                        Listener.loginAction(true);
+                        return;
+                    }
+            } catch (Exception e) {}
+            JOptionPane.showMessageDialog(null, "Feil brukernavn og/eller passord.");
+        }
 }
