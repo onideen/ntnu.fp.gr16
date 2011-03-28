@@ -9,7 +9,7 @@
 -->
 
 <root>
-  <errors>true</errors>
+  <errors>false</errors>
   <loss>0.1</loss>
   <delay>0.1</delay>
   <ghost>0.1</ghost>
