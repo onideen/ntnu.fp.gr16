@@ -38,6 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -46,6 +47,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.text.TableView.TableRow;
 import no.ntnu.fp.model.Event;
+import no.ntnu.fp.model.calendar.Utils;
 import sun.awt.X11GraphicsConfig;
 
 /**
@@ -100,6 +102,11 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
         //frame.pack();
         frame.setSize(500, 500);
         frame.setVisible(true);
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MONTH, 10);
+        cal.set(Calendar.DATE, 17);
+        cal.set(Calendar.YEAR, 1012);
+        panel.setWeek(cal);
     }
     private JTable table;
     private JScrollPane scrollPane;
@@ -123,17 +130,46 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
         buildTable();
         addEventListeners();
         scrollPane = new JScrollPane(table);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        //scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane);
         //setSize(new Dimension(735, 400));
     }
 
-    private JScrollPane getTable() {
-        return scrollPane;
-    }
-
     private void addEventListeners() {
         addComponentListener(this);
+    }
+
+    public void setWeek(Calendar calendar) {
+        bounds.weekStartTime(calendar.getTime());
+        adjustSpan();
+        System.out.print("Cal: ");
+        System.out.println(calendar.getTime());
+
+        System.out.print("getWeek(): ");
+        System.out.println(getWeek().getTime());
+
+        System.out.print("weekSpan: ");
+        System.out.println(weekSpan);
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                for(int i = 1; i < model.getColumnCount(); i++)
+                    table.getColumn(""+i).setHeaderValue(model.getColumnName(i));
+
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(bounds.position().dateValue());
+                int column = cal.get(Calendar.DAY_OF_WEEK);
+                if(table.getSelectedColumn() != column)
+                    table.setColumnSelectionInterval(column, column);
+
+                repaint();
+            }
+
+        });
+    }
+
+    public Calendar getWeek() {
+        return Utils.getCalendar(bounds.weekStartTime().dateValue());
     }
 
     private void adjustSpan() {
