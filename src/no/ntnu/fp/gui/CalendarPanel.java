@@ -2,25 +2,12 @@ package no.ntnu.fp.gui;
 
 import com.u2d.calendar.CellResChoice;
 import com.u2d.calendar.DateTimeBounds;
-import com.u2d.model.EObject;
 import com.u2d.type.atom.TimeEO;
-import com.u2d.type.atom.TimeInterval;
 import com.u2d.type.atom.TimeSpan;
-import java.awt.BorderLayout;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Rectangle;
-import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.text.DateFormat;
@@ -30,11 +17,9 @@ import java.util.Date;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultCellEditor;
 import javax.swing.WindowConstants;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -43,10 +28,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.text.TableView.TableRow;
 import no.ntnu.fp.model.Event;
-import sun.awt.X11GraphicsConfig;
 
 /**
  * This code was edited or generated using CloudGarden's Jigloo

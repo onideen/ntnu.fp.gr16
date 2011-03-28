@@ -41,6 +41,7 @@ public class CalendarService implements ConnectionListener,
                     try {
                         o=method.invoke(this, sr.getParameters());
                     } catch (Exception e) {
+                        System.out.println(sr.getFunction());
                         e.printStackTrace();
                     }
 
@@ -64,16 +65,18 @@ public class CalendarService implements ConnectionListener,
     }
 
     private static Connection getConnection() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-            String userName = "erlendd_felles";
-            String password = "fpfpfp";
-            String url = "jdbc:mysql://mydb11.surftown.no/erlendd_qamerat";
-            Connection conn = DriverManager.getConnection(url, userName,
-                    password);
-            return conn;
-        } catch (Exception e) {
-            // TODO: handle exception
+        for(int i = 0; i<5; i++){
+            try {
+                Class.forName("com.mysql.jdbc.Driver").newInstance();
+                String userName = "erlendd_felles";
+                String password = "fpfpfp";
+                String url = "jdbc:mysql://mydb11.surftown.no/erlendd_qamerat";
+                Connection conn = DriverManager.getConnection(url, userName,
+                        password);
+                return conn;
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
         }
 
         return null;
@@ -98,12 +101,7 @@ public class CalendarService implements ConnectionListener,
 
     public void executeUpdate(String s) {
         try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-            String userName = "erlendd_felles";
-            String password = "fpfpfp";
-            String url = "jdbc:mysql://mydb11.surftown.no/erlendd_qamerat";
-            Connection conn = DriverManager.getConnection(url, userName,
-                    password);
+            Connection conn = getConnection();
 
             Statement q = conn.createStatement();
             q.executeUpdate(s);
@@ -114,6 +112,7 @@ public class CalendarService implements ConnectionListener,
             e.printStackTrace();
         }
     }
+
     private ReceiveConnectionWorker receiver;
     Set<no.ntnu.fp.net.co.Connection> connections = Collections.synchronizedSet(new HashSet<no.ntnu.fp.net.co.Connection>());
 

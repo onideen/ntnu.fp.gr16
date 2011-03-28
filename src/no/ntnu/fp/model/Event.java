@@ -11,7 +11,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Event {
 
-	int eid;
+	int eid = -1;
 	String roomName;
 	Date date;
 	Time startTime;
