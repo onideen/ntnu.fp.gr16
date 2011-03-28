@@ -147,7 +147,18 @@ public class ConnectionImpl extends AbstractConnection {
         connection.state = State.ESTABLISHED;
         connection.remoteAddress = packet.getSrc_addr();
         connection.remotePort = packet.getSrc_port();
-        if(connection.receivePacket(true).getFlag() != Flag.ACK)
+        KtnDatagram ack = null;
+        int tries = 0;
+        while(ack == null && tries++ < 3) {
+        	ack = connection.receivePacket(true);
+        	try {
+				wait(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+        if(ack.getFlag() != Flag.ACK)
             throw new IOException("Did not receive ACK after SYN_ACK.");
 
         return connection;
