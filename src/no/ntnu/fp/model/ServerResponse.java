@@ -66,7 +66,7 @@ public class ServerResponse {
 			
 			try {
 				objects.add(ServerRequest.createObjectFromElement(e));
-			} catch (ParseException e1) {
+			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		}

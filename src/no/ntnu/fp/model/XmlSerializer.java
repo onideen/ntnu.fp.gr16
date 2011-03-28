@@ -459,7 +459,11 @@ public class XmlSerializer {
 		for (int i = 0; i < e.getChildElements().size(); i++) {
 			Element child = e.getChildElements().get(i);
 			
-			a.add(ServerRequest.createObjectFromElement(child));
+                     try {
+                        a.add(ServerRequest.createObjectFromElement(child));
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
 		}
 		
 		return a;

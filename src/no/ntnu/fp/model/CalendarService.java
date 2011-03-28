@@ -66,12 +66,11 @@ public class CalendarService implements ConnectionListener,
     private static Connection getConnection() {
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            String userName = "fpg16";
+            String userName = "erlendd_felles";
             String password = "fpfpfp";
-            String url = "jdbc:mysql://127.0.0.1/fellesprosjekt";
+            String url = "jdbc:mysql://mydb11.surftown.no/erlendd_qamerat";
             Connection conn = DriverManager.getConnection(url, userName,
                     password);
-
             return conn;
         } catch (Exception e) {
             // TODO: handle exception
