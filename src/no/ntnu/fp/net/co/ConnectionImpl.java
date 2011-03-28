@@ -88,7 +88,7 @@ public class ConnectionImpl extends AbstractConnection {
         state = State.CLOSED.SYN_SENT;
 
         KtnDatagram synAck = receivePacket(true);
-        if(synAck.getFlag() == Flag.FIN)
+        if(synAck == null || synAck.getFlag() == Flag.FIN)
         {
             state = State.CLOSED;
             return;
@@ -109,60 +109,70 @@ public class ConnectionImpl extends AbstractConnection {
      * @see Connection#accept()
      */
     public synchronized Connection accept() throws IOException, SocketTimeoutException {
-        InternalReceiver receiver = new InternalReceiver(myPort);
-        receiver.start();
-        long timeout = CONNECT_TIMEOUT;
-        try {
-            receiver.join();
-        } catch (InterruptedException e) { /* do nothing */ }
+    	Connection conn = null;
+    	while(conn == null) {
+	        InternalReceiver receiver = new InternalReceiver(myPort);
+	        receiver.start();
+	        long timeout = CONNECT_TIMEOUT;
+	        try {
+	            receiver.join();
+	        } catch (InterruptedException e) { /* do nothing */ }
+	        
+	        try {
+		        receiver.stopReceive();
+		        KtnDatagram packet = receiver.getPacket();
+		        if(packet == null)
+		            throw new SocketTimeoutException("Didn't receive the SYN. Timeout.");
+		        if(packet.getFlag() != Flag.SYN)
+		            throw new IOException("Did not receive SYN.");
+		
+		        remoteAddress = packet.getSrc_addr();
+		        remotePort = packet.getSrc_port();
+		        int mPort = myPort;
+		        myPort = ++newtPort;
+		        sendAck(packet, true);
+		        myPort = mPort;
+		        mPort = newtPort;
+		
+		        /*receiver = new InternalReceiver(mPort);
+		        receiver.start();
+		        try {
+		            receiver.join(Math.max(timeout, 1));
+		        } catch (InterruptedException e) { }
+		
+		        packet = receiver.getPacket();
+		        if(packet == null)
+		            throw new SocketTimeoutException();
+		        if(packet.getFlag() != Flag.ACK)
+		            throw new IOException("Did not receive ACK after SYN_ACK.");*/
+		
+		        ConnectionImpl connection = new ConnectionImpl(mPort);
+		        connection.state = State.ESTABLISHED;
+		        connection.remoteAddress = packet.getSrc_addr();
+		        connection.remotePort = packet.getSrc_port();
+		        KtnDatagram ack = null;
+		        int tries = 0;
+		        while(ack == null && tries++ < 3) {
+		        	ack = connection.receivePacket(true);
+		        	try {
+						wait(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		        }
+		        if(ack == null || ack.getFlag() != Flag.ACK)
+		            throw new IOException("Did not receive ACK after SYN_ACK.");
+	        
+	        	conn = connection;
+	        }
+	        catch (IOException e)
+	        {
+	        	e.printStackTrace();
+	        }
+    	}
 
-        receiver.stopReceive();
-        KtnDatagram packet = receiver.getPacket();
-        if(packet == null)
-            throw new SocketTimeoutException("Didn't receive the SYN. Timeout.");
-        if(packet.getFlag() != Flag.SYN)
-            throw new IOException("Did not receive SYN.");
-
-        remoteAddress = packet.getSrc_addr();
-        remotePort = packet.getSrc_port();
-        int mPort = myPort;
-        myPort = ++newtPort;
-        sendAck(packet, true);
-        myPort = mPort;
-        mPort = newtPort;
-
-        /*receiver = new InternalReceiver(mPort);
-        receiver.start();
-        try {
-            receiver.join(Math.max(timeout, 1));
-        } catch (InterruptedException e) { }
-
-        packet = receiver.getPacket();
-        if(packet == null)
-            throw new SocketTimeoutException();
-        if(packet.getFlag() != Flag.ACK)
-            throw new IOException("Did not receive ACK after SYN_ACK.");*/
-
-        ConnectionImpl connection = new ConnectionImpl(mPort);
-        connection.state = State.ESTABLISHED;
-        connection.remoteAddress = packet.getSrc_addr();
-        connection.remotePort = packet.getSrc_port();
-        KtnDatagram ack = null;
-        int tries = 0;
-        while(ack == null && tries++ < 3) {
-        	ack = connection.receivePacket(true);
-        	try {
-				wait(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        }
-        
-        if(ack == null || ack.getFlag() != Flag.ACK)
-            throw new IOException("Did not receive ACK after SYN_ACK.");
-
-        return connection;
+        return conn;
     }
 
     /**
