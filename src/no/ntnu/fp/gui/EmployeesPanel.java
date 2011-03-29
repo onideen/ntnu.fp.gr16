@@ -31,9 +31,23 @@ public class EmployeesPanel extends javax.swing.JPanel {
     public EmployeesPanel() {
         initComponents();
 
+        employees = Communication.getEmployees();
+        ListEmployees();
+    }
+
+    List<Person> employees;
+    private void ListEmployees()
+    {
+        String f = txtFilter.getText().toLowerCase();
+        dlm.clear();
         lstEmployees.setModel(dlm);
-        for(Person p : Communication.getEmployees())
-            dlm.addElement(p);
+        for(Person p : employees)
+        {
+            if(p==null)
+                continue;
+            if (f.equals("") || (p.getName() + p.getEmail()).toLowerCase().contains(f))
+                dlm.addElement(p);
+        }
     }
 
     public void addListener(IPersonListener ipl)
@@ -53,6 +67,8 @@ public class EmployeesPanel extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         lstEmployees = new javax.swing.JList();
         btnShowCalendar = new javax.swing.JButton();
+        txtFilter = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
 
         lstEmployees.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -76,21 +92,45 @@ public class EmployeesPanel extends javax.swing.JPanel {
             }
         });
 
+        txtFilter.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtFilterKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtFilterKeyTyped(evt);
+            }
+        });
+
+        jLabel1.setText("Filter:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(btnShowCalendar)
-                .addContainerGap())
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addGap(10, 10, 10)
+                .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(208, Short.MAX_VALUE))
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnShowCalendar)
+                .addContainerGap(301, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnShowCalendar))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnShowCalendar, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -103,11 +143,21 @@ public class EmployeesPanel extends javax.swing.JPanel {
             ipl.personAction((Person)dlm.getElementAt(lstEmployees.getSelectedIndex()));
     }//GEN-LAST:event_btnShowCalendarActionPerformed
 
+    private void txtFilterKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFilterKeyReleased
+        
+    }//GEN-LAST:event_txtFilterKeyReleased
+
+    private void txtFilterKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFilterKeyTyped
+        ListEmployees();
+    }//GEN-LAST:event_txtFilterKeyTyped
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnShowCalendar;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JList lstEmployees;
+    private javax.swing.JTextField txtFilter;
     // End of variables declaration//GEN-END:variables
 
     public static void main(String args[])

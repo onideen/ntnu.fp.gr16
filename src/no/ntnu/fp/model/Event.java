@@ -5,14 +5,13 @@ import java.beans.PropertyChangeSupport;
 import java.sql.Time;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Event {
 
-	int eid;
+	int eid = -1;
 	String roomName;
 	Date date;
 	Time startTime;
@@ -39,6 +38,9 @@ public class Event {
 	public final static String PROPERTY_RESPONSIBLE = "responsible";
 	public final static String PROPERTY_ATTENDEE = "attendee";
 
+	public Event() {
+	}
+	
 	public Event(String desc, Type type, String owner, Date date, Time start, Time end, String room){
 		this.description=desc;
 		this.type=type;
@@ -115,24 +117,19 @@ public class Event {
 		propChangeSupp.firePropertyChange(event);
 	}
 	
-	public Calendar getDate() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return cal;
+	public Date getDate() {
+		return date;
 	}
 	
-	public void setDate(Calendar cal) {
-        Date date = (Date) cal.getTime();
+	public void setDate(Date date) {
 		Date old = this.date;
 		this.date = date;
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_DATE, old, date);
 		propChangeSupp.firePropertyChange(event);
 	}
 	
-	public Calendar getStartTime() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(startTime);
-		return cal;
+	public Time getStartTime() {
+		return startTime;
 	}
 	
 	public void setStartTime(Time startTime) {
@@ -142,10 +139,8 @@ public class Event {
 		propChangeSupp.firePropertyChange(event);
 	}
 	
-	public Calendar getEndTime() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(endTime);
-		return cal;
+	public Time getEndTime() {
+		return endTime;
 	}
 	
 	public void setEndTime(Time endTime) {

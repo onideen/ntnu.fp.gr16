@@ -1,30 +1,18 @@
 package no.ntnu.fp.model;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Time;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import javax.swing.JOptionPane;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import no.ntnu.fp.net.co.ConnectionImpl;
-import nu.xom.Builder;
-import nu.xom.Document;
-import nu.xom.Element;
-import nu.xom.Elements;
-import nu.xom.ParsingException;
 
 public class Communication {
+
+        public static String LoggedInUserEmail = "";
 
 	public static void main(String[] args) throws SQLException,
 			InstantiationException, IllegalAccessException,
@@ -33,7 +21,7 @@ public class Communication {
 		Date d = createDate(2011, 3, 15);
 		Time t1 = new Time(14, 00, 00);
 		Time t2 = new Time(16, 00, 00);
-		Event e = new Event("Ultraviktig m�te.", Event.Type.Appointment,
+		Event e = new Event("Ultraviktig møte.", Event.Type.Appointment,
 				"torkristianveld@hotmail.com", d, t1, t2, "Grupperom3");
 
 		e.addAttendee("bolle@bool.com");
@@ -76,11 +64,22 @@ public class Communication {
 			throws SQLException {
 		ServerResponse sr = sendData("login", user, password);
 		if (sr.isSuccess()) {
+                        LoggedInUserEmail = user;
 			return (Boolean) sr.getParameters()[0];
 		}
 
 		return false;
 	}
+        
+        public static boolean isLoggedIn()
+        {
+            return !LoggedInUserEmail.equals("");
+        }
+
+        public static void logout()
+        {
+            LoggedInUserEmail="";
+        }
 
 	private static Date createDate(int y, int m, int d) {
 		Calendar c = new GregorianCalendar(y, m - 1, d);
@@ -103,10 +102,10 @@ public class Communication {
 					.createObjectFromElement(sr.returnData.getChildElements()
 							.get(0));
 		} catch (Exception e) {
-			e.printStackTrace();
+                    e.printStackTrace();
 		}
 
-		return null;
+		return new ArrayList<Person>();
 	}
 
 	public static List<Message> getMessages(String email) {
@@ -115,7 +114,7 @@ public class Communication {
 			return (List<Message>) sr.getParameters()[0];
 		}
 
-		return null;
+		return new ArrayList<Message>();
 	}
 
 	public static Message getMessage(int mid) {

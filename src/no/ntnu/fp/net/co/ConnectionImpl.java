@@ -86,8 +86,20 @@ public class ConnectionImpl extends AbstractConnection {
         }
         
         state = State.CLOSED.SYN_SENT;
-
-        KtnDatagram synAck = receivePacket(true);
+        KtnDatagram synAck = null;
+        for(int i = 0; i < 3; i++) {
+        	synAck = receivePacket(true);
+        	if(synAck != null)
+        		break;
+        	
+        	try{
+        		wait(500);
+        	}
+        	catch(Throwable t){
+        		System.out.println("Conn SYNACK wait fail.");
+        		//t.printStackTrace();
+        	}
+        }
         if(synAck == null || synAck.getFlag() == Flag.FIN)
         {
             state = State.CLOSED;
@@ -168,6 +180,7 @@ public class ConnectionImpl extends AbstractConnection {
 	        }
 	        catch (IOException e)
 	        {
+                    System.out.println("Bæsil!");
 	        	e.printStackTrace();
 	        }
     	}

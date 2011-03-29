@@ -3,7 +3,6 @@ package no.ntnu.fp.model;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.ConnectException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,8 +38,10 @@ public class CalendarService implements ConnectionListener,
                     Object o = null;
 
                     try {
-                        o=method.invoke(this, sr.getParameters());
+                        o = method.invoke(this, sr.getParameters());
                     } catch (Exception e) {
+                        System.out.println(sr.getFunction() + ", " + sr.getParameters().length);
+                        System.out.println(sr.getXml());
                         e.printStackTrace();
                     }
 
@@ -54,6 +55,8 @@ public class CalendarService implements ConnectionListener,
                     e.printStackTrace();
                     System.out.println(sr.getFunction());
                 }
+
+                break;
             }
         }
 
@@ -64,16 +67,18 @@ public class CalendarService implements ConnectionListener,
     }
 
     private static Connection getConnection() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-            String userName = "erlendd_felles";
-            String password = "fpfpfp";
-            String url = "jdbc:mysql://mydb11.surftown.no/erlendd_qamerat";
-            Connection conn = DriverManager.getConnection(url, userName,
-                    password);
-            return conn;
-        } catch (Exception e) {
-            // TODO: handle exception
+        for(int i = 0; i<5; i++){
+            try {
+                Class.forName("com.mysql.jdbc.Driver").newInstance();
+                String userName = "erlendd_felles";
+                String password = "fpfpfp";
+                String url = "jdbc:mysql://mydb11.surftown.no/erlendd_qamerat";
+                Connection conn = DriverManager.getConnection(url, userName,
+                        password);
+                return conn;
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
         }
 
         return null;
@@ -98,12 +103,7 @@ public class CalendarService implements ConnectionListener,
 
     public void executeUpdate(String s) {
         try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-            String userName = "erlendd_felles";
-            String password = "fpfpfp";
-            String url = "jdbc:mysql://mydb11.surftown.no/erlendd_qamerat";
-            Connection conn = DriverManager.getConnection(url, userName,
-                    password);
+            Connection conn = getConnection();
 
             Statement q = conn.createStatement();
             q.executeUpdate(s);
@@ -114,6 +114,7 @@ public class CalendarService implements ConnectionListener,
             e.printStackTrace();
         }
     }
+
     private ReceiveConnectionWorker receiver;
     Set<no.ntnu.fp.net.co.Connection> connections = Collections.synchronizedSet(new HashSet<no.ntnu.fp.net.co.Connection>());
 
@@ -222,9 +223,9 @@ public class CalendarService implements ConnectionListener,
                     + "beskrivelse = ?, type = ?, ansvarlig = ?, reservertrom = ? WHERE id = "
                     + e.getEid() + ";");
 
-            p.setDate(1, (Date) e.getDate().getTime());
-            p.setTime(2, (Time) e.getStartTime().getTime());
-            p.setTime(3, (Time) e.getEndTime().getTime());
+            p.setDate(1, e.getDate());
+            p.setTime(2, e.getStartTime());
+            p.setTime(3, e.getEndTime());
             p.setString(4, e.getDescription());
             p.setString(5, e.getType().toString());
             p.setString(6, e.getResponsible());
@@ -259,9 +260,9 @@ public class CalendarService implements ConnectionListener,
             PreparedStatement p = c.prepareStatement("INSERT INTO Hendelse(dato, starttid, sluttid, beskrivelse, type, ansvarlig, reservertrom) "
                     + "VALUES(?, ?, ?, ?, ?, ?, ?);");
 
-            p.setDate(1, (Date) e.getDate().getTime());
-            p.setTime(2, (Time) e.getStartTime().getTime());
-            p.setTime(3, (Time) e.getEndTime().getTime());
+            p.setDate(1, e.getDate());
+            p.setTime(2, e.getStartTime());
+            p.setTime(3, e.getEndTime());
             p.setString(4, e.getDescription());
             p.setString(5, e.getType().toString());
             p.setString(6, e.getResponsible());
@@ -271,9 +272,9 @@ public class CalendarService implements ConnectionListener,
 
             p = c.prepareStatement("SELECT id FROM Hendelse WHERE dato = ? AND starttid = ? AND sluttid = ? AND ansvarlig = ? AND beskrivelse = ?;");
 
-            p.setDate(1, (Date) e.getDate().getTime());
-            p.setTime(2, (Time) e.getStartTime().getTime());
-            p.setTime(3, (Time) e.getEndTime().getTime());
+            p.setDate(1, e.getDate());
+            p.setTime(2, e.getStartTime());
+            p.setTime(3, e.getEndTime());
             p.setString(4, e.getResponsible());
             p.setString(5, e.getDescription());
 
@@ -461,25 +462,29 @@ public class CalendarService implements ConnectionListener,
     }
 
     public List<Event> getEvents(String email) throws SQLException {
-        ArrayList<Event> events = new ArrayList<Event>();
-        Connection c = getConnection();
-        Statement s = c.createStatement();
-        ResultSet rs = s.executeQuery("SELECT id FROM Hendelse WHERE `ansvarlig` = '"
-                + email + "';");
+        try {
+            ArrayList<Event> events = new ArrayList<Event>();
+            Connection c = getConnection();
+            Statement s = c.createStatement();
+            ResultSet rs = s.executeQuery("SELECT id FROM Hendelse WHERE `ansvarlig` = '"
+                    + email + "';");
 
-        while (rs.next()) {
-            Event e = getEvent(rs.getInt("id"));
-            events.add(e);
+            while (rs.next()) {
+                Event e = getEvent(rs.getInt("id"));
+                events.add(e);
+            }
+
+            rs = s.executeQuery("SELECT Hid FROM Deltaker WHERE `e-mail` = '"
+                    + email + "';");
+            while (rs.next()) {
+                Event e = getEvent(rs.getInt("hid"));
+                events.add(e);
+            }
+
+            return events;
+        } catch (Exception e) {
+            return null;
         }
-
-        rs = s.executeQuery("SELECT Hid FROM Deltaker WHERE `e-mail` = '"
-                + email + "';");
-        while (rs.next()) {
-            Event e = getEvent(rs.getInt("hid"));
-            events.add(e);
-        }
-
-        return events;
     }
 
     public Event getEvent(int eventId) {
@@ -523,7 +528,7 @@ public class CalendarService implements ConnectionListener,
         ResultSet rs = s.executeQuery("SELECT * from Rom;");
 
         while (rs.next()) {
-            Room room = new Room(rs.getString("navn"), rs.getInt("størrelse"));
+            Room room = new Room(rs.getString("navn"), rs.getInt("storrelse"));
             hashRooms.put(rs.getString("navn"), room);
         }
 
@@ -535,8 +540,8 @@ public class CalendarService implements ConnectionListener,
 
         while (rs.next()) {
             Event e = getEvent(rs.getInt("id"));
-            long a = e.getStartTime().getTimeInMillis();
-            long b = e.getEndTime().getTimeInMillis();
+            long a = e.getStartTime().getTime();
+            long b = e.getEndTime().getTime();
             long ss = r.getStartTime().getTime();
             long ee = r.getEndTime().getTime();
             if (((a >= ss && a < ee) || (b > ss && b < ee))
@@ -571,16 +576,20 @@ public class CalendarService implements ConnectionListener,
         return null;
     }
 
-    public boolean login(String user, String password) throws SQLException {
+    public boolean login(String email, String password) throws SQLException {
+
+        System.out.println("Logging in as :" + email + ", " + password);
+
         Connection c = getConnection();
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * FROM Person WHERE `e-mail` = '"
-                + user + "' AND `passord` = '" + password + "';");
+                + email + "' AND `passord` = '" + password + "';");
 
         if (rs.next()) {
             rs.close();
             return true;
         }
+        
         rs.close();
         return false;
     }
