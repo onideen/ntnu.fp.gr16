@@ -56,6 +56,7 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener {
         
         private LogInPanel loginPanel;
         private CalendarViewPanel calendarPanel;
+        private EmployeesPanel employeesPanel;
 
         private static MainPanel mainForm = null;
 
@@ -88,12 +89,8 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener {
 	public MainPanel() {
 		super();
 
-                calendarPanel = new CalendarViewPanel();
-
-                loginPanel = new LogInPanel();
-                loginPanel.setLoginListener(this);
-
 		initGUI();
+
                 changeMain(LOGIN);
 	}
 	
@@ -218,11 +215,13 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener {
                     panel=LOGIN;
 
                 menu.setVisible(panel!=LOGIN);
-
+                
 		switch (panel){
 		case CALENDAR:
+                        if(calendarPanel == null)
+                            calendarPanel = new CalendarViewPanel();
 			maincontainer.add(calendarPanel, BorderLayout.CENTER);
-                        
+                        calendarPanel.getCalendarPanel().setEvents(Communication.getEvents(Communication.LoggedInUserEmail));
 			break;
 		case AGREEMENT:
 			maincontainer.add(new CreateMeetingPanel(),BorderLayout.CENTER);
@@ -234,11 +233,19 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener {
 			//TODO legge til pålogget bruker over
 			break;
 		case EMPLOYEES:
-			maincontainer.add(new EmployeesPanel(),BorderLayout.CENTER);
+                        if(employeesPanel == null)
+                            employeesPanel = new EmployeesPanel();
+			maincontainer.add(employeesPanel,BorderLayout.CENTER);
                         break;
-                    case LOGIN:
-                        maincontainer.add(loginPanel, BorderLayout.CENTER);
-                        break;
+                case LOGIN:
+
+                    if(loginPanel == null){
+                        loginPanel = new LogInPanel();
+                        loginPanel.setLoginListener(this);
+                    }
+
+                    maincontainer.add(loginPanel, BorderLayout.CENTER);
+                    break;
 		}
 		updateUI();
 	}

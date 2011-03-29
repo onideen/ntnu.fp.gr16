@@ -413,6 +413,10 @@ public class CalendarService implements ConnectionListener,
 
         try {
             Connection c = getConnection();
+
+            if(c==null)
+                return null;
+
             Statement s = c.createStatement();
             ResultSet rs = s.executeQuery("SELECT * FROM Person WHERE `e-mail` = '"
                     + email + "';");
