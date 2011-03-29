@@ -9,6 +9,8 @@ import java.util.List;
 
 public class CreateMeetingModel {
 
+	private ServiceWrapper sw;
+	
 	private boolean newEvent = false;
 	private boolean timeIsSet = true;
 	private Event event;
@@ -83,10 +85,15 @@ public class CreateMeetingModel {
 				calendar = new Date(new java.util.Date().getTime());
 				startTime = new Time(10, 0, 0);
 				endTime = new Time(11, 0, 0);
+				event.setResponsible(Communication.LoggedInUserEmail);
 			}
 		}
 		else {
-			
+			calendar = new Date(event.getDate().getTimeInMillis());
+			startTime = new Time(event.getStartTime().getTimeInMillis());
+			endTime = new Time(event.getEndTime().getTimeInMillis());
+			room = event.getRoomObject();
+			description = event.getDescription();
 		}
 	}
 	
@@ -134,5 +141,18 @@ public class CreateMeetingModel {
 
 	public void addAttendee(Person person) {
 		attendees.add(person);
+	}
+
+	public boolean isValidInput() {
+		return true;
+	}
+
+	public void save() {
+		if (newEvent){
+			Communication.saveEvent(event);
+		}
+		else {
+			Communication.updateEvent(event);
+		}
 	}
 }

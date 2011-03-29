@@ -24,6 +24,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
@@ -38,16 +39,8 @@ import com.toedter.calendar.JDateChooser;
 import javax.swing.UIManager;
 
 
-public class CreateMeetingPanel extends javax.swing.JPanel {
+public class CreateMeetingPanel extends BaseCalendarView {
 
-	{
-		//Set Look & Feel
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
 	private CreateMeetingModel model;
 	private JPanel meeting;
 	private JButton save_button;
@@ -288,12 +281,18 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 		model.setStartTime((java.sql.Time)startTime.getSelectedItem());
 		model.setEndTime((java.sql.Time)end_time.getSelectedItem());
 		model.setRoom(((Room)roomChooser.getSelectedItem()));
-			
+		model.setDescription(description.getText());	
 		model.cleanAttendees();
-		for ( Object person: (List<Object>)selected_users_listModel.elements()) {
+		for ( Object person: selected_users_listModel.toArray()) {
 			model.addAttendee((Person)person);
 		}
+		
+		if (model.isValidInput()){
+			model.save();
+		}
+		else {
 			
+		}
 	}
 
 	private JLabel getRoom_label() {
@@ -552,6 +551,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
+			roomChooserModel.removeAllElements();
 			roomChooser.setEnabled(false);
 		}
 	}
