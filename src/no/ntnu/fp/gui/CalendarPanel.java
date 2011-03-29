@@ -130,6 +130,13 @@ public class CalendarPanel extends JPanel implements ComponentListener
         initGUI();
     }
 
+    public void setEvents(List<Event> events)
+    {
+        this.events = events;
+        repaint();
+        table.repaint();
+    }
+
     private void initGUI()
     {
         events = container.getService().getEvents();
