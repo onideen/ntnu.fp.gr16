@@ -1,5 +1,6 @@
 package no.ntnu.fp.gui;
 import java.awt.BorderLayout;
+import java.awt.Component;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -54,20 +55,38 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener {
 	private JButton employee_button;
         private LogInPanel loginPanel;
 
+        private static MainPanel mainForm = null;
+
 	/**
 	* Auto-generated main method to display this 
 	* JPanel inside a new JFrame.
 	*/
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
-		frame.getContentPane().add(new MainPanel());
+                MainPanel mp = new MainPanel();
+		frame.getContentPane().add(mp);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.setSize(1000, 700);
 		frame.setVisible(true);
+
+                mainForm = mp;
 	}
+
+        public static void refreshGUI()
+        {
+            if(mainForm!=null)
+                mainForm.updateUI();
+        }
+
+        public static MainPanel getMainForm()
+        {
+            return mainForm;
+        }
 	
 	public MainPanel() {
 		super();
+
+                
 
                 loginPanel = new LogInPanel();
                 loginPanel.setLoginListener(this);
@@ -200,7 +219,7 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener {
 
 		switch (panel){
 		case CALENDAR:
-			maincontainer.add(new CalendarPanel(), BorderLayout.CENTER);
+			maincontainer.add(new CalendarViewPanel(), BorderLayout.CENTER);
 			break;
 		case AGREEMENT:
 			maincontainer.add(new CreateMeetingPanel(),BorderLayout.CENTER);
