@@ -101,7 +101,7 @@ public class CreateMeetingModel {
 		
 		List<Room> rooms = Communication.getFreeRooms(new Reservation(calendar, startTime, endTime));
 
-		if (!newEvent && startTime == event.getStartTime() ){
+		if (!newEvent && startTime == event.getStartTime().getTime() ){
 			rooms.add(event.getRoomObject());
 		}
 		

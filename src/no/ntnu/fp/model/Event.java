@@ -5,7 +5,9 @@ import java.beans.PropertyChangeSupport;
 import java.sql.Time;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import no.ntnu.fp.model.calendar.Utils;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -117,36 +119,36 @@ public class Event {
 		propChangeSupp.firePropertyChange(event);
 	}
 	
-	public Date getDate() {
-		return date;
+	public Calendar getDate() {
+		return Utils.getCalendar(date);
 	}
 	
-	public void setDate(Date date) {
+	public void setDate(Calendar date) {
 		Date old = this.date;
-		this.date = date;
-		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_DATE, old, date);
+		this.date = Utils.getSqlDate(date);
+		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_DATE, old, this.date);
 		propChangeSupp.firePropertyChange(event);
 	}
 	
-	public Time getStartTime() {
-		return startTime;
+	public Calendar getStartTime() {
+		return Utils.getCalendar(startTime);
 	}
 	
-	public void setStartTime(Time startTime) {
+	public void setStartTime(Calendar startTime) {
 		Time old = this.startTime;
-		this.startTime = startTime;
-		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_STARTTIME, old, startTime);
+		this.startTime = Utils.getSqlTime(startTime);
+		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_STARTTIME, old, this.startTime);
 		propChangeSupp.firePropertyChange(event);
 	}
 	
-	public Time getEndTime() {
-		return endTime;
+	public Calendar getEndTime() {
+		return Utils.getCalendar(endTime);
 	}
 	
-	public void setEndTime(Time endTime) {
+	public void setEndTime(Calendar endTime) {
 		Time old = this.endTime;
-		this.endTime = endTime;
-		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_ENDTIME, old, endTime);
+		this.endTime = Utils.getSqlTime(endTime);
+		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_ENDTIME, old, this.endTime);
 		propChangeSupp.firePropertyChange(event);
 	}
 	
