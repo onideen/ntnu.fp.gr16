@@ -2,6 +2,7 @@ package no.ntnu.fp.model;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -17,6 +18,7 @@ public class CreateMeetingModel {
 	private Time endTime;
 	private String description;
 	private Room room;
+	private List<Person> attendees;
 	
 	public CreateMeetingModel(Date date, java.sql.Time startTime, java.sql.Time endTime){
 		this(new Event());
@@ -108,5 +110,29 @@ public class CreateMeetingModel {
 		return rooms;
 	}
 
-	
+	public List<Person> getAttendees() {
+		return attendees;
+	}
+
+	public List<Person> getAllUsers() {
+		if (newEvent) {
+			return Communication.getEmployees();
+		}
+		else {
+			List<Person> attendees = Communication.getAttendees(event.getEid()); 
+			List<Person> employees = Communication.getEmployees();
+			for (Person person : attendees) {
+				employees.remove(person);
+			}
+			return employees;
+		}
+	}
+
+	public void cleanAttendees() {
+		attendees = new ArrayList<Person>();
+	}
+
+	public void addAttendee(Person person) {
+		attendees.add(person);
+	}
 }

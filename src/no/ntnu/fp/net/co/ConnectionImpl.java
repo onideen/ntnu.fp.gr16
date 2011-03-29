@@ -96,7 +96,7 @@ public class ConnectionImpl extends AbstractConnection {
         		wait(500);
         	}
         	catch(Throwable t){
-        		System.out.println("Conn SYNACK wait fail.");
+        		System.out.println("Conn SYN_ACK wait fail.");
         		//t.printStackTrace();
         	}
         }
