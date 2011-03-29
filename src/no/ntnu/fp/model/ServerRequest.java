@@ -1,20 +1,18 @@
 package no.ntnu.fp.model;
 
 import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
-import java.net.InetAddress;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.List;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
+import javax.swing.WindowConstants;
+import no.ntnu.fp.gui.MainPanel;
+import no.ntnu.fp.gui.WorkingForm;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import no.ntnu.fp.net.co.ConnectionImpl;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
-import nu.xom.Elements;
-import nu.xom.ParsingException;
 
 public class ServerRequest {
 
@@ -172,30 +170,52 @@ public class ServerRequest {
 	 */
 	public ServerResponse sendRequest() {
 
-                //CalendarService c = new CalendarService();
-
-		/*try {
-			return c.receiveData(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}*/
+                setWorkingFormVisible(true);
 
                 try {
-
 			ServerConnection.connect();
                         String ans = ServerConnection.proxyRequest(requestData.toXML());
 
                         Document doc = new Builder().build(new StringReader(ans));
 
                         ServerResponse sr = new ServerResponse(doc.getRootElement());
+
+                        setWorkingFormVisible(false);
+
                         return sr;
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
+                setWorkingFormVisible(false);
+
 		return null;
 	}
+
+        static WorkingForm workingForm = null;
+        private static void setWorkingFormVisible(boolean value)
+        {
+            if(workingForm == null)
+                workingForm = new WorkingForm();
+
+            int x = MainPanel.getMainForm().getLocation().x;
+            int y = MainPanel.getMainForm().getLocation().y;
+
+            x += MainPanel.getMainForm().getWidth() / 2;
+            y += MainPanel.getMainForm().getHeight() / 2;
+
+            x -= workingForm.getWidth() / 2;
+            y -= workingForm.getHeight() /2;
+
+            workingForm.setLocation(x, y);
+
+            workingForm.setVisible(value);
+            workingForm.validate();
+            workingForm.doLayout();
+            workingForm.invalidate();
+            workingForm.repaint();
+        }
 
 	/**
 	 * 
