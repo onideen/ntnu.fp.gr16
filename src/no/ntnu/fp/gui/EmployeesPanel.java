@@ -144,7 +144,7 @@ public class EmployeesPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_btnShowCalendarActionPerformed
 
     private void txtFilterKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFilterKeyReleased
-        
+        ListEmployees();
     }//GEN-LAST:event_txtFilterKeyReleased
 
     private void txtFilterKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFilterKeyTyped

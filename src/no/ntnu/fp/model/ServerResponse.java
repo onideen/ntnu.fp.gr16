@@ -32,6 +32,16 @@ public class ServerResponse {
             }
 	}
 
+        private ServerResponse(){}
+
+        public static ServerResponse createFail(){
+            ServerResponse sr = new ServerResponse();
+            sr.fullXml=null;
+            sr.success=false;
+            sr.returnData = null;
+            return sr;
+        }
+
         public String getXmlForSending()
         {
             return fullXml.toXML();

@@ -21,7 +21,6 @@ import javax.swing.JPanel;
  */
 public class CalendarViewPanel extends BaseCalendarView implements ActionListener
 {
-
     public static void main(String[] args)
     {
         JFrame frame = new JFrame();
@@ -46,6 +45,10 @@ public class CalendarViewPanel extends BaseCalendarView implements ActionListene
         setupGUI();
     }
 
+    public CalendarPanel getCalendarPanel(){
+        return calendarPanel;
+    }
+
     private void setupGUI()
     {
         calendarPanel = new CalendarPanel(this);
@@ -59,7 +62,7 @@ public class CalendarViewPanel extends BaseCalendarView implements ActionListene
         s.gridy = 2;
         s.anchor = GridBagConstraints.CENTER;
         s.fill = GridBagConstraints.NONE;
-        yearLabel = new JLabel("2011");
+        yearLabel = new JLabel("" + calendarPanel.getWeek().get(Calendar.YEAR));
         add(yearLabel, s);
 
         paginationPanel = new JPanel();
@@ -89,14 +92,28 @@ public class CalendarViewPanel extends BaseCalendarView implements ActionListene
             Calendar cal = calendarPanel.getWeek();
             cal.add(Calendar.WEEK_OF_YEAR, 1);
             calendarPanel.setWeek(cal);
-            weekLabel.setText("" + cal.get(Calendar.WEEK_OF_YEAR));
+            int week = cal.get(Calendar.WEEK_OF_YEAR);
+            String wk = "" + week;
+            if (wk.length() == 1)
+            {
+                wk = "0" + wk;
+            }
+            weekLabel.setText("" + wk);
+            yearLabel.setText("" + cal.get(Calendar.YEAR));
         }
         else if (src == prevWeekButton)
         {
             Calendar cal = calendarPanel.getWeek();
             cal.add(Calendar.WEEK_OF_YEAR, -1);
             calendarPanel.setWeek(cal);
-            weekLabel.setText("" + cal.get(Calendar.WEEK_OF_YEAR));
+            int week = cal.get(Calendar.WEEK_OF_YEAR);
+            String wk = "" + week;
+            if (wk.length() == 1)
+            {
+                wk = "0" + wk;
+            }
+            weekLabel.setText("" + wk);
+            yearLabel.setText("" + cal.get(Calendar.YEAR));
         }
     }
 }
