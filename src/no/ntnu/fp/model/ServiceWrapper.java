@@ -25,10 +25,10 @@ public class ServiceWrapper {
         cal.set(Calendar.MINUTE, 0);
         Calendar cal2 = Calendar.getInstance();
         cal2.setTime(cal.getTime());
-        cal2.set(Calendar.HOUR, cal.get(Calendar.HOUR) + 2);
+        cal2.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) + 2);
         System.out.println(cal.getTime());
         System.out.println(cal2.getTime());
-        Event event = new Event("Test m;te",
+        Event event = new Event("Test møte, holdes en gang i året.",
                 Event.Type.Appointment,
                 "Per",
                 Utils.getSqlDate(cal),

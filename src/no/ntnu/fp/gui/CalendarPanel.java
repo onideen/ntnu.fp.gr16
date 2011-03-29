@@ -2,41 +2,34 @@ package no.ntnu.fp.gui;
 
 import com.u2d.calendar.CellResChoice;
 import com.u2d.calendar.DateTimeBounds;
-import com.u2d.model.EObject;
 import com.u2d.type.atom.TimeEO;
-import com.u2d.type.atom.TimeInterval;
 import com.u2d.type.atom.TimeSpan;
-import java.awt.BorderLayout;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.Rectangle;
-import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultCellEditor;
 import javax.swing.WindowConstants;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -44,11 +37,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.text.TableView.TableRow;
+import no.ntnu.fp.gui.listeners.CalendarPanelActionListener;
 import no.ntnu.fp.model.Event;
 import no.ntnu.fp.model.calendar.Utils;
-import sun.awt.X11GraphicsConfig;
 
 /**
  * This code was edited or generated using CloudGarden's Jigloo
@@ -62,9 +53,13 @@ import sun.awt.X11GraphicsConfig;
  * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
  * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
  */
-public class CalendarPanel extends BaseCalendarView implements ComponentListener {
+public class CalendarPanel extends BaseCalendarView implements ComponentListener
+{
 
-    private static final String[] WEEKS = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+    private static final String[] WEEKS =
+    {
+        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+    };
     private static DateFormat COLHEADER_FORMATTER = new SimpleDateFormat("EEE, MMM dd");
     private DateTimeBounds bounds;
     private final TimeSpan daySpan = new TimeSpan();
@@ -75,27 +70,29 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
     private static int FIRST_COLUMN_WIDTH = 65;
     private static int WEEKEND_COLUMN_WIDTH = 85;
     private static int ROW_HEIGHT = 65;
+    private final List<CalendarPanelActionListener> actionListeners = Collections.synchronizedList(new LinkedList<CalendarPanelActionListener>());
 
     /**
      * Auto-generated main method to display this
      * JPanel inside a new JFrame.
      */
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         final JFrame frame = new JFrame("Calendar panel");
         final CalendarPanel panel = new CalendarPanel();
         /*frame.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e)
-            {
-                //panel.setSize(e.getComponent().getSize());
-                //panel.getTable().setSize(panel.getSize());
-                //panel.getTable().setBounds(panel.getBounds());
-                //panel.getTable().revalidate();
-                System.out.println(e.getComponent().getSize());
-                System.out.println(e.getComponent());
-                System.out.println(frame.getContentPane());
-                System.out.println(panel.getTable());
-            }
+        @Override
+        public void componentResized(ComponentEvent e)
+        {
+        //panel.setSize(e.getComponent().getSize());
+        //panel.getTable().setSize(panel.getSize());
+        //panel.getTable().setBounds(panel.getBounds());
+        //panel.getTable().revalidate();
+        System.out.println(e.getComponent().getSize());
+        System.out.println(e.getComponent());
+        System.out.println(frame.getContentPane());
+        System.out.println(panel.getTable());
+        }
         });*/
         frame.setContentPane(panel);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -106,16 +103,62 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
         cal.set(Calendar.MONTH, 10);
         cal.set(Calendar.DATE, 17);
         cal.set(Calendar.YEAR, 1012);
-        panel.setWeek(cal);
+        //panel.setWeek(cal);
+
+        panel.addCalendarPanelActionListener(new CalendarPanelActionListener() {
+
+            public void eventClicked(CalendarPanel panel, Event event)
+            {
+                System.out.println("Event clicked.");
+            }
+
+            public void timeClicked(CalendarPanel panel, TimeSpan timeSpan)
+            {
+                System.out.println("Time clicked.");
+            }
+        });
     }
     private JTable table;
     private JScrollPane scrollPane;
 
-    public CalendarPanel() {
+    public final void addCalendarPanelActionListener(CalendarPanelActionListener listener)
+    {
+        if (listener != null && !actionListeners.contains(listener))
+        {
+            actionListeners.add(listener);
+        }
+    }
+
+    public final void removeCalendarPanelActionListener(CalendarPanelActionListener listener)
+    {
+        if (listener != null && actionListeners.contains(listener))
+        {
+            actionListeners.remove(listener);
+        }
+    }
+
+    private void onEventClicked(Event event)
+    {
+        for (int i = 0, l = actionListeners.size(); i < l; i++)
+        {
+            actionListeners.get(i).eventClicked(this, event);
+        }
+    }
+
+    private void onTimeClicked(TimeSpan timeSpan)
+    {
+        for (int i = 0, l = actionListeners.size(); i < l; i++)
+        {
+            actionListeners.get(i).timeClicked(this, timeSpan);
+        }
+    }
+
+    public CalendarPanel()
+    {
         super();
         bounds = new DateTimeBounds();
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
@@ -124,7 +167,8 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
         initGUI();
     }
 
-    private void initGUI() {
+    private void initGUI()
+    {
         events = getService().getEvents();
         adjustSpan();
         buildTable();
@@ -135,12 +179,15 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
         //setSize(new Dimension(735, 400));
     }
 
-    private void addEventListeners() {
+    private void addEventListeners()
+    {
         addComponentListener(this);
     }
 
-    public void setWeek(Calendar calendar) {
-        bounds.weekStartTime(calendar.getTime());
+    public void setWeek(Calendar calendar)
+    {
+        bounds.position(calendar.getTime());
+        //bounds.weekStartTime(calendar.getTime());
         adjustSpan();
         System.out.print("Cal: ");
         System.out.println(calendar.getTime());
@@ -150,29 +197,37 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
 
         System.out.print("weekSpan: ");
         System.out.println(weekSpan);
-        SwingUtilities.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable()
+        {
 
-            public void run() {
-                for(int i = 1; i < model.getColumnCount(); i++)
-                    table.getColumn(""+i).setHeaderValue(model.getColumnName(i));
+            public void run()
+            {
+                for (int i = 1; i < model.getColumnCount(); i++)
+                {
+                    table.getColumn("" + i).setHeaderValue(model.getColumnName(i));
+                }
 
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(bounds.position().dateValue());
                 int column = cal.get(Calendar.DAY_OF_WEEK);
-                if(table.getSelectedColumn() != column)
+                if (table.getSelectedColumn() != column)
+                {
                     table.setColumnSelectionInterval(column, column);
+                }
 
                 repaint();
+                table.repaint();
             }
-
         });
     }
 
-    public Calendar getWeek() {
+    public Calendar getWeek()
+    {
         return Utils.getCalendar(bounds.weekStartTime().dateValue());
     }
 
-    private void adjustSpan() {
+    private void adjustSpan()
+    {
         Calendar startOfWeek = Calendar.getInstance();
         Date time = bounds.position().dateValue();
         startOfWeek.setTime(time);
@@ -181,7 +236,8 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
 
         startOfWeek.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 
-        if (startOfWeek.getTime().after(time)) {
+        if (startOfWeek.getTime().after(time))
+        {
             startOfWeek.set(Calendar.DAY_OF_WEEK, -7);
         }
 
@@ -200,7 +256,8 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
         daySpan.setValue(new TimeSpan(startHr.dateValue(), bounds.dayInterval()));
     }
 
-    private Calendar getDateTimeForCellCoordinates(int rowidx, int colidx) {
+    private Calendar getDateTimeForCellCoordinates(int rowidx, int colidx)
+    {
         Calendar cal = Calendar.getInstance();
         cal.setTime(daySpan.startDate());
         cal.add(Calendar.DATE, colidx - 1);
@@ -209,16 +266,23 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
         return cal;
     }
 
-    private Event getEventForTime(Calendar cal) {
-        for (Event e : events) {
+    private Event getEventForTime(Calendar cal)
+    {
+        for (Event e : events)
+        {
             if (e.getDate().get(Calendar.YEAR) == cal.get(Calendar.YEAR)
-                    && e.getDate().get(Calendar.DATE) == cal.get(Calendar.DATE)) {
-                boolean startsBefore = e.getStartTime().get(Calendar.HOUR) <= cal.get(Calendar.HOUR);
-                boolean endsAfter = e.getEndTime().get(Calendar.HOUR) > cal.get(Calendar.HOUR);
-                if (startsBefore && endsAfter) {
-                    if (e.getStartTime().get(Calendar.HOUR) == cal.get(Calendar.HOUR)) {
+                && e.getDate().get(Calendar.DATE) == cal.get(Calendar.DATE))
+            {
+                boolean startsBefore = e.getStartTime().get(Calendar.HOUR_OF_DAY) <= cal.get(Calendar.HOUR_OF_DAY);
+                boolean endsAfter = e.getEndTime().get(Calendar.HOUR_OF_DAY) > cal.get(Calendar.HOUR_OF_DAY);
+                if (startsBefore && endsAfter)
+                {
+                    if (e.getStartTime().get(Calendar.HOUR_OF_DAY) == cal.get(Calendar.HOUR_OF_DAY))
+                    {
                         e.setResponsible("true");
-                    } else {
+                    }
+                    else
+                    {
                         e.setResponsible("false");
                     }
                     return e;
@@ -228,7 +292,8 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
         return null;
     }
 
-    protected void buildTable() {
+    protected void buildTable()
+    {
         model = new WeekTableModel();
         table = new JTable();
         int twidth = 0;
@@ -238,10 +303,10 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
         //table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         table.setRowHeight(ROW_HEIGHT);
-        
+
 
         TableColumn column = new TableColumn(0, FIRST_COLUMN_WIDTH,
-                new RowHeaderCellRenderer(), null);
+                                             new RowHeaderCellRenderer(), null);
 
         column.setMinWidth(FIRST_COLUMN_WIDTH);
         column.setMaxWidth(FIRST_COLUMN_WIDTH);
@@ -251,9 +316,10 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
         table.addColumn(column);
 
         DefaultTableCellRenderer renderer = null;
-        for (int i = 1; i < model.getColumnCount(); i++) {
+        for (int i = 1; i < model.getColumnCount(); i++)
+        {
             int width = (i > 5)
-                    ? WEEKEND_COLUMN_WIDTH : COLUMN_WIDTH;
+                ? WEEKEND_COLUMN_WIDTH : COLUMN_WIDTH;
             renderer = new CalendarCellRenderer();
             column = new TableColumn(i, width, renderer, null);
             column.setMinWidth(width);
@@ -270,13 +336,71 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
         table.setSelectionBackground(Color.cyan);
         //table.setSize(new Dimension(twidth, 1560));
         //table.setMinimumSize(new Dimension(735, 1560));
+        table.addMouseListener(new MouseListener() {
+
+            public void mouseClicked(MouseEvent e)
+            {
+                int x = e.getX();
+                int y = e.getY();
+                int row = 0;
+                int col = 0;
+
+                boolean hit = false;
+                while(!hit) {
+                    Rectangle rect = table.getCellRect(row, col, true);
+                    if(rect.contains(x, y))
+                    {
+                        hit = true;
+                    }
+                    else
+                    {
+                        if(rect.getMaxX() < x)
+                        {
+                            col++;
+                        }
+                        if(rect.getMaxY() < y)
+                        {
+                            row++;
+                        }
+                        if(table.getColumnCount() == col)
+                            return;
+                        if(table.getRowCount() == row)
+                            return;
+                    }
+                }
+
+                System.out.println("Row: " + row + ", Col: " + col);
+            }
+
+            public void mousePressed(MouseEvent e)
+            {
+                //throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public void mouseReleased(MouseEvent e)
+            {
+                //throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public void mouseEntered(MouseEvent e)
+            {
+                //throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public void mouseExited(MouseEvent e)
+            {
+                //throw new UnsupportedOperationException("Not supported yet.");
+            }
+        });
     }
 
-    protected CellResChoice cellRes() {
+    protected CellResChoice cellRes()
+    {
         return CellResChoice.ONE_HOUR;
     }
 
-    public void componentResized(ComponentEvent ce) {
+    public void componentResized(ComponentEvent ce)
+    {
         //throw new UnsupportedOperationException("Not supported yet.");
         //table.setPreferredSize(table.getSize());
         System.out.println(table.getSize());
@@ -284,77 +408,93 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
         scrollPane.revalidate();
     }
 
-    public void componentMoved(ComponentEvent ce) {
+    public void componentMoved(ComponentEvent ce)
+    {
         //throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void componentShown(ComponentEvent ce) {
-        //throw new UnsupportedOperationException("Not supported yet.");
-        
-    }
-
-    public void componentHidden(ComponentEvent ce) {
+    public void componentShown(ComponentEvent ce)
+    {
         //throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private class WeekTableModel extends AbstractTableModel {
+    public void componentHidden(ComponentEvent ce)
+    {
+        //throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private class WeekTableModel extends AbstractTableModel
+    {
 
         private int numCellsInDay;
         private TimeEO[] times;
 
-        public WeekTableModel() {
+        public WeekTableModel()
+        {
             updateCellRes();
         }
 
-        public void updateCellRes() {
+        public void updateCellRes()
+        {
             numCellsInDay = daySpan.numIntervals(cellRes().timeInterval());
             times = new TimeEO[numCellsInDay];
 
             int i = 0;
             for (Iterator itr = daySpan.iterator(cellRes().timeInterval());
-                    itr.hasNext();) {
+                itr.hasNext();)
+            {
                 times[i++] = (TimeEO) itr.next();
             }
             fireTableStructureChanged();
         }
 
-        public int getRowCount() {
+        public int getRowCount()
+        {
             return numCellsInDay;
         }
 
-        public int getColumnCount() {
+        public int getColumnCount()
+        {
             return WEEKS.length + 1;
         }
 
-        public String getColumnName(int column) {
-            if (column == 0) {
+        public String getColumnName(int column)
+        {
+            if (column == 0)
+            {
                 return " ";
             }
             TimeSpan span = weekSpan.add(Calendar.DATE, column - 1);
             return COLHEADER_FORMATTER.format(span.startDate());
         }
 
-        public boolean isCellEditable(int nRow, int nCol) {
+        public boolean isCellEditable(int nRow, int nCol)
+        {
             return false;
         }
 
-        public Object getValueAt(int nRow, int nCol) {
-            if (nCol > 0) {
+        public Object getValueAt(int nRow, int nCol)
+        {
+            if (nCol > 0)
+            {
                 return null; //TODO: Make better!
             }
             return times[nRow].toString();
         }
 
-        public String toString() {
+        public String toString()
+        {
             return "Week View";
         }
     }
 
-    private class RowHeaderCellRenderer implements TableCellRenderer {
+    private class RowHeaderCellRenderer implements TableCellRenderer
+    {
 
         JLabel cell;
 
-        public RowHeaderCellRenderer() {
+        public RowHeaderCellRenderer()
+        {
             cell = new JLabel();
             cell.setOpaque(true);
             Color color = UIManager.getColor("TableHeader.background");
@@ -368,36 +508,59 @@ public class CalendarPanel extends BaseCalendarView implements ComponentListener
         }
 
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+                                                       boolean isSelected, boolean hasFocus, int row, int column)
+        {
             cell.setText(value.toString());
             return cell;
         }
     }
 
-    private class CalendarCellRenderer extends DefaultTableCellRenderer {
+    private class CalendarCellRenderer extends DefaultTableCellRenderer
+    {
 
-        public CalendarCellRenderer() {
+        JTextArea cell;
+
+        public CalendarCellRenderer()
+        {
+            //setLineWrap(true);
+            cell = new JTextArea();
+            cell.setOpaque(true);
+            Color color = table.getBackground();
+            cell.setBackground(color);
+
+            Font font = table.getFont();
+            cell.setFont(font);
+            cell.setBorder(BorderFactory.createEmptyBorder(0, 2, 2, 2));
         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                boolean hasFocus, int row, int column) {
+                                                       boolean hasFocus, int row, int column)
+        {
             Boolean start = false;
             Calendar cal = getDateTimeForCellCoordinates(row, column);
             Event event = getEventForTime(cal);
-            if (event != null) {
-                this.setBackground(Color.yellow);
+            if (event != null)
+            {
+                cell.setBackground(Color.yellow);
                 start = Boolean.parseBoolean(event.getResponsible());
-                if (start) {
-                    this.setText(event.getDescription());
-                } else {
-                    this.setText("");
+                if (start)
+                {
+                    cell.setText(event.getDescription());
                 }
-            } else {
-                this.setBackground(table.getBackground());
-                this.setText("");
+                else
+                {
+                    cell.setText("");
+                }
             }
-            return this;
+            else
+            {
+                cell.setBackground(table.getBackground());
+                cell.setText("");
+            }
+//            return this;
+            cell.setSize(new Dimension(table.getColumn("" + column).getWidth(), 10000));
+            return cell;
         }
     }
 }
