@@ -156,6 +156,8 @@ public class CreateMeetingModel {
 		for (Person person : attendees) {
 			event.addAttendee(person.getEmail());
 		}
+		if (event.getRoom() == null)
+			event.setRoom("");
 		
 		if (newEvent){
 			Communication.saveEvent(event);
