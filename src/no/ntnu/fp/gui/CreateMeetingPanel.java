@@ -15,6 +15,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Date;
 import java.sql.Time;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -42,11 +43,11 @@ import javax.swing.UIManager;
 public class CreateMeetingPanel extends BaseCalendarView {
 
 	private CreateMeetingModel model;
-	private JPanel meeting;
+	private JPanel meetingPanel;
 	private JButton save_button;
 	private JButton add_users;
 	private JPanel buttons_panel;
-	private JLabel new_agreement_label;
+	private JLabel newMeetingLabel;
 	private JLabel selected_users_label;
 	private JButton unselect;
 	private JButton room_button;
@@ -57,16 +58,16 @@ public class CreateMeetingPanel extends BaseCalendarView {
 	private JScrollPane selected_users_scroll;
 	private JList all_users_list;
 	private JLabel all_users_label;
-	private JPanel all_users;
+	private JPanel allUsersPanel;
 	private JComboBox roomChooser;
-	private JLabel room_label;
+	private JLabel roomLabel;
 	private JEditorPane description;
-	private JLabel description_label;
-	private JLabel end_time_label;
-	private JLabel start_time_label;
+	private JLabel descriptionLabel;
+	private JLabel endTimeLabel;
+	private JLabel startTimeLabel;
 	private JComboBox end_time;
 	private JComboBox startTime;
-	private JLabel date_label;
+	private JLabel dateLabel;
 	private JDateChooser calendar;
 	private DefaultListModel selected_users_listModel;
 	private DefaultListModel all_users_listModel;
@@ -75,18 +76,6 @@ public class CreateMeetingPanel extends BaseCalendarView {
 	private ComboBoxModel startTimeModel;
 	
 	private JPanel room_chooser_panel;
-	
-	/**
-	* Auto-generated main method to display this 
-	* JPanel inside a new JFrame.
-	*/
-	public static void main(String[] args) {
-		JFrame frame = new JFrame();
-		frame.getContentPane().add(new CreateMeetingPanel());
-		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		frame.pack();
-		frame.setVisible(true);
-	}
 	
 	public CreateMeetingPanel(Event event) {
 		super();
@@ -111,9 +100,9 @@ public class CreateMeetingPanel extends BaseCalendarView {
 			this.setLayout(thisLayout);
 			this.setPreferredSize(new java.awt.Dimension(873, 406));
 			
-			meeting = new JPanel();
+			meetingPanel = new JPanel();
 			GridBagLayout meetingLayout = new GridBagLayout();
-			this.add(meeting, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 30));
+			this.add(meetingPanel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 30));
 			this.add(getAll_users(), new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 			meetingLayout.rowWeights = new double[] {0.1, 0.1, 0.1, 0.1, 0.1, 0.0, 0.0, 0.1};
 			meetingLayout.rowHeights = new int[] {7, 7, 7, 7, 7, 25, 44, 7};
@@ -122,20 +111,20 @@ public class CreateMeetingPanel extends BaseCalendarView {
 			
 			calendar = new JDateChooser();
 			
-			meeting.setLayout(meetingLayout);
-			meeting.add(calendar, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
-			meeting.add(getDate_label(), new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
-			meeting.add(getStart_time_label(), new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
-			meeting.add(getEnd_time(), new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-			meeting.add(getEnd_time_label(), new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
-			meeting.add(getDescription_label(), new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
-			meeting.add(getStart_time(), new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
-			meeting.add(end_time, new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
-			meeting.add(getDescription(), new GridBagConstraints(1, 5, 1, 2, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 10), 0, 0));
-			meeting.add(getRoom_label(), new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
-			meeting.add(getRoomChooserPanel(), new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
-			meeting.add(getNew_agreement_label(), new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-			meeting.add(getButtons_panel(), new GridBagConstraints(1, 7, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+			meetingPanel.setLayout(meetingLayout);
+			meetingPanel.add(calendar, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
+			meetingPanel.add(getDate_label(), new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+			meetingPanel.add(getStart_time_label(), new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+			meetingPanel.add(getEnd_time(), new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+			meetingPanel.add(getEnd_time_label(), new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+			meetingPanel.add(getDescription_label(), new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+			meetingPanel.add(getStart_time(), new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
+			meetingPanel.add(end_time, new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
+			meetingPanel.add(getDescription(), new GridBagConstraints(1, 5, 1, 2, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 10), 0, 0));
+			meetingPanel.add(getRoom_label(), new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+			meetingPanel.add(getRoomChooserPanel(), new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
+			meetingPanel.add(getNew_agreement_label(), new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+			meetingPanel.add(getButtons_panel(), new GridBagConstraints(1, 7, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -154,10 +143,9 @@ public class CreateMeetingPanel extends BaseCalendarView {
 	private void fillCells() {
 		
 		model.setDefaultValues();
-	
-		calendar.setDate(model.getDate());
-		startTime.setSelectedItem(model.getStartTime());
-		end_time.setSelectedItem(model.getEndTime());
+		calendar.setDate(new Date(model.getDate().getTimeInMillis()));
+		startTime.setSelectedItem(new Time(model.getStartTime().getTimeInMillis()));
+		end_time.setSelectedItem(new Time(model.getEndTime().getTimeInMillis()));
 		description.setText(model.getDescription());
 		roomChooserModel.setSelectedItem(model.getRoom());
 		addEmployees();
@@ -180,44 +168,44 @@ public class CreateMeetingPanel extends BaseCalendarView {
 	}
 	
 	private JLabel getDate_label() {
-		if(date_label == null) {
-			date_label = new JLabel();
-			date_label.setText("Dato: ");
-			date_label.setLabelFor(calendar);
-			date_label.setPreferredSize(new java.awt.Dimension(100, 0));
-			date_label.setHorizontalAlignment(SwingConstants.TRAILING);
+		if(dateLabel == null) {
+			dateLabel = new JLabel();
+			dateLabel.setText("Dato: ");
+			dateLabel.setLabelFor(calendar);
+			dateLabel.setPreferredSize(new java.awt.Dimension(100, 0));
+			dateLabel.setHorizontalAlignment(SwingConstants.TRAILING);
 		}
-		return date_label;
+		return dateLabel;
 	}
 	
 	private JLabel getStart_time_label() {
-		if(start_time_label == null) {
-			start_time_label = new JLabel();
-			start_time_label.setText("Start: ");
-			start_time_label.setPreferredSize(new java.awt.Dimension(100, 0));
-			start_time_label.setHorizontalAlignment(SwingConstants.TRAILING);
+		if(startTimeLabel == null) {
+			startTimeLabel = new JLabel();
+			startTimeLabel.setText("Start: ");
+			startTimeLabel.setPreferredSize(new java.awt.Dimension(100, 0));
+			startTimeLabel.setHorizontalAlignment(SwingConstants.TRAILING);
 		}
-		return start_time_label;
+		return startTimeLabel;
 	}
 	
 	private JLabel getEnd_time_label() {
-		if(end_time_label == null) {
-			end_time_label = new JLabel();
-			end_time_label.setText("Slutt: ");
-			end_time_label.setPreferredSize(new java.awt.Dimension(100, 0));
-			end_time_label.setHorizontalAlignment(SwingConstants.TRAILING);
+		if(endTimeLabel == null) {
+			endTimeLabel = new JLabel();
+			endTimeLabel.setText("Slutt: ");
+			endTimeLabel.setPreferredSize(new java.awt.Dimension(100, 0));
+			endTimeLabel.setHorizontalAlignment(SwingConstants.TRAILING);
 		}
-		return end_time_label;
+		return endTimeLabel;
 	}
 	
 	private JLabel getDescription_label() {
-		if(description_label == null) {
-			description_label = new JLabel();
-			description_label.setText("Beskrivelse: ");
-			description_label.setPreferredSize(new java.awt.Dimension(100, 0));
-			description_label.setHorizontalAlignment(SwingConstants.TRAILING);
+		if(descriptionLabel == null) {
+			descriptionLabel = new JLabel();
+			descriptionLabel.setText("Beskrivelse: ");
+			descriptionLabel.setPreferredSize(new java.awt.Dimension(100, 0));
+			descriptionLabel.setHorizontalAlignment(SwingConstants.TRAILING);
 		}
-		return description_label;
+		return descriptionLabel;
 	}
 	
 	public JComboBox getStart_time() {
@@ -277,12 +265,17 @@ public class CreateMeetingPanel extends BaseCalendarView {
 	}
 	
 	protected void saveEvent() {
-		model.setDate(new Date(calendar.getCalendar().getTimeInMillis()));
-		model.setStartTime((java.sql.Time)startTime.getSelectedItem());
-		model.setEndTime((java.sql.Time)end_time.getSelectedItem());
+		model.setDate(calendar.getCalendar());
+		Calendar startTimeCal = Calendar.getInstance();
+		startTimeCal.setTime((java.sql.Time)startTime.getSelectedItem());
+		model.setStartTime(startTimeCal);
+		Calendar endTimeCal = Calendar.getInstance();
+		endTimeCal.setTime((java.sql.Time)end_time.getSelectedItem());
+		model.setEndTime(endTimeCal);
 		model.setRoom(((Room)roomChooser.getSelectedItem()));
 		model.setDescription(description.getText());	
 		model.cleanAttendees();
+		
 		for ( Object person: selected_users_listModel.toArray()) {
 			model.addAttendee((Person)person);
 		}
@@ -296,13 +289,13 @@ public class CreateMeetingPanel extends BaseCalendarView {
 	}
 
 	private JLabel getRoom_label() {
-		if(room_label == null) {
-			room_label = new JLabel();
-			room_label.setText("Rom: ");
-			room_label.setPreferredSize(new java.awt.Dimension(100, 0));
-			room_label.setHorizontalAlignment(SwingConstants.TRAILING);
+		if(roomLabel == null) {
+			roomLabel = new JLabel();
+			roomLabel.setText("Rom: ");
+			roomLabel.setPreferredSize(new java.awt.Dimension(100, 0));
+			roomLabel.setHorizontalAlignment(SwingConstants.TRAILING);
 		}
-		return room_label;
+		return roomLabel;
 	}
 	
 	private JComboBox getRoom_chooser() {
@@ -350,7 +343,7 @@ public class CreateMeetingPanel extends BaseCalendarView {
 	
 	
 	protected void getRooms() {
-		model.setDate(new Date(calendar.getCalendar().getTimeInMillis()));
+		model.setDate(calendar.getCalendar());
 		List<Room> rooms = model.getRooms();
 		
 		roomChooserModel.removeAllElements();
@@ -362,26 +355,26 @@ public class CreateMeetingPanel extends BaseCalendarView {
 	}
 
 	private JPanel getAll_users() {
-		if(all_users == null) {
-			all_users = new JPanel();
+		if(allUsersPanel == null) {
+			allUsersPanel = new JPanel();
 			GridBagLayout all_usersLayout = new GridBagLayout();
 			all_usersLayout.rowWeights = new double[] {0.1, 0.1, 0.1, 0.1};
 			all_usersLayout.rowHeights = new int[] {7, 7, 7, 7};
 			all_usersLayout.columnWeights = new double[] {0.0, 0.0, 0.0};
 			all_usersLayout.columnWidths = new int[] {245, 50, 257};
-			all_users.setLayout(all_usersLayout);
-			all_users.add(getButtons_select_unselect_panel(), new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-			all_users.add(getAll_users_label(), new GridBagConstraints(-1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-			all_users.add(getSelected_users_scroll(), new GridBagConstraints(2, 1, 1, 3, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-			all_users.add(getAllEmployeeScroll(), new GridBagConstraints(0, 1, 1, 3, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-			all_users.add(getSelected_users_label(), new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+			allUsersPanel.setLayout(all_usersLayout);
+			allUsersPanel.add(getButtons_select_unselect_panel(), new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+			allUsersPanel.add(getAll_users_label(), new GridBagConstraints(-1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+			allUsersPanel.add(getSelected_users_scroll(), new GridBagConstraints(2, 1, 1, 3, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+			allUsersPanel.add(getAllEmployeeScroll(), new GridBagConstraints(0, 1, 1, 3, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+			allUsersPanel.add(getSelected_users_label(), new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 			if( model.getAttendees() == null){
-				all_users.setVisible(false);
+				allUsersPanel.setVisible(false);
 			}else {
-				all_users.setVisible(true);
+				allUsersPanel.setVisible(true);
 			}
 		}
-		return all_users;
+		return allUsersPanel;
 	}
 
 	private JLabel getAll_users_label() {
@@ -507,11 +500,11 @@ public class CreateMeetingPanel extends BaseCalendarView {
 		return selected_users_label;
 	}
 	private JLabel getNew_agreement_label() {
-		if(new_agreement_label == null) {
-			new_agreement_label = new JLabel();
-			new_agreement_label.setText("Legg til ny avtale");
+		if(newMeetingLabel == null) {
+			newMeetingLabel = new JLabel();
+			newMeetingLabel.setText("Legg til ny avtale");
 		}
-		return new_agreement_label;
+		return newMeetingLabel;
 	}
 	
 	private JPanel getButtons_panel() {
@@ -539,7 +532,7 @@ public class CreateMeetingPanel extends BaseCalendarView {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					all_users.setVisible(true);
+					allUsersPanel.setVisible(true);
 					
 				}
 			});
