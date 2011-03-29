@@ -53,7 +53,9 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener {
 	private JButton message_button;
 	private JButton logout_button;
 	private JButton employee_button;
+        
         private LogInPanel loginPanel;
+        private CalendarViewPanel calendarPanel;
 
         private static MainPanel mainForm = null;
 
@@ -86,7 +88,7 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener {
 	public MainPanel() {
 		super();
 
-                
+                calendarPanel = new CalendarViewPanel();
 
                 loginPanel = new LogInPanel();
                 loginPanel.setLoginListener(this);
@@ -219,7 +221,8 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener {
 
 		switch (panel){
 		case CALENDAR:
-			maincontainer.add(new CalendarViewPanel(), BorderLayout.CENTER);
+			maincontainer.add(calendarPanel, BorderLayout.CENTER);
+                        
 			break;
 		case AGREEMENT:
 			maincontainer.add(new CreateMeetingPanel(),BorderLayout.CENTER);

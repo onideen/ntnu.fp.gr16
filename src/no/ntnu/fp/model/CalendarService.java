@@ -153,7 +153,9 @@ public class CalendarService implements ConnectionListener,
             ServerRequest req = new ServerRequest(doc.getRootElement());
             ServerResponse resp = receiveData(req);
 
-            connection.send(resp.getXmlForSending());
+            String xmlToSend = resp.getXmlForSending();
+            System.out.println("Preparing to send xml: " + xmlToSend);
+            connection.send(xmlToSend);
         } catch (ParsingException ex) {
             ex.printStackTrace();
         } catch (IOException ex) {
@@ -178,6 +180,8 @@ public class CalendarService implements ConnectionListener,
             while (rs.next()) {
                 persons.add(getPerson(rs.getString("e-mail")));
             }
+
+            c.close();
 
             return persons;
 
@@ -213,6 +217,8 @@ public class CalendarService implements ConnectionListener,
                     Message.Type.Information, attendee, eId);
             saveMessage(m);
         }
+
+        c.close();
     }
 
     public void updateEvent(Event e) {
@@ -246,6 +252,8 @@ public class CalendarService implements ConnectionListener,
                         Message.Type.Invitation, attendee, e.getEid());
                 saveMessage(m);
             }
+
+            c.close();
 
         } catch (Exception e2) {
             e2.printStackTrace();
@@ -301,6 +309,7 @@ public class CalendarService implements ConnectionListener,
             }
 
             p.close();
+            c.close();
 
             return e.getEid();
 
@@ -329,6 +338,8 @@ public class CalendarService implements ConnectionListener,
             p.setInt(5, m.getEvent());
 
             p.executeUpdate();
+
+            c.close();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -415,6 +426,9 @@ public class CalendarService implements ConnectionListener,
                 return p;
             }
 
+            rs.close();
+            c.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -432,6 +446,9 @@ public class CalendarService implements ConnectionListener,
 			Message m = getMessage(rs.getInt("id"));
 			messages.add(m);
 		}
+
+                rs.close();
+                c.close();
 		
 		return messages;
 	}
@@ -454,6 +471,9 @@ public class CalendarService implements ConnectionListener,
 
                 return m;
             }
+
+            rs.close();
+            c.close();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -481,6 +501,9 @@ public class CalendarService implements ConnectionListener,
                 Event e = getEvent(rs.getInt("hid"));
                 events.add(e);
             }
+
+            rs.close();
+            c.close();
 
             return events;
         } catch (Exception e) {
@@ -513,6 +536,9 @@ public class CalendarService implements ConnectionListener,
 
                 return e;
             }
+
+            rs.close();
+            c.close();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -554,6 +580,8 @@ public class CalendarService implements ConnectionListener,
         }
 
         s.close();
+        rs.close();
+        c.close();
 
         for (Room room : hashRooms.values()) {
             freeRooms.add(room);
@@ -574,6 +602,8 @@ public class CalendarService implements ConnectionListener,
         }
 
         s.close();
+        rs.close();
+        c.close();
         return null;
     }
 
@@ -592,10 +622,12 @@ public class CalendarService implements ConnectionListener,
 
         if (rs.next()) {
             rs.close();
+            c.close();
             return true;
         }
         
         rs.close();
+        c.close();
         return false;
     }
 

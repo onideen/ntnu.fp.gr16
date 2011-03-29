@@ -21,7 +21,6 @@ import javax.swing.JPanel;
  */
 public class CalendarViewPanel extends BaseCalendarView implements ActionListener
 {
-
     public static void main(String[] args)
     {
         JFrame frame = new JFrame();
