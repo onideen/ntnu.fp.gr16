@@ -66,7 +66,7 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener {
                 MainPanel mp = new MainPanel();
 		frame.getContentPane().add(mp);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		frame.setSize(1000, 700);
+		frame.setSize(1010, 710);
 		frame.setVisible(true);
 
                 mainForm = mp;
@@ -238,8 +238,5 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener {
                         break;
 		}
 		updateUI();
-		
 	}
-	
-	
 }
