@@ -61,14 +61,15 @@ public class CalendarService implements ConnectionListener,
             }
         }
 
-        if(!foundMethod)
+        if (!foundMethod) {
             throw new FileNotFoundException("The method '" + sr.getFunction() + "' could not be found.");
+        }
 
         return null;
     }
 
     private static Connection getConnection() {
-        for(int i = 0; i<5; i++){
+        for (int i = 0; i < 5; i++) {
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance();
                 String userName = "erlendd_felles";
@@ -115,7 +116,6 @@ public class CalendarService implements ConnectionListener,
             e.printStackTrace();
         }
     }
-
     private ReceiveConnectionWorker receiver;
     Set<no.ntnu.fp.net.co.Connection> connections = Collections.synchronizedSet(new HashSet<no.ntnu.fp.net.co.Connection>());
 
@@ -414,8 +414,9 @@ public class CalendarService implements ConnectionListener,
         try {
             Connection c = getConnection();
 
-            if(c==null)
+            if (c == null) {
                 return null;
+            }
 
             Statement s = c.createStatement();
             ResultSet rs = s.executeQuery("SELECT * FROM Person WHERE `e-mail` = '"
@@ -441,30 +442,40 @@ public class CalendarService implements ConnectionListener,
     }
 
     public List<Message> getMessages(String person) throws SQLException {
-		List<Message> messages = new ArrayList<Message>();
-		Connection c = getConnection();
-		Statement s = c.createStatement();
-		ResultSet rs = s.executeQuery("SELECT * FROM Melding WHERE `mottaker` = '" + person + "';");
+        List<Message> messages = new ArrayList<Message>();
+        Connection c = getConnection();
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery("SELECT * FROM Melding WHERE `mottaker` = '" + person + "';");
 
-		while (rs.next()) {
-			Message m = getMessage(rs.getInt("id"));
-			messages.add(m);
-		}
+        while (rs.next()) {
+            Message m = new Message(rs.getString("innhold"),
+                    Message.Type.valueOf(rs.getString("type")),
+                    rs.getString("mottaker"), rs.getInt("relatertmote"));
+            m.setMid(rs.getInt("id"));
+            m.setTimeSent(rs.getTimestamp("tidsendt"));
+            if (m != null) {
+                messages.add(m);
+            }
+        }
 
-                rs.close();
-                c.close();
-		
-		return messages;
-	}
+        rs.close();
+        c.close();
+
+        return messages;
+    }
 
     public static Message getMessage(int id) {
 
         try {
 
             Connection c = getConnection();
+
+            if (c == null) {
+                return null;
+            }
+
             Statement s = c.createStatement();
-            ResultSet rs = s.executeQuery("SELECT * FROM Melding WHERE id = "
-                    + id + ";");
+            ResultSet rs = s.executeQuery("SELECT * FROM Melding WHERE id = " + id + ";");
 
             if (rs.next()) {
                 Message m = new Message(rs.getString("innhold"),
@@ -495,14 +506,13 @@ public class CalendarService implements ConnectionListener,
                     + email + "';");
 
             while (rs.next()) {
-                Event e = getEvent(rs.getInt("id"));
+                Event e = createEvent(rs);
                 events.add(e);
             }
 
-            rs = s.executeQuery("SELECT Hid FROM Deltaker WHERE `e-mail` = '"
-                    + email + "';");
+            rs = s.executeQuery("SELECT Hendelse.* FROM Deltaker, Hendelse WHERE `e-mail` = '" + email + "' AND Hendelse.id = Deltaker.hid;");
             while (rs.next()) {
-                Event e = getEvent(rs.getInt("hid"));
+                Event e = createEvent(rs);
                 events.add(e);
             }
 
@@ -525,16 +535,7 @@ public class CalendarService implements ConnectionListener,
                     + eventId + ";");
 
             if (rs.next()) {
-                Event e = new Event(rs.getString("beskrivelse"),
-                        Event.Type.valueOf(rs.getString("type")),
-                        rs.getString("ansvarlig"), rs.getDate("dato"),
-                        rs.getTime("starttid"), rs.getTime("sluttid"),
-                        rs.getString("reservertrom"));
-                e.setEid(eventId);
-
-                for (Person p : getAttendees(eventId)) {
-                    e.addAttendee(p.getEmail());
-                }
+                Event e = createEvent(rs);
 
                 s.close();
 
@@ -551,6 +552,21 @@ public class CalendarService implements ConnectionListener,
         return null;
     }
 
+    private Event createEvent(ResultSet rs) throws SQLException {
+        Event e = new Event(rs.getString("beskrivelse"),
+                Event.Type.valueOf(rs.getString("type")),
+                rs.getString("ansvarlig"), rs.getDate("dato"),
+                rs.getTime("starttid"), rs.getTime("sluttid"),
+                rs.getString("reservertrom"));
+        e.setEid(rs.getInt("id"));
+
+        for (Person p : getAttendees(rs.getInt("id"))) {
+            e.addAttendee(p.getEmail());
+        }
+
+        return e;
+    }
+
     public List<Room> getFreeRooms(Reservation r) throws SQLException {
         HashMap<String, Room> hashRooms = new HashMap<String, Room>();
         List<Room> freeRooms = new ArrayList<Room>();
@@ -565,12 +581,12 @@ public class CalendarService implements ConnectionListener,
 
         // rs = s.executeQuery("SELECT id from Hendelse WHERE dato =" +
         // r.getDate() );
-        PreparedStatement p = c.prepareStatement("SELECT id from Hendelse WHERE dato = ?;");
+        PreparedStatement p = c.prepareStatement("SELECT * from Hendelse WHERE dato = ?;");
         p.setDate(1, r.getDate());
         rs = p.executeQuery();
 
         while (rs.next()) {
-            Event e = getEvent(rs.getInt("id"));
+            Event e = createEvent(rs);
             long a = e.getStartTime().getTimeInMillis();
             long b = e.getEndTime().getTimeInMillis();
             long ss = r.getStartTime().getTime();
@@ -617,8 +633,9 @@ public class CalendarService implements ConnectionListener,
 
         Connection c = getConnection();
 
-        if(c==null)
+        if (c == null) {
             return false;
+        }
 
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * FROM Person WHERE `e-mail` = '"
@@ -629,7 +646,7 @@ public class CalendarService implements ConnectionListener,
             c.close();
             return true;
         }
-        
+
         rs.close();
         c.close();
         return false;

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import no.ntnu.fp.model.Communication;
-import no.ntnu.fp.model.IPersonListener;
+import no.ntnu.fp.gui.listeners.IPersonListener;
 import no.ntnu.fp.model.Person;
 
 /**
