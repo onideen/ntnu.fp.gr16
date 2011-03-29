@@ -155,9 +155,9 @@ public class CalendarService implements ConnectionListener,
 
             connection.send(resp.getXmlForSending());
         } catch (ParsingException ex) {
-            Logger.getLogger(CalendarService.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         } catch (IOException ex) {
-            Logger.getLogger(CalendarService.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }
 
@@ -582,6 +582,10 @@ public class CalendarService implements ConnectionListener,
         System.out.println("Logging in as :" + email + ", " + password);
 
         Connection c = getConnection();
+
+        if(c==null)
+            return false;
+
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * FROM Person WHERE `e-mail` = '"
                 + email + "' AND `passord` = '" + password + "';");
