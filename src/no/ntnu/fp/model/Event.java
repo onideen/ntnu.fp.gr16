@@ -7,6 +7,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import no.ntnu.fp.model.calendar.Utils;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -39,6 +40,9 @@ public class Event {
 	public final static String PROPERTY_RESPONSIBLE = "responsible";
 	public final static String PROPERTY_ATTENDEE = "attendee";
 
+	public Event() {
+	}
+	
 	public Event(String desc, Type type, String owner, Date date, Time start, Time end, String room){
 		this.description=desc;
 		this.type=type;
@@ -64,11 +68,6 @@ public class Event {
 		
 		propChangeSupp = new PropertyChangeSupport(this);
 	}
-
-        public Event()
-        {
-            propChangeSupp = new PropertyChangeSupport(this);
-        }
 	
 	public String getDateString()
 	{
@@ -121,42 +120,35 @@ public class Event {
 	}
 	
 	public Calendar getDate() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return cal;
+		return Utils.getCalendar(date);
 	}
 	
-	public void setDate(Calendar cal) {
-        Date date = (Date) cal.getTime();
+	public void setDate(Calendar date) {
 		Date old = this.date;
-		this.date = date;
-		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_DATE, old, date);
+		this.date = Utils.getSqlDate(date);
+		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_DATE, old, this.date);
 		propChangeSupp.firePropertyChange(event);
 	}
 	
 	public Calendar getStartTime() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(startTime);
-		return cal;
+		return Utils.getCalendar(startTime);
 	}
 	
-	public void setStartTime(Time startTime) {
+	public void setStartTime(Calendar startTime) {
 		Time old = this.startTime;
-		this.startTime = startTime;
-		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_STARTTIME, old, startTime);
+		this.startTime = Utils.getSqlTime(startTime);
+		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_STARTTIME, old, this.startTime);
 		propChangeSupp.firePropertyChange(event);
 	}
 	
 	public Calendar getEndTime() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(endTime);
-		return cal;
+		return Utils.getCalendar(endTime);
 	}
 	
-	public void setEndTime(Time endTime) {
+	public void setEndTime(Calendar endTime) {
 		Time old = this.endTime;
-		this.endTime = endTime;
-		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_ENDTIME, old, endTime);
+		this.endTime = Utils.getSqlTime(endTime);
+		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_ENDTIME, old, this.endTime);
 		propChangeSupp.firePropertyChange(event);
 	}
 	
