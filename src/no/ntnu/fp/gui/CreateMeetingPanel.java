@@ -65,21 +65,21 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	private JList all_users_list;
 	private JLabel all_users_label;
 	private JPanel all_users;
-	private JComboBox room_chooser;
+	private JComboBox roomChooser;
 	private JLabel room_label;
 	private JEditorPane description;
 	private JLabel description_label;
 	private JLabel end_time_label;
 	private JLabel start_time_label;
 	private JComboBox end_time;
-	private JComboBox start_time;
+	private JComboBox startTime;
 	private JLabel date_label;
 	private JDateChooser calendar;
 	private DefaultListModel selected_users_listModel;
 	private DefaultListModel all_users_listModel;
-	private DefaultComboBoxModel room_chooserModel;
+	private DefaultComboBoxModel roomChooserModel;
 	private ComboBoxModel end_comboModel;
-	private ComboBoxModel start_timeModel;
+	private ComboBoxModel startTimeModel;
 	
 	private JPanel room_chooser_panel;
 	
@@ -103,6 +103,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	
 	public CreateMeetingPanel() {
 		super();
+		model = new CreateMeetingModel();
 		initGUI();
 	}
 	
@@ -162,13 +163,11 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 		model.setDefaultValues();
 	
 		calendar.setDate(model.getDate());
-		start_time.setSelectedItem(model.getStartTime());
+		startTime.setSelectedItem(model.getStartTime());
 		end_time.setSelectedItem(model.getEndTime());
-//		getRooms();
-//		room_chooser.setSelectedItem(event.getRoomObject());
-//		room_chooser.setEnabled(false);
-//		description.setText(event.getDescription());
-//		addEmployees();
+		description.setText(model.getDescription());
+		roomChooserModel.setSelectedItem(model.getRoom());
+		
 	}
 
 	private void addEmployees() {
@@ -229,28 +228,19 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	}
 	
 	public JComboBox getStart_time() {
-		if(start_time == null) {
-			start_timeModel = new DefaultComboBoxModel(hentKlokkeslett());
-			start_time = new JComboBox(start_timeModel);
-			start_time.setEditable(true);
-			start_time.setRequestFocusEnabled(false);
-			start_time.addActionListener(new TimeListener());
+		if(startTime == null) {
+			startTimeModel = new DefaultComboBoxModel(model.hentKlokkeslett());
+			startTime = new JComboBox(startTimeModel);
+			startTime.setEditable(true);
+			startTime.setRequestFocusEnabled(false);
+			startTime.addActionListener(new TimeListener());
 		}
-		return start_time;
-	}
-
-	private Time[] hentKlokkeslett() {
-		Time[] comboChoose = new Time[24];
-		for (int i = 0; i < 24; i++){
-			comboChoose[i] = new Time(i, 0, 0);
-		}
-		return comboChoose;
-		
+		return startTime;
 	}
 	
 	private JComboBox getEnd_time() {
 		if(end_time == null) {
-			end_comboModel = new DefaultComboBoxModel(hentKlokkeslett());
+			end_comboModel = new DefaultComboBoxModel(model.hentKlokkeslett());
 			end_time = new JComboBox(end_comboModel);
 			end_time.setRequestFocusEnabled(false);
 			end_time.setEditable(true);
@@ -264,7 +254,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	}
 	
 	public ComboBoxModel getStartComboModel(){
-		return start_timeModel;
+		return startTimeModel;
 	}
 	
 	public JEditorPane getDescription() {
@@ -319,15 +309,15 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	}
 	
 	private JComboBox getRoom_chooser() {
-		if(room_chooser == null) {
-			room_chooserModel = new DefaultComboBoxModel();
-			room_chooser = new JComboBox();
-			room_chooser.setModel(room_chooserModel);
-			room_chooser.setEditable(true);
-			room_chooser.setEnabled(false);
-			room_chooser.setRenderer(new RoomRendrer());
+		if(roomChooser == null) {
+			roomChooserModel = new DefaultComboBoxModel();
+			roomChooser = new JComboBox();
+			roomChooser.setModel(roomChooserModel);
+			roomChooser.setEditable(true);
+			roomChooser.setEnabled(false);
+			roomChooser.setRenderer(new RoomRendrer());
 		}
-		return room_chooser;
+		return roomChooser;
 	}
 	
 	private JPanel getRoomChooserPanel() {
@@ -363,20 +353,15 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	
 	
 	protected void getRooms() {
-//		
-//		java.sql.Date date = new Date(calendar.getCalendar().getTimeInMillis());
-//		
-//		List<Room> rooms = Communication.getFreeRooms(new Reservation(date, (Time)start_time.getSelectedItem(), (Time)end_time.getSelectedItem()));
-//		if (event != null && start_time.getSelectedItem() == event.getStartTime() ){
-//			room_chooserModel.addElement(event.getRoomObject());
-//		}
-//		
-//		room_chooserModel.removeAllElements();
-//		
-//		for (Room room : rooms) {
-//			room_chooserModel.addElement(room);
-//		}
-//		room_chooser.setEnabled(true);
+		model.setDate(new Date(calendar.getCalendar().getTimeInMillis()));
+		List<Room> rooms = model.getRooms();
+		
+		roomChooserModel.removeAllElements();
+		
+		for (Room room : rooms) {
+			roomChooserModel.addElement(room);
+		}
+		roomChooser.setEnabled(true);
 	}
 
 	private JPanel getAll_users() {
@@ -569,7 +554,7 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			room_chooser.setEnabled(false);
+			roomChooser.setEnabled(false);
 		}
 	}
 	
