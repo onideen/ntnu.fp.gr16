@@ -80,7 +80,13 @@ public class LogInPanel extends javax.swing.JPanel {
 				}
 				{
 					passwordField = new JPasswordField();
-					logInPanel.add(passwordField, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+                                        passwordField.addActionListener(new ActionListener(){
+                                            @Override
+                                            public void actionPerformed(ActionEvent e) {
+							LogIn();
+						}
+                                        });
+                                        logInPanel.add(passwordField, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 				}
 				{
 					passwordLabel = new JLabel();

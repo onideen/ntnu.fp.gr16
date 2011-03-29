@@ -1,7 +1,6 @@
 package no.ntnu.fp.gui;
 import java.awt.BorderLayout;
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -11,8 +10,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 
 import javax.swing.WindowConstants;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -168,6 +165,12 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener {
 					logout_button.setVerticalTextPosition(SwingConstants.BOTTOM);
 					logout_button.setPreferredSize(new java.awt.Dimension(50, 50));
 					logout_button.setSize(50, 50);
+                                        logout_button.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+                                                        Communication.logout();
+							changeMain(LOGIN);
+						}
+					});
 				}
 			}
 			{

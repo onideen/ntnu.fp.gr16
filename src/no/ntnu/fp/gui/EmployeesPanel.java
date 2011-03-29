@@ -38,14 +38,14 @@ public class EmployeesPanel extends javax.swing.JPanel {
     List<Person> employees;
     private void ListEmployees()
     {
-        String f = txtFilter.getText();
+        String f = txtFilter.getText().toLowerCase();
         dlm.clear();
         lstEmployees.setModel(dlm);
         for(Person p : employees)
         {
             if(p==null)
                 continue;
-            if (f.equals("") || (p.getName() + p.getEmail()).contains(f))
+            if (f.equals("") || (p.getName() + p.getEmail()).toLowerCase().contains(f))
                 dlm.addElement(p);
         }
     }
@@ -108,15 +108,16 @@ public class EmployeesPanel extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(btnShowCalendar)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addGap(10, 10, 10)
                 .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(208, Short.MAX_VALUE))
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnShowCalendar)
+                .addContainerGap(301, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -126,9 +127,10 @@ public class EmployeesPanel extends javax.swing.JPanel {
                     .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnShowCalendar))
+                .addComponent(btnShowCalendar, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
