@@ -41,9 +41,11 @@ public class Event {
 	public final static String PROPERTY_ATTENDEE = "attendee";
 
 	public Event() {
+		propChangeSupp = new PropertyChangeSupport(this);
 	}
 	
 	public Event(String desc, Type type, String owner, Date date, Time start, Time end, String room){
+		this();
 		this.description=desc;
 		this.type=type;
 		this.responsible=owner;
@@ -51,11 +53,11 @@ public class Event {
 		this.startTime=start;
 		this.endTime=end;
 		this.roomName=room;
-		propChangeSupp = new PropertyChangeSupport(this);
 	}
 	
 	public Event(int eid, String type, String desc, Date date, Time start, Time end, String responsible, List<String> attendees, String room)
 	{
+		this();
 		this.eid=eid;
 		this.type=Type.valueOf(type);
 		this.description=desc;
@@ -65,8 +67,6 @@ public class Event {
 		this.responsible=responsible;
 		this.attendees=attendees;
 		this.roomName=room;
-		
-		propChangeSupp = new PropertyChangeSupport(this);
 	}
 	
 	public String getDateString()
