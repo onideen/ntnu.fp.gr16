@@ -45,6 +45,10 @@ public class CalendarViewPanel extends BaseCalendarView implements ActionListene
         setupGUI();
     }
 
+    public CalendarPanel getCalendarPanel(){
+        return calendarPanel;
+    }
+
     private void setupGUI()
     {
         calendarPanel = new CalendarPanel(this);
