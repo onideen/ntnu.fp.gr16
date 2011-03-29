@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import no.ntnu.fp.model.Communication;
-import no.ntnu.fp.model.ILoginListener;
+import no.ntnu.fp.gui.listeners.ILoginListener;
 
 /**
 * This code was edited or generated using CloudGarden's Jigloo

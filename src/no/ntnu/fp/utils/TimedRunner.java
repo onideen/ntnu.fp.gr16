@@ -20,7 +20,6 @@ public class TimedRunner {
 
     public TimedRunner(long timeOutInMillis, Runnable runner)
     {
-        timer = new Timer();
         this.runner = runner;
         timeout = timeOutInMillis;
     }
@@ -30,6 +29,7 @@ public class TimedRunner {
         if(running)
             return this;
         running = true;
+        timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask()
         {
             @Override
@@ -47,5 +47,17 @@ public class TimedRunner {
             return;
         running = false;
         timer.cancel();
+        timer = null;
+    }
+
+    public void invoke() {
+        boolean r = running;
+        if(r)
+            this.stop();
+
+        runner.run();
+
+        if(r)
+            this.start();
     }
 }

@@ -157,6 +157,8 @@ public class XmlSerializer {
 				createElement(Event.PROPERTY_ATTENDEE, m.getAttendees()),
 				createElement(Room.PROPERTY_NAME, m.getRoom())
 				);
+
+                System.out.println(e.toXML());
 		
 		return createDataXml("Event", e);
 	}
