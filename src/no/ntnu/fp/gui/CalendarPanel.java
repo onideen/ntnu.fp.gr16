@@ -137,6 +137,13 @@ public class CalendarPanel extends JPanel implements ComponentListener
         buildTable();
         addEventListeners();
         scrollPane = new JScrollPane(table);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                scrollPane.getVerticalScrollBar().setValue(500);
+            }
+        });
+        
         //scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane);
         //setSize(new Dimension(735, 400));

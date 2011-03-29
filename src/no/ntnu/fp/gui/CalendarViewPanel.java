@@ -89,7 +89,13 @@ public class CalendarViewPanel extends BaseCalendarView implements ActionListene
             Calendar cal = calendarPanel.getWeek();
             cal.add(Calendar.WEEK_OF_YEAR, 1);
             calendarPanel.setWeek(cal);
-            weekLabel.setText("" + cal.get(Calendar.WEEK_OF_YEAR));
+            int week = cal.get(Calendar.WEEK_OF_YEAR);
+            String wk = "" + week;
+            if (wk.length() == 1)
+            {
+                wk = "0" + wk;
+            }
+            weekLabel.setText("" + wk);
             yearLabel.setText("" + cal.get(Calendar.YEAR));
         }
         else if (src == prevWeekButton)
@@ -97,7 +103,13 @@ public class CalendarViewPanel extends BaseCalendarView implements ActionListene
             Calendar cal = calendarPanel.getWeek();
             cal.add(Calendar.WEEK_OF_YEAR, -1);
             calendarPanel.setWeek(cal);
-            weekLabel.setText("" + cal.get(Calendar.WEEK_OF_YEAR));
+            int week = cal.get(Calendar.WEEK_OF_YEAR);
+            String wk = "" + week;
+            if (wk.length() == 1)
+            {
+                wk = "0" + wk;
+            }
+            weekLabel.setText("" + wk);
             yearLabel.setText("" + cal.get(Calendar.YEAR));
         }
     }
