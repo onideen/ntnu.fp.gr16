@@ -67,7 +67,7 @@ public class CalendarPanel extends JPanel implements ComponentListener
     private final TimeSpan daySpan = new TimeSpan();
     private final TimeSpan weekSpan = new TimeSpan();
     private WeekTableModel model;
-    private Event[] events;
+    private List<Event> events;
     private static int COLUMN_WIDTH = 100;
     private static int FIRST_COLUMN_WIDTH = 65;
     private static int WEEKEND_COLUMN_WIDTH = 85;
@@ -133,6 +133,13 @@ public class CalendarPanel extends JPanel implements ComponentListener
         initGUI();
     }
 
+    public void setEvents(List<Event> events)
+    {
+        this.events = events;
+        repaint();
+        table.repaint();
+    }
+
     private void initGUI()
     {
         events = container.getService().getEvents();
@@ -140,6 +147,13 @@ public class CalendarPanel extends JPanel implements ComponentListener
         buildTable();
         addEventListeners();
         scrollPane = new JScrollPane(table);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                scrollPane.getVerticalScrollBar().setValue(500);
+            }
+        });
+        
         //scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane);
         //setSize(new Dimension(735, 400));
@@ -234,6 +248,8 @@ public class CalendarPanel extends JPanel implements ComponentListener
 
     private Event getEventForTime(Calendar cal)
     {
+        if(events == null)
+            return null;
         for (Event e : events)
         {
             if (e.getDate().get(Calendar.YEAR) == cal.get(Calendar.YEAR)

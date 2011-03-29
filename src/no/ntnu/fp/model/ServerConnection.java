@@ -52,6 +52,7 @@ public class ServerConnection {
                 throw new InvalidActivityException("Can't send data before a connection is made.");
 
             connection.send(message);
+            System.out.println(">>>>>>Sent request and waiting for response.");
             return connection.receive();
         }
     }
