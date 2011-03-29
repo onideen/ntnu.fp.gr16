@@ -209,12 +209,8 @@ public class ServerRequest {
             y -= workingForm.getHeight() /2;
 
             workingForm.setLocation(x, y);
-
             workingForm.setVisible(value);
-            workingForm.validate();
-            workingForm.doLayout();
-            workingForm.invalidate();
-            workingForm.repaint();
+            workingForm.setTitle("Arbeider ... Vennligst vent.");
         }
 
 	/**
