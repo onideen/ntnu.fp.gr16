@@ -200,7 +200,7 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener {
 
 		switch (panel){
 		case CALENDAR:
-			maincontainer.add(new CalendarPanel(), BorderLayout.CENTER);
+			maincontainer.add(new CalendarViewPanel(), BorderLayout.CENTER);
 			break;
 		case AGREEMENT:
 			maincontainer.add(new CreateMeetingPanel(),BorderLayout.CENTER);

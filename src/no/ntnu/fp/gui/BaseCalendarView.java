@@ -5,6 +5,7 @@
 
 package no.ntnu.fp.gui;
 
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +39,11 @@ public class BaseCalendarView extends JPanel {
             Logger.getLogger(BaseCalendarView.class.getName()).log(Level.SEVERE, null, ex);
         }
         service = new ServiceWrapper();
+        Dimension size = new Dimension(985, 505);
+        setSize(size);
+        setMinimumSize(size);
+        setMaximumSize(size);
+        setPreferredSize(size);
     }
 
 }
