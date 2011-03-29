@@ -167,23 +167,23 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 		end_time.setSelectedItem(model.getEndTime());
 		description.setText(model.getDescription());
 		roomChooserModel.setSelectedItem(model.getRoom());
+		addEmployees();
 		
 	}
 
 	private void addEmployees() {
-//		if (event != null) {
-//			List<Person> attendees = Communication.getAttendees(event.getEid()); 
-//		
-//			for (Person person : attendees) 
-//				selected_users_listModel.addElement(person);
-//		}
-//		
-//		List<Person> employees = Communication.getEmployees();
-//		for (Person person : employees) {
-//			if ( event != null && ! selected_users_listModel.contains(person))
-//				all_users_listModel.addElement(person);
-//		}
-//		
+		List<Person> attendees = model.getAttendees(); 
+		if (attendees != null) {
+			for (Person person : attendees) 
+				selected_users_listModel.addElement(person);
+		}
+		
+		List<Person> employees = model.getAllUsers();
+		if (employees != null){
+		for (Person person : employees)
+				all_users_listModel.addElement(person);
+		}
+		
 	}
 	
 	private JLabel getDate_label() {
@@ -284,18 +284,16 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 	}
 	
 	protected void saveEvent() {
-//		if (event == null){
-//			event.setDate(calendar.getCalendar());
-//			event.setStartTime((java.sql.Time)start_time.getSelectedItem());
-//			event.setEndTime((java.sql.Time)end_time.getSelectedItem());
-//			event.setRoom(((Room)room_chooser.getSelectedItem()).getName());
-//			
-////			for ( Object person: (List<Object>)selected_users_listModel.elements()) {
-////				event.addAttendee(((Person)person).getEmail());
-////			}
-////			
-//			Communication.updateEvent(event);
-//		}
+		model.setDate(new Date(calendar.getCalendar().getTimeInMillis()));
+		model.setStartTime((java.sql.Time)startTime.getSelectedItem());
+		model.setEndTime((java.sql.Time)end_time.getSelectedItem());
+		model.setRoom(((Room)roomChooser.getSelectedItem()));
+			
+		model.cleanAttendees();
+		for ( Object person: (List<Object>)selected_users_listModel.elements()) {
+			model.addAttendee((Person)person);
+		}
+			
 	}
 
 	private JLabel getRoom_label() {
@@ -378,11 +376,11 @@ public class CreateMeetingPanel extends javax.swing.JPanel {
 			all_users.add(getSelected_users_scroll(), new GridBagConstraints(2, 1, 1, 3, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 			all_users.add(getAllEmployeeScroll(), new GridBagConstraints(0, 1, 1, 3, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 			all_users.add(getSelected_users_label(), new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-//			if( ! (model.getAttendees() != null && ! event.getAttendees().isEmpty())){
-//				all_users.setVisible(false);
-//			}else {
-//				all_users.setVisible(true);
-//			}
+			if( model.getAttendees() == null){
+				all_users.setVisible(false);
+			}else {
+				all_users.setVisible(true);
+			}
 		}
 		return all_users;
 	}
