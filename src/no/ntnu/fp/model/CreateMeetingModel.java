@@ -30,14 +30,14 @@ public class CreateMeetingModel
     public CreateMeetingModel(Event event)
     {
         this.event = event;
-
-        for(Person p : Communication.getEmployees())
-            if(p.getEmail().equals(Communication.LoggedInUserEmail))
+        
+        for(Person p : Communication.getEmployees()) {
+            if(p.getEmail().equals(event.getResponsible()))
             {
                 responsiblePerson = p;
                 break;
             }
-
+        }
         newEvent = false;
         timeIsSet = true;
     }
@@ -47,6 +47,13 @@ public class CreateMeetingModel
         this(new Event());
         newEvent = true;
         timeIsSet = false;
+
+        for(Person p : Communication.getEmployees())
+            if(p.getEmail().equals(Communication.LoggedInUserEmail))
+            {
+                responsiblePerson = p;
+                break;
+            }
     }
 
     public Calendar getDate()
@@ -161,7 +168,7 @@ public class CreateMeetingModel
     {
         List<Person> att = new ArrayList<Person>();
         for(Person p : Communication.getEmployees())
-            if(event.attendees.contains(p.getEmail()) || Communication.LoggedInUserEmail.equals(p.getEmail()))
+            if(event.attendees.contains(p.getEmail()) || responsiblePerson.getEmail().equals(p.getEmail()))
                 att.add(p);
 
         System.out.println(att);
