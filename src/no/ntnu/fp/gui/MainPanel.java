@@ -344,6 +344,7 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
             case APPOINTMENT:
                 if (meetingPanel == null)
                 {
+                    System.out.println("LAGA NY MEETING PANEL MED TOM ******************************************************");
                     meetingPanel = new CreateMeetingPanel();
                 }
 

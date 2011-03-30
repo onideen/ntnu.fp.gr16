@@ -77,6 +77,18 @@ public class CalendarService implements ConnectionListener,
                 String url = "jdbc:mysql://mydb11.surftown.no/erlendd_qamerat";
                 Connection conn = DriverManager.getConnection(url, userName,
                         password);
+
+                if(conn == null)
+                {
+                    System.out.println("");
+                    System.out.println("***");
+                    System.out.println("***");
+                    System.out.println("[[[[[[[[[[[[[[DATABASE CONNECTION FAILED]]]]]]]]]]]]]]");
+                    System.out.println("***");
+                    System.out.println("***");
+                    System.out.println("");
+                }
+
                 return conn;
             } catch (Exception e) {
                 // TODO: handle exception
@@ -391,7 +403,7 @@ public class CalendarService implements ConnectionListener,
                 return null;
 
             Statement s = c.createStatement();
-            ResultSet rs = s.executeQuery("SELECT Person.* FROM Deltaker WHERE `Deltaker.e-mail` = `Person.e-mail` AND `hid` = " + eventId + ";");
+            ResultSet rs = s.executeQuery("SELECT Person.* FROM Person, Deltaker WHERE Deltaker.`e-mail` = Person.`e-mail` AND `hid` = " + eventId + ";");
 
             List<Person> persons = new ArrayList<Person>();
 
@@ -522,7 +534,7 @@ public class CalendarService implements ConnectionListener,
                 events.add(e);
             }
 
-            rs = s.executeQuery("SELECT Hendelse.* FROM Deltaker, Hendelse WHERE `e-mail` = '" + email + "' AND Hendelse.id = Deltaker.hid AND Hendelse.status = 'true';");
+            rs = s.executeQuery("SELECT Hendelse.* FROM Deltaker, Hendelse WHERE `e-mail` = '" + email + "' AND Hendelse.id = Deltaker.hid AND Deltaker.status = 'true';");
             while (rs.next()) {
                 Event e = createEvent(rs);
                 events.add(e);
@@ -533,6 +545,7 @@ public class CalendarService implements ConnectionListener,
 
             return events;
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
