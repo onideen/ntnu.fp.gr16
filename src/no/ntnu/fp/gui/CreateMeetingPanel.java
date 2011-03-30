@@ -170,6 +170,9 @@ public class CreateMeetingPanel extends BaseCalendarView
             description.setEnabled(false);
             select.setEnabled(false);
             unselect.setEnabled(false);
+            delete_button.setEnabled(false);
+            room_button.setEnabled(false);
+            
         }
         else
         {
@@ -180,6 +183,8 @@ public class CreateMeetingPanel extends BaseCalendarView
             description.setEnabled(true);
             select.setEnabled(true);
             unselect.setEnabled(true);
+            delete_button.setEnabled(true);
+            room_button.setEnabled(true);
         }
     }
 
@@ -362,7 +367,7 @@ public class CreateMeetingPanel extends BaseCalendarView
                     deleteEvent();
                 }
             });
-            if (model.isNew())
+            if (model.isNew() || !model.isEditable())
             {
                 delete_button.setText("Avbryt");
             }
@@ -372,7 +377,7 @@ public class CreateMeetingPanel extends BaseCalendarView
 
     protected void deleteEvent()
     {
-        if (model.isNew())
+        if (model.isNew() || !model.isEditable())
         {
             MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
         }
