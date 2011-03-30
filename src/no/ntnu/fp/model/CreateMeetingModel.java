@@ -227,6 +227,9 @@ public class CreateMeetingModel
 
     public boolean isEditable()
     {
+    	System.out.println("Event.getResponsible: " + event.getResponsible());
+    	System.out.println("Logged in User: " + Communication.LoggedInUserEmail);
+    	System.err.println("=====================================================================================================");
         if (event.getResponsible().equals(Communication.LoggedInUserEmail))
         {
             return true;

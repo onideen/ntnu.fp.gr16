@@ -102,6 +102,7 @@ public class Event {
 	}
 
         Room roomObject = null;
+		private boolean first;
         public Room getRoomObject()
         {
             if(roomObject!=null)
@@ -183,6 +184,15 @@ public class Event {
 		this.responsible = responsible;
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_RESPONSIBLE, old, responsible);
 		propChangeSupp.firePropertyChange(event);
+	}
+
+	public void setFirst(boolean b) {
+		first = b;
+		
+	}
+
+	public boolean getFirst() {
+		return first;
 	}
 	
 }
