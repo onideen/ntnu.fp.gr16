@@ -59,7 +59,7 @@ public class Communication {
 	}
 
 	public static boolean login(String user, String password)
-			throws SQLException {
+			 {
 		ServerResponse sr = sendData("login", user, password);
 		if (sr.isSuccess()) {
                         LoggedInUserEmail = user;

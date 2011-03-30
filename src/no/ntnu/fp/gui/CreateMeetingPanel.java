@@ -412,7 +412,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         {
             model.save();
             MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
-            MainPanel.getMainForm().refresCalendar();
+            MainPanel.getMainForm().refreshCalendar();
         }
         else
         {
