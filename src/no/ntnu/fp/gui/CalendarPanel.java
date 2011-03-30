@@ -258,11 +258,11 @@ public class CalendarPanel extends JPanel implements ComponentListener
                 {
                     if (e.getStartTime().get(Calendar.HOUR_OF_DAY) == cal.get(Calendar.HOUR_OF_DAY))
                     {
-                        e.setResponsible("true");
+                        e.setFirst(true);
                     }
                     else
                     {
-                        e.setResponsible("false");
+                        e.setFirst(false);
                     }
                     return e;
                 }
@@ -532,7 +532,7 @@ public class CalendarPanel extends JPanel implements ComponentListener
             if (event != null)
             {
                 cell.setBackground(Color.yellow);
-                start = Boolean.parseBoolean(event.getResponsible());
+                start = event.getFirst();
                 if (start)
                 {
                     cell.setText(event.getDescription());
