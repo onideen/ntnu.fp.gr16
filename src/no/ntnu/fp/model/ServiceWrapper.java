@@ -5,6 +5,7 @@
 
 package no.ntnu.fp.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -15,7 +16,8 @@ import java.util.List;
 public class ServiceWrapper {
 
     public List<Event> getEvents() {
-        return Communication.getEvents(Communication.LoggedInUserEmail);
+        //return Communication.getEvents(Communication.LoggedInUserEmail);
+        return new ArrayList<Event>();
     }
     
 

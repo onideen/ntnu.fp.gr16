@@ -19,7 +19,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
-import no.ntnu.fp.gui.listeners.IGeneralListener;
+import no.ntnu.fp.gui.listeners.GeneralListener;
 
 /**
  *
@@ -173,8 +173,8 @@ public class MessageListPanel extends javax.swing.JPanel {
         readMessages(p.getEmail());
     }
 
-   IGeneralListener listener = null;
-   public void setGeneralListener(IGeneralListener l)
+   GeneralListener listener = null;
+   public void setGeneralListener(GeneralListener l)
    {
        listener = l;
    }

@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import no.ntnu.fp.model.Communication;
-import no.ntnu.fp.gui.listeners.ILoginListener;
+import no.ntnu.fp.gui.listeners.LoginListener;
 
 /**
 * This code was edited or generated using CloudGarden's Jigloo
@@ -110,8 +110,8 @@ public class LogInPanel extends javax.swing.JPanel {
 		}
 	}
 
-        ILoginListener Listener = null;
-        public void setLoginListener(ILoginListener l)
+        LoginListener Listener = null;
+        public void setLoginListener(LoginListener l)
         {
             Listener = l;
         }

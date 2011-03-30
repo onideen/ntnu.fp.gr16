@@ -8,51 +8,49 @@
  *
  * Created on 18.mar.2011, 10:16:19
  */
-
 package no.ntnu.fp.gui;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import no.ntnu.fp.model.Communication;
-import no.ntnu.fp.gui.listeners.IPersonListener;
 import no.ntnu.fp.model.Person;
 
 /**
  *
  * @author Erlend Dahl
  */
-public class EmployeesPanel extends javax.swing.JPanel {
+public class EmployeesPanel extends javax.swing.JPanel
+{
 
     DefaultListModel dlm = new DefaultListModel();
-    List<IPersonListener> personListeners = new ArrayList<IPersonListener>();
 
     /** Creates new form EmployeesPanel */
-    public EmployeesPanel() {
+    public EmployeesPanel()
+    {
         initComponents();
 
         employees = Communication.getEmployees();
         ListEmployees();
     }
-
     List<Person> employees;
+
     private void ListEmployees()
     {
         String f = txtFilter.getText().toLowerCase();
         dlm.clear();
         lstEmployees.setModel(dlm);
-        for(Person p : employees)
+        for (Person p : employees)
         {
-            if(p==null)
+            if (p == null)
+            {
                 continue;
+            }
             if (f.equals("") || (p.getName() + p.getEmail()).toLowerCase().contains(f))
+            {
                 dlm.addElement(p);
+            }
         }
-    }
-
-    public void addListener(IPersonListener ipl)
-    {
-        personListeners.add(ipl);
     }
 
     /** This method is called from within the constructor to
@@ -135,12 +133,12 @@ public class EmployeesPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void lstEmployeesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstEmployeesValueChanged
-        btnShowCalendar.setEnabled(lstEmployees.getSelectedIndex()>-1);
+        btnShowCalendar.setEnabled(lstEmployees.getSelectedIndex() > -1);
     }//GEN-LAST:event_lstEmployeesValueChanged
 
     private void btnShowCalendarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowCalendarActionPerformed
-        for(IPersonListener ipl : personListeners)
-            ipl.personAction((Person)dlm.getElementAt(lstEmployees.getSelectedIndex()));
+        Person person = (Person)dlm.getElementAt(lstEmployees.getSelectedIndex());
+        
     }//GEN-LAST:event_btnShowCalendarActionPerformed
 
     private void txtFilterKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFilterKeyReleased
@@ -150,8 +148,6 @@ public class EmployeesPanel extends javax.swing.JPanel {
     private void txtFilterKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFilterKeyTyped
         ListEmployees();
     }//GEN-LAST:event_txtFilterKeyTyped
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnShowCalendar;
     private javax.swing.JLabel jLabel1;
@@ -159,16 +155,4 @@ public class EmployeesPanel extends javax.swing.JPanel {
     private javax.swing.JList lstEmployees;
     private javax.swing.JTextField txtFilter;
     // End of variables declaration//GEN-END:variables
-
-    public static void main(String args[])
-    {
-        EmployeesPanel p = new EmployeesPanel();
-        JFrame frame = new JFrame();
-        frame.getContentPane().add(p);
-        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-        
-    }
-
 }

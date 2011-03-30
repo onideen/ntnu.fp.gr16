@@ -107,6 +107,10 @@ public class CalendarPanel extends JPanel implements ComponentListener
         }
     }
 
+    public JScrollPane getScrollPane() {
+        return scrollPane;
+    }
+
     /**
      * @wbp.parser.constructor
      */

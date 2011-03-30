@@ -9,6 +9,6 @@ package no.ntnu.fp.gui.listeners;
  *
  * @author Erlend Dahl
  */
-public interface IGeneralListener {
+public interface GeneralListener {
     public void action();
 }

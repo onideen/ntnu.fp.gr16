@@ -23,9 +23,9 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import no.ntnu.fp.gui.listeners.CalendarPanelActionListener;
-import no.ntnu.fp.gui.listeners.IGeneralListener;
+import no.ntnu.fp.gui.listeners.GeneralListener;
 import no.ntnu.fp.model.Communication;
-import no.ntnu.fp.gui.listeners.ILoginListener;
+import no.ntnu.fp.gui.listeners.LoginListener;
 import no.ntnu.fp.model.Message;
 import no.ntnu.fp.utils.TimedRunner;
 
@@ -41,7 +41,7 @@ import no.ntnu.fp.utils.TimedRunner;
  * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
  * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
  */
-public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGeneralListener, CalendarPanelActionListener
+public class MainPanel extends javax.swing.JPanel implements LoginListener, GeneralListener, CalendarPanelActionListener
 {
 
 
