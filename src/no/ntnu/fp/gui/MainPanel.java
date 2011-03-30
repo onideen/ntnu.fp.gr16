@@ -134,7 +134,7 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
                 {
                     try
                     {
-                        msgs = Communication.getMessages(Communication.LoggedInUserEmail);
+                        msgs = Communication.getMessagesSilent(Communication.LoggedInUserEmail);
                     }
                     catch (Exception e)
                     {

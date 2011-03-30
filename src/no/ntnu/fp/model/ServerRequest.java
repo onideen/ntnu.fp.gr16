@@ -180,16 +180,27 @@ public class ServerRequest {
 		throw new Exception(type + " is not supported.");
 	}
 
+        public ServerResponse sendRequestSilent(){
+            return doSendRequest(false);
+        }
+
+        public ServerResponse sendRequest(){
+            return doSendRequest(true);
+        }
+
 	/**
 	 * Sends this server request to the server.
 	 * 
 	 * @return
 	 */
-	public ServerResponse sendRequest() {
+	private ServerResponse doSendRequest(boolean silent) {
 
-                setWorkingFormVisible(true);
+                if(silent == false)
+                    setWorkingFormVisible(true);
 
                 try {
+                        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" + requestData.toXML());
+
 			ServerConnection.connect();
                         String ans = ServerConnection.proxyRequest(requestData.toXML());
 
@@ -197,7 +208,8 @@ public class ServerRequest {
 
                         ServerResponse sr = new ServerResponse(doc.getRootElement());
 
-                        setWorkingFormVisible(false);
+                        if(silent == false)
+                            setWorkingFormVisible(false);
 
                         return sr;
 
@@ -206,7 +218,8 @@ public class ServerRequest {
 			e.printStackTrace();
 		}
 
-                setWorkingFormVisible(false);
+                if(silent == false)
+                    setWorkingFormVisible(false);
 
 		return ServerResponse.createFail();
 	}
