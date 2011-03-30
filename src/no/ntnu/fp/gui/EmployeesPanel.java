@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import no.ntnu.fp.model.Communication;
+import no.ntnu.fp.model.Event;
 import no.ntnu.fp.model.Person;
 
 /**
@@ -138,7 +139,12 @@ public class EmployeesPanel extends javax.swing.JPanel
 
     private void btnShowCalendarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowCalendarActionPerformed
         Person person = (Person)dlm.getElementAt(lstEmployees.getSelectedIndex());
-        
+        List<Event> events = Communication.getEvents(person.getEmail());
+        CalendarDoubleView cdv = new CalendarDoubleView(events, person.getName());
+        MainPanel.getMainForm().changeMain(MainPanel.CALENDAR, cdv);
+        for(CalendarPanel cp : cdv.getCalendarPanels()) {
+            cp.addCalendarPanelActionListener(MainPanel.getMainForm());
+        }
     }//GEN-LAST:event_btnShowCalendarActionPerformed
 
     private void txtFilterKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFilterKeyReleased

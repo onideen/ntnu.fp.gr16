@@ -83,7 +83,7 @@ public class MainPanel extends javax.swing.JPanel implements LoginListener, Gene
     {
         JFrame frame = new JFrame();
         MainPanel mp = new MainPanel();
-        frame.getContentPane().add(mp);
+        frame.setContentPane(mp);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setSize(1010, 710);
         frame.setVisible(true);
@@ -404,5 +404,12 @@ public class MainPanel extends javax.swing.JPanel implements LoginListener, Gene
         meetingPanel = new CreateMeetingPanel(timeSpan.startCal(), timeSpan.startCal(), timeSpan.endCal());
 
         changeMain(APPOINTMENT);
+    }
+
+    public void changeMain(int panel, CalendarDoubleView cdv)
+    {
+        changeMain(panel);
+        maincontainer.removeAll();
+        maincontainer.add(cdv, BorderLayout.CENTER);
     }
 }
