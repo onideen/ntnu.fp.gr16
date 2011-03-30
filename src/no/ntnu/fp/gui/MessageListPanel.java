@@ -185,6 +185,9 @@ public class MessageListPanel extends javax.swing.JPanel {
        Communication.answerMessage(m, answer);
        dlm.removeElement(m);
 
+       if(dlm.size()>0)
+           jList1.setSelectedIndex(0);
+
        if(listener!=null)
            listener.action();
 
