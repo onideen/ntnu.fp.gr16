@@ -9,8 +9,8 @@ import java.util.List;
 
 public class CreateMeetingModel {
 
-	private boolean newEvent = false;
-	private boolean timeIsSet = true;
+	private boolean newEvent;
+	private boolean timeIsSet;
 	private Event event;
 	
 	private Calendar calendar;
@@ -23,13 +23,17 @@ public class CreateMeetingModel {
 	
 	public CreateMeetingModel(Calendar date, Calendar startTime, Calendar endTime){
 		this(new Event());
-		calendar = date;
+		this.calendar = date;
 		this.startTime = startTime;
 		this.endTime = endTime;
+		newEvent = true;
+		timeIsSet = true;
 	}
 	
 	public CreateMeetingModel(Event event) {
 		this.event = event;
+		newEvent = false;
+		timeIsSet = true;
 	}
 	
 	public CreateMeetingModel() {
@@ -80,8 +84,8 @@ public class CreateMeetingModel {
 
 	public void setDefaultValues() {
 		if (newEvent) {
-			calendar = Calendar.getInstance();
 			if (!timeIsSet){
+				calendar = Calendar.getInstance();
 				startTime = Calendar.getInstance();
 				endTime = Calendar.getInstance();
 				startTime.setTime(new Time(10, 0, 0));
