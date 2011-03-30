@@ -29,6 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import com.toedter.calendar.JDateChooser;
+import javax.swing.JOptionPane;
 
 public class CreateMeetingPanel extends BaseCalendarView
 {
@@ -410,7 +411,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         }
         else
         {
-        	
+        	JOptionPane.showMessageDialog(meetingPanel, "Ugyldig input", "Ugyldig input", JOptionPane.ERROR_MESSAGE);
         }
     }
 

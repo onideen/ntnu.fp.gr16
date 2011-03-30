@@ -207,6 +207,9 @@ public class CreateMeetingModel
 
     public boolean isValidInput()
     {
+        if(getEndTime().before(getStartTime()) || getEndTime()==getStartTime())
+            return false;
+
         return true;
     }
 
