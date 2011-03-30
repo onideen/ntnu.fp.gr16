@@ -262,11 +262,22 @@ public class CalendarService implements ConnectionListener,
             p.setInt(1, e.getEid());
             p.executeUpdate();
 
+            p = c.prepareStatement("DELETE FROM Deltaker WHERE hid = ?;");
+            p.setInt(1, e.getEid());
+            p.executeUpdate();
+
             Person boss = getPerson(e.getResponsible());
             for (String attendee : e.getAttendees()) {
                 if (attendee.equals(e.getResponsible())) {
                     continue;
                 }
+
+                p = c.prepareStatement("INSERT INTO Deltaker(`hid`, `e-mail`, `status`) VALUES(?, ?, ?);");
+                p.setInt(1, e.getEid());
+                p.setString(2, attendee);
+                p.setString(3, "venter");
+
+                p.executeUpdate();
 
                 Message m = new Message(boss.getName()
                         + " har endret møtet. Møtet er nå " + e.getDateString()
@@ -381,16 +392,24 @@ public class CalendarService implements ConnectionListener,
                     + m.getReceiver() + "';";
             executeUpdate(s);
 
+            System.out.println("*********************************** Svarer " + answer + " på melding " + m.getMid());
+
             if (answer == false) {
 
                 Event relatedEvent = getEvent(m.getEvent());
                 Person sender = getPerson(m.getReceiver());
                 Person creator = getPerson(relatedEvent.getResponsible());
 
+                System.out.println("*********************************** RelEvent " + relatedEvent.getEid());
+                System.out.println("*********************************** Sender " + sender.getName());
+                System.out.println("*********************************** Creator " + creator.getName());
+
                 List<Person> attendees = getAttendees(m.getEvent());
                 attendees.add(creator);
                 for (Person person : attendees) {
+                    System.out.println("*********************************** Looping attendee " + person.getName());
                     if (!sender.getEmail().equals(person.getEmail())) {
+                        System.out.println("*********************************** Sending message " + person.getName());
                         Message message = new Message(sender.getName()
                                 + " har avslått møtet til " + creator.getName()
                                 + " den " + relatedEvent.getDate() + " kl "
@@ -398,6 +417,7 @@ public class CalendarService implements ConnectionListener,
                                 Message.Type.Information, person.getEmail(),
                                 m.getEvent());
                         saveMessage(message);
+                        System.out.println("*********************************** Message sent.");
                     }
                 }
 

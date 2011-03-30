@@ -184,6 +184,7 @@ public class MessageListPanel extends javax.swing.JPanel {
        Message m = (Message)dlm.getElementAt(jList1.getSelectedIndex());
        Communication.answerMessage(m, answer);
        dlm.removeElement(m);
+       MainPanel.getMainForm().refreshCalendar();
 
        if(dlm.size()>0)
            jList1.setSelectedIndex(0);

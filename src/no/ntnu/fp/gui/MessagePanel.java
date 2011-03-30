@@ -53,42 +53,40 @@ public class MessagePanel extends javax.swing.JPanel {
         lblContents.setName("lblText"); // NOI18N
         lblContents.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
 
-        lblInvitation.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        lblInvitation.setFont(new java.awt.Font("Tahoma", 0, 18));
         lblInvitation.setText("Invitation");
         lblInvitation.setName("lblMessageType"); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
         layout.setHorizontalGroup(
-        	layout.createParallelGroup(Alignment.TRAILING)
-        		.addGroup(layout.createSequentialGroup()
-        			.addContainerGap(366, Short.MAX_VALUE)
-        			.addComponent(jLabel1)
-        			.addPreferredGap(ComponentPlacement.RELATED)
-        			.addComponent(lblDate)
-        			.addContainerGap())
-        		.addGroup(Alignment.LEADING, layout.createSequentialGroup()
-        			.addContainerGap()
-        			.addComponent(lblInvitation)
-        			.addContainerGap(423, Short.MAX_VALUE))
-        		.addGroup(Alignment.LEADING, layout.createSequentialGroup()
-        			.addContainerGap()
-        			.addComponent(lblContents, GroupLayout.PREFERRED_SIZE, 370, GroupLayout.PREFERRED_SIZE)
-        			.addContainerGap(128, Short.MAX_VALUE))
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(315, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblDate)
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblContents, javax.swing.GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE)
+                    .addComponent(lblInvitation))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
-        	layout.createParallelGroup(Alignment.LEADING)
-        		.addGroup(layout.createSequentialGroup()
-        			.addGap(8)
-        			.addComponent(lblInvitation)
-        			.addPreferredGap(ComponentPlacement.RELATED)
-        			.addComponent(lblContents, GroupLayout.PREFERRED_SIZE, 57, GroupLayout.PREFERRED_SIZE)
-        			.addPreferredGap(ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
-        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
-        				.addComponent(lblDate)
-        				.addComponent(jLabel1))
-        			.addContainerGap())
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblInvitation)
+                .addGap(8, 8, 8)
+                .addComponent(lblContents, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblDate)
+                    .addComponent(jLabel1))
+                .addContainerGap())
         );
-        this.setLayout(layout);
     }// </editor-fold>//GEN-END:initComponents
 
 
