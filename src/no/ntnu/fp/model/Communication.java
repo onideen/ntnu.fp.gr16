@@ -93,6 +93,14 @@ public class Communication {
 		return response;
 	}
 
+        private static ServerResponse sendDataSilent(String function,
+			Object... parameters) {
+		ServerRequest sr = new ServerRequest(function, parameters);
+		ServerResponse response = sr.sendRequestSilent();
+
+		return response;
+	}
+
         private static List<Person> cacheEmployees = null;
 	public static List<Person> getEmployees() {
                 if(cacheEmployees != null)
@@ -103,7 +111,9 @@ public class Communication {
 			List<Person> cache = (List<Person>) ServerRequest
 					.createObjectFromElement(sr.returnData.getChildElements()
 							.get(0));
-                        cacheEmployees = cache;
+                        if(cache!=null)
+                            if(cache.size()>5)
+                                cacheEmployees = cache;
                         return cache;
 		} catch (Exception e) {
                     e.printStackTrace();
@@ -111,6 +121,16 @@ public class Communication {
 
 		return new ArrayList<Person>();
 	}
+
+        public static List<Message> getMessagesSilent(String email)
+        {
+            ServerResponse sr = sendDataSilent("getMessages", email);
+            if (sr.isSuccess()) {
+                    return (List<Message>) sr.getParameters()[0];
+            }
+
+            return new ArrayList<Message>();
+        }
 
 	public static List<Message> getMessages(String email) {
 		ServerResponse sr = sendData("getMessages", email);
