@@ -158,6 +158,11 @@ public class CreateMeetingModel {
 		}
 		if (event.getRoom() == null)
 			event.setRoom("");
+		if (event.attendees == null || event.attendees.isEmpty())
+			event.type = Event.Type.Appointment;
+		else
+			event.type = Event.Type.Meeting;
+		
 		
 		if (newEvent){
 			Communication.saveEvent(event);
