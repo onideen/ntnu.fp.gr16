@@ -356,7 +356,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         if (delete_button == null)
         {
             delete_button = new JButton();
-            delete_button.setIcon(new ImageIcon(getClass().getResource("/Save.png")));
+            delete_button.setIcon(new ImageIcon(getClass().getResource("/Close-icon.png")));
             delete_button.setIconTextGap(10);
             delete_button.setText("Slett");
             delete_button.addActionListener(new ActionListener()
