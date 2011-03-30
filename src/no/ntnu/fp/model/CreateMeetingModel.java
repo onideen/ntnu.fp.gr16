@@ -182,4 +182,13 @@ public class CreateMeetingModel {
 		else
 			return false;
 	}
+
+        public boolean isNew()
+        {
+            return newEvent;
+        }
+
+        public void delete(){
+            //Nuthin' here ...
+        }
 }
