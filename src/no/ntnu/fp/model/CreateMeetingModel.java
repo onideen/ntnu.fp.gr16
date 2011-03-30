@@ -12,20 +12,13 @@ public class CreateMeetingModel
     private boolean newEvent;
     private boolean timeIsSet;
     private Event event;
-    private Calendar calendar;
-    private Calendar startTime;
-    private Calendar endTime;
-    private String description;
-    private Room room;
-    private List<Person> attendees;
-    private String responsible;
 
     public CreateMeetingModel(Calendar date, Calendar startTime, Calendar endTime)
     {
         this(new Event());
-        this.calendar = date;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        setDate(date);
+        setStartTime(startTime);
+        setEndTime(endTime);
         newEvent = true;
         timeIsSet = true;
     }
@@ -33,6 +26,7 @@ public class CreateMeetingModel
     public CreateMeetingModel(Event event)
     {
         this.event = event;
+
         newEvent = false;
         timeIsSet = true;
     }
@@ -46,7 +40,7 @@ public class CreateMeetingModel
 
     public Calendar getDate()
     {
-        return calendar;
+        return event.getDate();
     }
 
     public boolean isNew()
@@ -56,47 +50,47 @@ public class CreateMeetingModel
 
     public void setDate(Calendar calendar)
     {
-        this.calendar = calendar;
+        event.setDate(calendar);
     }
 
     public Calendar getStartTime()
     {
-        return startTime;
+        return event.getStartTime();
     }
 
     public void setStartTime(Calendar startTime)
     {
-        this.startTime = startTime;
+        event.setStartTime(startTime);
     }
 
     public Calendar getEndTime()
     {
-        return endTime;
+        return event.getEndTime();
     }
 
     public void setEndTime(Calendar endTime)
     {
-        this.endTime = endTime;
+        event.setEndTime(endTime);
     }
 
     public Room getRoom()
     {
-        return room;
+        return event.getRoomObject();
     }
 
     public void setRoom(Room room)
     {
-        this.room = room;
+        event.setRoom(room.toString());
     }
 
     public String getDescription()
     {
-        return description;
+        return event.getDescription();
     }
 
     public void setDescription(String description)
     {
-        this.description = description;
+        event.setDescription(description);
     }
 
     public void setDefaultValues()
@@ -105,21 +99,23 @@ public class CreateMeetingModel
         {
             if (!timeIsSet)
             {
-                calendar = Calendar.getInstance();
-                startTime = Calendar.getInstance();
-                endTime = Calendar.getInstance();
+                setDate(Calendar.getInstance());
+                Calendar startTime = Calendar.getInstance();
+                Calendar endTime = Calendar.getInstance();
                 startTime.setTime(new Time(10, 0, 0));
                 endTime.setTime(new Time(11, 0, 0));
+                setStartTime(startTime);
+                setEndTime(endTime);
             }
             event.setResponsible(Communication.LoggedInUserEmail);
         }
         else
         {
-            calendar = event.getDate();
-            startTime = event.getStartTime();
-            endTime = event.getEndTime();
-            room = event.getRoomObject();
-            description = event.getDescription();
+            setDate(event.getDate());
+            setStartTime(event.getStartTime());
+            setEndTime(event.getEndTime());
+            setRoom(event.getRoomObject());
+            setDescription(event.getDescription());
         }
     }
 
@@ -135,20 +131,21 @@ public class CreateMeetingModel
 
     public List<Room> getRooms()
     {
+        List<Room> rooms = Communication.getFreeRooms(new Reservation(new Date(getDate().getTimeInMillis()), new Time(getStartTime().getTimeInMillis()), new Time(getEndTime().getTimeInMillis())));
 
-        List<Room> rooms = Communication.getFreeRooms(new Reservation(new Date(calendar.getTimeInMillis()), new Time(startTime.getTimeInMillis()), new Time(endTime.getTimeInMillis())));
-
-        if (!newEvent && startTime == event.getStartTime())
-        {
+        if (!newEvent && getStartTime() == event.getStartTime())
             rooms.add(event.getRoomObject());
-        }
 
         return rooms;
     }
 
     public List<Person> getAttendees()
     {
-        return attendees;
+        List<Person> att = new ArrayList<Person>();
+        for(Person p : Communication.getEmployees())
+            if(event.attendees.contains(p.getEmail()))
+                att.add(p);
+        return att;
     }
 
     public List<Person> getAllUsers()
@@ -159,24 +156,24 @@ public class CreateMeetingModel
         }
         else
         {
-            List<Person> attendees = Communication.getAttendees(event.getEid());
+            List<Person> attendees = getAttendees();
             List<Person> employees = Communication.getEmployees();
+
             for (Person person : attendees)
-            {
                 employees.remove(person);
-            }
+            
             return employees;
         }
     }
 
     public void cleanAttendees()
     {
-        attendees = new ArrayList<Person>();
+        event.attendees.clear();
     }
 
     public void addAttendee(Person person)
     {
-        attendees.add(person);
+        event.attendees.add(person.getEmail());
     }
 
     public boolean isValidInput()
@@ -186,30 +183,6 @@ public class CreateMeetingModel
 
     public void save()
     {
-        event.setDate(calendar);
-        event.setStartTime(startTime);
-        event.setEndTime(endTime);
-        event.setRoom(room.toString());
-        event.setDescription(description);
-
-        for (Person person : attendees)
-        {
-            event.addAttendee(person.getEmail());
-        }
-        if (event.getRoom() == null)
-        {
-            event.setRoom("");
-        }
-        if (event.attendees == null || event.attendees.isEmpty())
-        {
-            event.type = Event.Type.Appointment;
-        }
-        else
-        {
-            event.type = Event.Type.Meeting;
-        }
-
-
         if (newEvent)
         {
             Communication.saveEvent(event);
@@ -227,16 +200,6 @@ public class CreateMeetingModel
 
     public boolean isEditable()
     {
-    	System.out.println("Event.getResponsible: " + event.getResponsible());
-    	System.out.println("Logged in User: " + Communication.LoggedInUserEmail);
-    	System.err.println("=====================================================================================================");
-        if (event.getResponsible().equals(Communication.LoggedInUserEmail))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return event.getResponsible().equals(Communication.LoggedInUserEmail);
     }
 }
