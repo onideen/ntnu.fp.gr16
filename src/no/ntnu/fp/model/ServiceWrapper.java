@@ -17,5 +17,6 @@ public class ServiceWrapper {
     public List<Event> getEvents() {
         return Communication.getEvents(Communication.LoggedInUserEmail);
     }
+    
 
 }

@@ -19,6 +19,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
+import no.ntnu.fp.gui.listeners.IGeneralListener;
 
 /**
  *
@@ -172,11 +173,21 @@ public class MessageListPanel extends javax.swing.JPanel {
         readMessages(p.getEmail());
     }
 
+   IGeneralListener listener = null;
+   public void setGeneralListener(IGeneralListener l)
+   {
+       listener = l;
+   }
+
    private void answerAndRemoveSelectedMessage(boolean answer)
     {
        Message m = (Message)dlm.getElementAt(jList1.getSelectedIndex());
        Communication.answerMessage(m, answer);
        dlm.removeElement(m);
+
+       if(listener!=null)
+           listener.action();
+
        jList1.updateUI();
    }
 }

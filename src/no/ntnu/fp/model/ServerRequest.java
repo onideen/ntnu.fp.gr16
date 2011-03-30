@@ -185,12 +185,13 @@ public class ServerRequest {
                         return sr;
 
 		} catch (Exception e) {
+                        JOptionPane.showMessageDialog(null, "Feil ved serverkommunikasjon. Vennligst prøv igjen en gang i neste uke.","Kommunikasjonsfeil",JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
 
                 setWorkingFormVisible(false);
 
-		return null;
+		return ServerResponse.createFail();
 	}
 
         static WorkingForm workingForm = null;
