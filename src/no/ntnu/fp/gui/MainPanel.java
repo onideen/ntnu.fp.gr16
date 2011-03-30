@@ -124,7 +124,7 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
 
         changeMain(LOGIN);
 
-        runner = new TimedRunner(1000 * 180, new Runnable()
+        runner = new TimedRunner(1000 * 45, new Runnable()
         {
 
             public void run()
