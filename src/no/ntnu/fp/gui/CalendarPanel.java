@@ -263,7 +263,7 @@ public class CalendarPanel extends JPanel implements ComponentListener
         for (Event e : events)
         {
             if (e.getDate().get(Calendar.YEAR) == cal.get(Calendar.YEAR)
-                && e.getDate().get(Calendar.DATE) == cal.get(Calendar.DATE))
+                && e.getDate().get(Calendar.DAY_OF_YEAR) == cal.get(Calendar.DAY_OF_YEAR))
             {
                 boolean startsBefore = e.getStartTime().get(Calendar.HOUR_OF_DAY) <= cal.get(Calendar.HOUR_OF_DAY);
                 boolean endsAfter = e.getEndTime().get(Calendar.HOUR_OF_DAY) > cal.get(Calendar.HOUR_OF_DAY);

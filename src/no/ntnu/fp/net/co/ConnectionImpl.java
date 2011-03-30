@@ -103,6 +103,17 @@ public class ConnectionImpl extends AbstractConnection
         KtnDatagram synAck = null;
         for (int i = 0; i < 3; i++)
         {
+            if(i % 2 == 0 && i > 0)
+            {
+                try
+                {
+                    simplySendPacket(datagram);
+                }
+                catch (Exception e)
+                {
+                    throw new IOException(e);
+                }
+            }
             synAck = receivePacket(true);
             if (synAck != null)
             {
