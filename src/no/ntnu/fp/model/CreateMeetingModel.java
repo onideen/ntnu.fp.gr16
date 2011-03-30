@@ -161,12 +161,10 @@ public class CreateMeetingModel
 
     public List<Room> getRooms()
     {
-        System.out.println("getRooms() <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<<");
-
-        List<Room> rooms = Communication.getFreeRooms(new Reservation(new Date(getDate().getTimeInMillis()), new Time(getStartTime().getTimeInMillis()), new Time(getEndTime().getTimeInMillis())));
-
-        if (!newEvent && getStartTime() == event.getStartTime())
-            rooms.add(event.getRoomObject());
+        List<Room> rooms = Communication.getFreeRooms(
+                new Reservation(new Date(getDate().getTimeInMillis()), new Time(getStartTime().getTimeInMillis()), new Time(getEndTime().getTimeInMillis())),
+                event.getEid()
+                );
 
         return rooms;
     }
