@@ -315,7 +315,7 @@ public class MainPanel extends javax.swing.JPanel implements LoginListener, Gene
         changeMain(CALENDAR);
         runner.invoke();
     }
-    public static void refresCalendar()
+    public static void refreshCalendar()
     {
         getMainForm().calendarPanel.getCalendarPanel().setEvents(Communication.getEvents(Communication.LoggedInUserEmail));
     }
