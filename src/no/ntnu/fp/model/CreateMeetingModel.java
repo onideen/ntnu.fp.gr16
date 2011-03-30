@@ -181,4 +181,10 @@ public class CreateMeetingModel {
     {
         Communication.deleteEvent(event.getEid());
     }
+	public boolean isEditable() {
+		if (event.getResponsible().equals(Communication.LoggedInUserEmail))
+			return true;
+		else
+			return false;
+	}
 }
