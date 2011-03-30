@@ -680,6 +680,8 @@ public class CreateMeetingPanel extends BaseCalendarView
     {
         for (Object person : selected_users_list.getSelectedValues())
         {
+            if(((Person)person).getEmail().equals(Communication.LoggedInUserEmail))
+                continue;
             selected_users_listModel.removeElement(person);
             all_users_listModel.addElement(person);
         }

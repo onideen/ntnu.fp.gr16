@@ -16,8 +16,8 @@ import java.util.List;
 public class ServiceWrapper {
 
     public List<Event> getEvents() {
-        //return Communication.getEvents(Communication.LoggedInUserEmail);
-        return new ArrayList<Event>();
+        return Communication.getEvents(Communication.LoggedInUserEmail);
+        //return new ArrayList<Event>();
     }
     
 

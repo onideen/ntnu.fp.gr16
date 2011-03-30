@@ -109,6 +109,9 @@ public class Event {
                 if(roomObject.getName().equals(getRoom()))
                     return roomObject;
 
+            if(getRoom()==null || getRoom().equals(""))
+                return null;
+            
             roomObject = Communication.getARoom(getRoom());
             return roomObject;
         }

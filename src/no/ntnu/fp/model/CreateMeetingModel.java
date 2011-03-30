@@ -26,6 +26,7 @@ public class CreateMeetingModel
     public CreateMeetingModel(Event event)
     {
         this.event = event;
+        this.event.attendees.add(Communication.LoggedInUserEmail);
 
         newEvent = false;
         timeIsSet = true;
@@ -143,7 +144,7 @@ public class CreateMeetingModel
     {
         List<Person> att = new ArrayList<Person>();
         for(Person p : Communication.getEmployees())
-            if(event.attendees.contains(p.getEmail()))
+            if(event.attendees.contains(p.getEmail()) || Communication.LoggedInUserEmail.equals(p.getEmail()))
                 att.add(p);
         return att;
     }
@@ -152,6 +153,14 @@ public class CreateMeetingModel
     {
         if (newEvent)
         {
+            List<Person> employees = Communication.getEmployees();
+            for(Person p:employees)
+                if(p.getEmail().equals(Communication.LoggedInUserEmail))
+                {
+                    employees.remove(p);
+                    break;
+                }
+
             return Communication.getEmployees();
         }
         else
