@@ -18,15 +18,15 @@ import no.ntnu.fp.utils.ServiceLoaders;
  */
 public class ServiceWrapper {
 
+<<<<<<< HEAD
     public static interface EventsRunner
     {
         void run(List<Event> events);
-    }
-
-    public static interface LoginRunner
-    {
-
-        void run(boolean success);
+=======
+    public List<Event> getEvents() {
+        return Communication.getEvents(Communication.LoggedInUserEmail);
+        //return new ArrayList<Event>();
+>>>>>>> a65a789b72b7917b1f68d751ca598fd492388c68
     }
 
     public void getEvents(final EventsRunner runner) {
@@ -43,17 +43,5 @@ public class ServiceWrapper {
             }
         });
         //runner.run(new List<Event>());
-    }
-
-    public void login(final String username, final String password, final LoginRunner runner)
-    {
-        Loader.loadAndRun(ServiceLoaders.login(username, password), new LoadCallback() {
-
-            public void run(Object object)
-            {
-                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Login complete<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-                runner.run(((Boolean)object).booleanValue());
-            }
-        });
     }
 }

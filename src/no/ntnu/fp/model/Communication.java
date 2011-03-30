@@ -60,7 +60,7 @@ public class Communication {
 
 	public static boolean login(String user, String password)
 			 {
-		ServerResponse sr = sendData("login", user, password);
+		ServerResponse sr = sendDataSilent("login", user, password);
 		if (sr.isSuccess()) {
                         LoggedInUserEmail = user;
 			return (Boolean) sr.getParameters()[0];

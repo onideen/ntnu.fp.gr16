@@ -196,7 +196,7 @@ public class ServerRequest {
 	 */
 	private ServerResponse doSendRequest(boolean silent) {
 
-                setWorkingFormVisible(!silent);
+                //setWorkingFormVisible(!silent);
 
                 try {
                         System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" + requestData.toXML());
@@ -208,7 +208,7 @@ public class ServerRequest {
 
                         ServerResponse sr = new ServerResponse(doc.getRootElement());
 
-                        setWorkingFormVisible(false);
+                        //setWorkingFormVisible(false);
 
                         return sr;
 
@@ -217,7 +217,7 @@ public class ServerRequest {
 			e.printStackTrace();
 		}
 
-                setWorkingFormVisible(false);
+                //setWorkingFormVisible(false);
 
 		return ServerResponse.createFail();
 	}
