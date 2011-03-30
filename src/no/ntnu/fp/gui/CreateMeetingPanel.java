@@ -98,7 +98,6 @@ public class CreateMeetingPanel extends BaseCalendarView {
 	
 	private void initGUI() {
 		try {
-			setModel(new CreateMeetingModel());
 			GridBagLayout thisLayout = new GridBagLayout();
 			thisLayout.rowWeights = new double[] {0.1};
 			thisLayout.rowHeights = new int[] {7};
