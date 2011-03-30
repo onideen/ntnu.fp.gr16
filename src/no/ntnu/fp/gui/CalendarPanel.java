@@ -38,6 +38,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import no.ntnu.fp.gui.listeners.CalendarPanelActionListener;
 import no.ntnu.fp.model.Event;
+import no.ntnu.fp.model.ServiceWrapper.EventsRunner;
 import no.ntnu.fp.model.calendar.Utils;
 
 /**
@@ -143,7 +144,15 @@ public class CalendarPanel extends JPanel implements ComponentListener
 
     private void initGUI()
     {
-        events = container.getService().getEvents();
+        events = null;
+        container.getService().getEvents(new EventsRunner() {
+
+            public void run(List<Event> events)
+            {
+                if(CalendarPanel.this.events == null)
+                    setEvents(events);
+            }
+        });
         adjustSpan();
         buildTable();
         addEventListeners();

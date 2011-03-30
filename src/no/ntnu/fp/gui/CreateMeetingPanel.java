@@ -157,6 +157,9 @@ public class CreateMeetingPanel extends BaseCalendarView
         }
         fillCells();
         doEditable();
+
+        if(model.getAttendees().size()>1)
+            add_users.doClick();
     }
 
     private void doEditable()
@@ -172,7 +175,6 @@ public class CreateMeetingPanel extends BaseCalendarView
             unselect.setEnabled(false);
             delete_button.setEnabled(false);
             room_button.setEnabled(false);
-            
         }
         else
         {
@@ -410,7 +412,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         {
             model.save();
             MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
-            MainPanel.getMainForm().refresCalendar();
+            MainPanel.getMainForm().refreshCalendar();
         }
         else
         {

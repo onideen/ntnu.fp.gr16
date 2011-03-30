@@ -65,10 +65,11 @@ public class CalendarDoubleView extends BaseCalendarView implements ActionListen
         });
     }
 
-    public CalendarDoubleView(List<Event> otherEvents, String otherName)
+    public CalendarDoubleView(List<Event> events, List<Event> otherEvents, String otherName)
     {
         this();
 
+        calendarPanel.setEvents(events);
         calendarPanel2.setEvents(otherEvents);
         otherLabel.setText("Kalenderen til " + otherName + ":");
     }

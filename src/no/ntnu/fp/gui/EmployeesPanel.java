@@ -16,12 +16,15 @@ import javax.swing.*;
 import no.ntnu.fp.model.Communication;
 import no.ntnu.fp.model.Event;
 import no.ntnu.fp.model.Person;
+import no.ntnu.fp.model.ServiceWrapper.EventsRunner;
+import no.ntnu.fp.utils.Loader;
+import no.ntnu.fp.utils.ServiceLoaders;
 
 /**
  *
  * @author Erlend Dahl
  */
-public class EmployeesPanel extends javax.swing.JPanel
+public class EmployeesPanel extends BaseCalendarView
 {
 
     DefaultListModel dlm = new DefaultListModel();
@@ -138,13 +141,35 @@ public class EmployeesPanel extends javax.swing.JPanel
     }//GEN-LAST:event_lstEmployeesValueChanged
 
     private void btnShowCalendarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowCalendarActionPerformed
-        Person person = (Person)dlm.getElementAt(lstEmployees.getSelectedIndex());
-        List<Event> events = Communication.getEvents(person.getEmail());
+        final Person person = (Person) dlm.getElementAt(lstEmployees.getSelectedIndex());
+
+        getService().getEvents(person.getEmail(), new EventsRunner()
+        {
+
+            public void run(List<Event> events)
+            {
+                final List<Event> otherEvents = events;
+                getService().getEvents(new EventsRunner()
+                {
+
+                    public void run(List<Event> events)
+                    {
+                        CalendarDoubleView cdv = new CalendarDoubleView(events, otherEvents, person.getName());
+                        MainPanel.getMainForm().changeMain(MainPanel.CALENDAR, cdv);
+                        for (CalendarPanel cp : cdv.getCalendarPanels())
+                        {
+                            cp.addCalendarPanelActionListener(MainPanel.getMainForm());
+                        }
+                    }
+                });
+            }
+        });
+        /*List<Event> events = Communication.getEvents(person.getEmail());
         CalendarDoubleView cdv = new CalendarDoubleView(events, person.getName());
         MainPanel.getMainForm().changeMain(MainPanel.CALENDAR, cdv);
         for(CalendarPanel cp : cdv.getCalendarPanels()) {
-            cp.addCalendarPanelActionListener(MainPanel.getMainForm());
-        }
+        cp.addCalendarPanelActionListener(MainPanel.getMainForm());
+        }*/
     }//GEN-LAST:event_btnShowCalendarActionPerformed
 
     private void txtFilterKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFilterKeyReleased
