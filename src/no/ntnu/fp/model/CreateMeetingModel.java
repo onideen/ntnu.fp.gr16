@@ -172,4 +172,11 @@ public class CreateMeetingModel {
 			Communication.updateEvent(event);
 		}
 	}
+
+	public boolean isEditable() {
+		if (event.getResponsible().equals(Communication.LoggedInUserEmail))
+			return true;
+		else
+			return false;
+	}
 }
