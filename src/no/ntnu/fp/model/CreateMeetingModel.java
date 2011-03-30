@@ -38,6 +38,10 @@ public class CreateMeetingModel {
 		timeIsSet = false;
 	}
 
+    public boolean isNew() {
+        return newEvent;
+    }
+
 	public Calendar getDate() {
 		return calendar;
 	}
@@ -172,4 +176,9 @@ public class CreateMeetingModel {
 			Communication.updateEvent(event);
 		}
 	}
+
+    public void delete()
+    {
+        Communication.deleteEvent(event.getEid());
+    }
 }
