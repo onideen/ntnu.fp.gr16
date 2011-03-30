@@ -29,6 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import com.toedter.calendar.JDateChooser;
+import javax.swing.JOptionPane;
 
 public class CreateMeetingPanel extends BaseCalendarView
 {
@@ -37,7 +38,6 @@ public class CreateMeetingPanel extends BaseCalendarView
     private JPanel meetingPanel;
     private JButton save_button;
     private JButton delete_button;
-    private JButton add_users;
     private JPanel buttons_panel;
     private JLabel newMeetingLabel;
     private JLabel selected_users_label;
@@ -157,9 +157,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         }
         fillCells();
         doEditable();
-
-        if(model.getAttendees().size()>1)
-            add_users.doClick();
+        
     }
 
     private void doEditable()
@@ -188,11 +186,6 @@ public class CreateMeetingPanel extends BaseCalendarView
             delete_button.setEnabled(true);
             room_button.setEnabled(true);
         }
-    }
-
-    private void setModel(CreateMeetingModel model)
-    {
-        this.model = model;
     }
 
     public Component getJDateChooser()
@@ -382,11 +375,13 @@ public class CreateMeetingPanel extends BaseCalendarView
         if (model.isNew() || !model.isEditable())
         {
             MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
+            MainPanel.getMainForm().refreshCalendar();
         }
         else
         {
             model.delete();
             MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
+            MainPanel.getMainForm().refreshCalendar();
         }
     }
 
@@ -416,7 +411,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         }
         else
         {
-        	
+        	JOptionPane.showMessageDialog(meetingPanel, "Ugyldig input", "Ugyldig input", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -525,14 +520,7 @@ public class CreateMeetingPanel extends BaseCalendarView
             allUsersPanel.add(getSelected_users_scroll(), new GridBagConstraints(2, 1, 1, 3, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
             allUsersPanel.add(getAllEmployeeScroll(), new GridBagConstraints(0, 1, 1, 3, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
             allUsersPanel.add(getSelected_users_label(), new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-            if (model.getAttendees() == null)
-            {
-                allUsersPanel.setVisible(false);
-            }
-            else
-            {
-                allUsersPanel.setVisible(true);
-            }
+            allUsersPanel.setVisible(true);
         }
         return allUsersPanel;
     }
@@ -734,31 +722,8 @@ public class CreateMeetingPanel extends BaseCalendarView
             buttons_panel.setLayout(buttons_panelLayout);
             buttons_panel.add(getSave_button(), new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
             buttons_panel.add(getDelete_button(), new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-            buttons_panel.add(getAdd_users(), new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
         }
         return buttons_panel;
-    }
-
-    private JButton getAdd_users()
-    {
-        if (add_users == null)
-        {
-            add_users = new JButton();
-            add_users.setIcon(new ImageIcon(getClass().getResource("/addusers.png")));
-            add_users.setIconTextGap(10);
-            add_users.setText("Legg til deltakere");
-            add_users.addActionListener(new ActionListener()
-            {
-
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    allUsersPanel.setVisible(true);
-
-                }
-            });
-        }
-        return add_users;
     }
 
     public class TimeListener implements ActionListener
