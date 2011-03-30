@@ -49,7 +49,7 @@ public abstract class AbstractConnection implements Connection {
      * {@link #RETRANSMIT} value, for a total of 4 possible transmissions before
      * timing out.
      */
-    protected static int TIMEOUT = 3 * RETRANSMIT + (RETRANSMIT / 2);
+    protected static int TIMEOUT = 30 * RETRANSMIT + (RETRANSMIT / 2);
 
     /**
      * Connection timeout

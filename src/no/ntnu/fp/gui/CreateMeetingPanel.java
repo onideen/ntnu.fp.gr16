@@ -362,7 +362,7 @@ public class CreateMeetingPanel extends BaseCalendarView
                     deleteEvent();
                 }
             });
-            if (model.isNew())
+            if (model.isNew() || !model.isEditable())
             {
                 delete_button.setText("Avbryt");
             }
@@ -372,7 +372,7 @@ public class CreateMeetingPanel extends BaseCalendarView
 
     protected void deleteEvent()
     {
-        if (model.isNew())
+        if (model.isNew() || !model.isEditable())
         {
             MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
         }
