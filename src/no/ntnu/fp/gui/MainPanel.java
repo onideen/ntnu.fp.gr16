@@ -315,6 +315,11 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
         changeMain(CALENDAR);
         runner.invoke();
     }
+    public static void refresCalendar()
+    {
+        getMainForm().calendarPanel.getCalendarPanel().setEvents(Communication.getEvents(Communication.LoggedInUserEmail));
+    }
+
     private int activePanel;
 
     public void changeMain(int panel)
@@ -339,7 +344,6 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
                     calendarPanel.getCalendarPanel().addCalendarPanelActionListener(this);
                 }
                 maincontainer.add(calendarPanel, BorderLayout.CENTER);
-                calendarPanel.getCalendarPanel().setEvents(Communication.getEvents(Communication.LoggedInUserEmail));
                 break;
             case APPOINTMENT:
                 if (meetingPanel == null)
