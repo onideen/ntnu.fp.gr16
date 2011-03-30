@@ -216,6 +216,7 @@ public class MainPanel extends javax.swing.JPanel implements LoginListener, Gene
                         @Override
                         public void actionPerformed(ActionEvent e)
                         {
+                            meetingPanel = null;
                             changeMain(APPOINTMENT);
                         }
                     });
