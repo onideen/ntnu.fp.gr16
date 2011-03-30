@@ -134,8 +134,30 @@ public class CreateMeetingPanel extends BaseCalendarView {
 			e.printStackTrace();
 		}
 		fillCells();
+		doEditable();
 	}
 	
+	private void doEditable() {
+		if ( ! model.isEditable()){
+			calendar.setEnabled(false);
+			startTime.setEnabled(false);
+			end_time.setEnabled(false);
+			roomChooser.setEnabled(false);
+			description.setEnabled(false);
+			select.setEnabled(false);
+			unselect.setEnabled(false);
+		}
+		else {
+			calendar.setEnabled(true);
+			startTime.setEnabled(true);
+			end_time.setEnabled(true);
+			roomChooser.setEnabled(true);
+			description.setEnabled(true);
+			select.setEnabled(true);
+			unselect.setEnabled(true);
+		}
+	}
+
 	private void setModel(CreateMeetingModel model) {
 		this.model = model;
 	}
