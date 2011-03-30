@@ -124,7 +124,7 @@ public class MainPanel extends javax.swing.JPanel implements LoginListener, Gene
 
         changeMain(LOGIN);
 
-        runner = new TimedRunner(1000 * 180, new Runnable()
+        runner = new TimedRunner(1000 * 45, new Runnable()
         {
 
             public void run()
@@ -134,7 +134,7 @@ public class MainPanel extends javax.swing.JPanel implements LoginListener, Gene
                 {
                     try
                     {
-                        msgs = Communication.getMessages(Communication.LoggedInUserEmail);
+                        msgs = Communication.getMessagesSilent(Communication.LoggedInUserEmail);
                     }
                     catch (Exception e)
                     {
