@@ -78,8 +78,7 @@ public class CalendarService implements ConnectionListener,
                 Connection conn = DriverManager.getConnection(url, userName,
                         password);
 
-                if(conn == null)
-                {
+                if (conn == null) {
                     System.out.println("");
                     System.out.println("***");
                     System.out.println("***");
@@ -158,21 +157,28 @@ public class CalendarService implements ConnectionListener,
         connections.add(connection);
     }
 
-    public void messageReceived(String message, no.ntnu.fp.net.co.Connection connection) {
-        try {
-            Document doc = new Builder().build(new StringReader(message));
+    public void messageReceived(final String message, final no.ntnu.fp.net.co.Connection connection) {
+        Thread thread = new Thread(new Runnable() {
 
-            ServerRequest req = new ServerRequest(doc.getRootElement());
-            ServerResponse resp = receiveData(req);
+            public void run() {
+                try {
+                    Document doc = new Builder().build(new StringReader(message));
 
-            String xmlToSend = resp.getXmlForSending();
-            System.out.println("Preparing to send xml: " + xmlToSend);
-            connection.send(xmlToSend);
-        } catch (ParsingException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+                    ServerRequest req = new ServerRequest(doc.getRootElement());
+                    ServerResponse resp = receiveData(req);
+
+                    String xmlToSend = resp.getXmlForSending();
+                    System.out.println("Preparing to send xml: " + xmlToSend);
+                    connection.send(xmlToSend);
+                } catch (ParsingException ex) {
+                    ex.printStackTrace();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+
     }
 
     public void stopListening() {
@@ -256,8 +262,12 @@ public class CalendarService implements ConnectionListener,
             p.setInt(1, e.getEid());
             p.executeUpdate();
 
+            Person boss = getPerson(e.getResponsible());
             for (String attendee : e.getAttendees()) {
-                Person boss = getPerson(e.getResponsible());
+                if (attendee.equals(e.getResponsible())) {
+                    continue;
+                }
+
                 Message m = new Message(boss.getName()
                         + " har endret møtet. Møtet er nå " + e.getDateString()
                         + ". Møtet gjelder: " + e.getDescription(),
@@ -304,7 +314,12 @@ public class CalendarService implements ConnectionListener,
                 e.setEid(rs.getInt(1));
             }
 
+            Person boss = getPerson(e.getResponsible());
             for (String attendee : e.getAttendees()) {
+                if (attendee.equals(e.getResponsible())) {
+                    continue;
+                }
+
                 p = c.prepareStatement("INSERT INTO Deltaker(`hid`, `e-mail`, `status`) VALUES(?, ?, ?);");
                 p.setInt(1, e.getEid());
                 p.setString(2, attendee);
@@ -312,7 +327,6 @@ public class CalendarService implements ConnectionListener,
 
                 p.executeUpdate();
 
-                Person boss = getPerson(e.getResponsible());
                 Message m = new Message(boss.getName()
                         + " har kalt inn til møte " + e.getDateString()
                         + ". Møtet gjelder: " + e.getDescription(),
@@ -399,8 +413,9 @@ public class CalendarService implements ConnectionListener,
         try {
             Connection c = getConnection();
 
-            if(c==null)
+            if (c == null) {
                 return null;
+            }
 
             Statement s = c.createStatement();
             ResultSet rs = s.executeQuery("SELECT Person.* FROM Person, Deltaker WHERE Deltaker.`e-mail` = Person.`e-mail` AND `hid` = " + eventId + ";");
@@ -453,8 +468,7 @@ public class CalendarService implements ConnectionListener,
         return null;
     }
 
-    private Person createPerson(ResultSet rs) throws SQLException
-    {
+    private Person createPerson(ResultSet rs) throws SQLException {
         Person p = new Person();
         p.setEmail(rs.getString("e-mail"));
         p.setName(rs.getString("navn"));
@@ -511,14 +525,13 @@ public class CalendarService implements ConnectionListener,
         return null;
     }
 
-    private static Message createMessage(ResultSet rs) throws SQLException
-    {
+    private static Message createMessage(ResultSet rs) throws SQLException {
         Message m = new Message(rs.getString("innhold"),
-        Message.Type.valueOf(rs.getString("type")),
-        rs.getString("mottaker"), rs.getInt("relatertmote"));
+                Message.Type.valueOf(rs.getString("type")),
+                rs.getString("mottaker"), rs.getInt("relatertmote"));
         m.setMid(rs.getInt("id"));
         m.setTimeSent(rs.getTimestamp("tidsendt"));
-            return m;
+        return m;
     }
 
     public List<Event> getEvents(String email) throws SQLException {
@@ -592,8 +605,7 @@ public class CalendarService implements ConnectionListener,
         return e;
     }
 
-    public List<Room> getFreeRooms(Reservation r) throws SQLException
-    {
+    public List<Room> getFreeRooms(Reservation r) throws SQLException {
         return getFreeRooms(r, -1);
     }
 
