@@ -2,7 +2,6 @@ package no.ntnu.fp.gui;
 
 import com.u2d.type.atom.TimeSpan;
 import java.awt.BorderLayout;
-import java.awt.Event;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -185,7 +184,7 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
 
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            changeMain(AGREEMENT);
+                            changeMain(APPOINTMENT);
                         }
                     });
                 }
@@ -274,6 +273,7 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
         runner.invoke();
     }
 
+    private int activePanel;
     private void changeMain(int panel) {
         maincontainer.removeAll();
 
@@ -282,6 +282,8 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
         }
 
         menu.setVisible(panel != LOGIN);
+
+        activePanel = panel;
 
         switch (panel) {
             case CALENDAR:
@@ -329,7 +331,7 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
         runner.invoke();
     }
 
-    public void eventClicked(CalendarPanel panel, Event event)
+    public void eventClicked(CalendarPanel panel, no.ntnu.fp.model.Event event)
     {
         meetingPanel = new CreateMeetingPanel(event);
 
@@ -338,7 +340,10 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
 
     public void timeClicked(CalendarPanel panel, TimeSpan timeSpan)
     {
-        meetingPanel = new CreateMeetingPanel();
+        if(activePanel != CALENDAR)
+            return;
+
+        meetingPanel = new CreateMeetingPanel(timeSpan.startCal(), timeSpan.startCal(), timeSpan.endCal());
 
         changeMain(APPOINTMENT);
     }

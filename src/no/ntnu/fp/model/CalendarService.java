@@ -386,14 +386,17 @@ public class CalendarService implements ConnectionListener,
 
         try {
             Connection c = getConnection();
+
+            if(c==null)
+                return null;
+
             Statement s = c.createStatement();
-            ResultSet rs = s.executeQuery("SELECT `e-mail` FROM Deltaker WHERE `hid` = "
-                    + eventId + ";");
+            ResultSet rs = s.executeQuery("SELECT Person.* FROM Deltaker WHERE `Deltaker.e-mail` = `Person.e-mail` AND `hid` = " + eventId + ";");
 
             List<Person> persons = new ArrayList<Person>();
 
             while (rs.next()) {
-                persons.add(getPerson(rs.getString("e-mail")));
+                persons.add(createPerson(rs));
             }
 
             rs.close();
@@ -423,10 +426,7 @@ public class CalendarService implements ConnectionListener,
                     + email + "';");
 
             if (rs.next()) {
-                Person p = new Person();
-                p.setEmail(rs.getString("e-mail"));
-                p.setName(rs.getString("navn"));
-                p.setPassword(rs.getString("passord"));
+                Person p = createPerson(rs);
 
                 return p;
             }
@@ -439,6 +439,16 @@ public class CalendarService implements ConnectionListener,
         }
 
         return null;
+    }
+
+    private Person createPerson(ResultSet rs) throws SQLException
+    {
+        Person p = new Person();
+        p.setEmail(rs.getString("e-mail"));
+        p.setName(rs.getString("navn"));
+        p.setPassword(rs.getString("passord"));
+
+        return p;
     }
 
     public List<Message> getMessages(String person) throws SQLException {
