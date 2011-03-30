@@ -207,8 +207,13 @@ public class Communication {
 		return sendData("updateEvent", e).isSuccess();
 	}
 
-	public static List<Room> getFreeRooms(Reservation r) {
-		ServerResponse sr = sendData("getFreeRooms", r);
+        public static List<Room> getFreeRooms(Reservation r)
+        {
+            return getFreeRooms(r, -1);
+        }
+
+	public static List<Room> getFreeRooms(Reservation r, int ignoreEvent) {
+		ServerResponse sr = sendData("getFreeRooms", r, ignoreEvent);
 		if (sr.isSuccess()) {
 			try {
 				return (List<Room>) ServerRequest
