@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import no.ntnu.fp.model.Event.Type;
+
 public class CreateMeetingModel
 {
 
@@ -203,6 +205,11 @@ public class CreateMeetingModel
 
     public void save()
     {
+    	if (event.getAttendees().size() == 1)
+    		event.setType(Type.Appointment);
+    	else
+    		event.setType(Type.Meeting);
+    	
         if (newEvent)
         {
             Communication.saveEvent(event);
