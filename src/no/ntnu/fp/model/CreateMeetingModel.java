@@ -25,6 +25,13 @@ public class CreateMeetingModel
         setEndTime(endTime);
         newEvent = true;
         timeIsSet = true;
+        
+        for(Person p : Communication.getEmployees())
+            if(p.getEmail().equals(Communication.LoggedInUserEmail))
+            {
+                responsiblePerson = p;
+                break;
+            }
     }
 
     public CreateMeetingModel(Event event)
