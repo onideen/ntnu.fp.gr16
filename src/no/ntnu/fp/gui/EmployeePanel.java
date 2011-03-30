@@ -95,6 +95,11 @@ public class EmployeePanel extends javax.swing.JPanel {
 
     public void readPerson(Person p)
     {
+        if(p==null)
+        {
+            new Exception().printStackTrace();
+            return;
+        }
         lblName.setText(p.getName());
         lblEmail.setText(p.getEmail());
     }

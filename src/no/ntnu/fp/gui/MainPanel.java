@@ -389,6 +389,11 @@ public class MainPanel extends javax.swing.JPanel implements LoginListener, Gene
 
     public void eventClicked(CalendarPanel panel, no.ntnu.fp.model.Event event)
     {
+        if (activePanel != CALENDAR)
+        {
+            return;
+        }
+        
         meetingPanel = new CreateMeetingPanel(event);
 
         changeMain(APPOINTMENT);

@@ -102,7 +102,7 @@ public class Event {
 	}
 
         Room roomObject = null;
-		private boolean first;
+        private boolean first;
         public Room getRoomObject()
         {
             if(roomObject!=null)

@@ -104,7 +104,9 @@ public class Communication {
         private static List<Person> cacheEmployees = null;
 	public static List<Person> getEmployees() {
                 if(cacheEmployees != null)
-                    return cacheEmployees;
+                {
+                    return new ArrayList<Person>(cacheEmployees);
+                }
 
 		ServerResponse sr = sendData("getEmployees");
 		try {
@@ -151,7 +153,6 @@ public class Communication {
 	}
 
 	public static Room getARoom(String roomname) {
-            System.out.println(roomname);
 		ServerResponse sr = sendData("getRoom", roomname);
 		if (sr.isSuccess()) {
 			return (Room) sr.getParameters()[0];
