@@ -104,6 +104,7 @@ public class Communication {
 					.createObjectFromElement(sr.returnData.getChildElements()
 							.get(0));
                         cacheEmployees = cache;
+                        return cache;
 		} catch (Exception e) {
                     e.printStackTrace();
 		}
@@ -201,7 +202,7 @@ public class Communication {
 	}
 
 	public static boolean answerMessage(Message m, boolean answer) {
-		ServerResponse sr = sendData("answerMessage", m.getMid(), answer);
+		ServerResponse sr = sendData("answerMessage", m, answer);
 		return sr.isSuccess();
 	}
 

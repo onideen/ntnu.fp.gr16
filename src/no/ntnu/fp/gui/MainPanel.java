@@ -51,11 +51,11 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
             e.printStackTrace();
         }
     }
-    private static final int CALENDAR = 1;
-    private static final int APPOINTMENT = 2;
-    private static final int MESSAGES = 3;
-    private static final int EMPLOYEES = 4;
-    private static final int LOGIN = 5;
+    public static final int CALENDAR = 1;
+    public static final int APPOINTMENT = 2;
+    public static final int MESSAGES = 3;
+    public static final int EMPLOYEES = 4;
+    public static final int LOGIN = 5;
     
     private JPanel menu;
     private JPanel maincontainer;
@@ -274,7 +274,7 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
     }
 
     private int activePanel;
-    private void changeMain(int panel) {
+    public void changeMain(int panel) {
         maincontainer.removeAll();
 
         if (!Communication.isLoggedIn()) {
@@ -296,6 +296,7 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
                 break;
             case APPOINTMENT:
                 if(meetingPanel == null){
+                    System.out.println("LAGA NY MEETING PANEL MED TOM ******************************************************");
                     meetingPanel = new CreateMeetingPanel();
                 }
 
