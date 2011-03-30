@@ -17,6 +17,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import no.ntnu.fp.model.Communication;
 import no.ntnu.fp.gui.listeners.LoginListener;
+import no.ntnu.fp.model.ServiceWrapper;
 import no.ntnu.fp.utils.LoadCallback;
 import no.ntnu.fp.utils.Loader;
 import no.ntnu.fp.utils.ServiceLoaders;
@@ -147,12 +148,11 @@ public class LogInPanel extends javax.swing.JPanel
 
     private void LogIn()
     {
-        Loader.loadAndRun(ServiceLoaders.login(usernameTextField.getText(), passwordField.getText()),
-                          new LoadCallback()
-        {
-            public void run(Object object)
+        // Bruker her new ServiceWrapper siden dette er er s'rtilfelle. Ikke bruk det til vanlig, bruk BaseCalendarView.getService();
+        new ServiceWrapper().login(usernameTextField.getText(), passwordField.getText(), new ServiceWrapper.LoginRunner() {
+
+            public void run(boolean success)
             {
-                Boolean success = (Boolean) object;
                 if (success)
                 {
                     if (Listener != null)
@@ -167,5 +167,6 @@ public class LogInPanel extends javax.swing.JPanel
                 }
             }
         });
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Sending login async.<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     }
 }
