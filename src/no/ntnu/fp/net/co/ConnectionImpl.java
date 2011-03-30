@@ -285,14 +285,13 @@ public class ConnectionImpl extends AbstractConnection
             {
                 throw new IOException("No data came.");
             }
+            if(isValid(datagram)) {
+                sendAck(datagram, false);
+            }
             if (isValid(datagram) && datagram.getSeq_nr() != lastReceived)
             {
                 lastReceived = datagram.getSeq_nr();
-                sendAck(datagram, false);
                 return datagram.getPayload().toString();
-            }
-            else if(isValid(datagram)) {
-                sendAck(datagram, false);
             }
             else
             {

@@ -274,7 +274,7 @@ public abstract class AbstractConnection implements Connection {
      *             Thrown if unable to send packet.
      * @see #constructInternalPacket(Flag)
      */
-    protected synchronized void sendAck(KtnDatagram packetToAck, boolean synAck)
+    protected void sendAck(KtnDatagram packetToAck, boolean synAck)
             throws IOException, ConnectException {
     
         /*
