@@ -41,13 +41,18 @@ import no.ntnu.fp.utils.TimedRunner;
  * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
  * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
  */
-public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGeneralListener, CalendarPanelActionListener {
+public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGeneralListener, CalendarPanelActionListener
+{
+
 
     {
         //Set Look & Feel
-        try {
+        try
+        {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
     }
@@ -56,7 +61,6 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
     public static final int MESSAGES = 3;
     public static final int EMPLOYEES = 4;
     public static final int LOGIN = 5;
-    
     private JPanel menu;
     private JPanel maincontainer;
     private JButton new_agreement_button;
@@ -69,14 +73,14 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
     private EmployeesPanel employeesPanel;
     private CreateMeetingPanel meetingPanel;
     private static MainPanel mainForm = null;
-
     TimedRunner runner;
 
     /**
      * Auto-generated main method to display this
      * JPanel inside a new JFrame.
      */
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         JFrame frame = new JFrame();
         MainPanel mp = new MainPanel();
         frame.getContentPane().add(mp);
@@ -84,26 +88,33 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
         frame.setSize(1010, 710);
         frame.setVisible(true);
 
-        frame.addWindowListener(new WindowAdapter() {
-          public void windowClosing(WindowEvent e) {
-            System.exit(0);
-          }
+        frame.addWindowListener(new WindowAdapter()
+        {
+
+            public void windowClosing(WindowEvent e)
+            {
+                System.exit(0);
+            }
         });
 
         mainForm = mp;
     }
 
-    public static void refreshGUI() {
-        if (mainForm != null) {
+    public static void refreshGUI()
+    {
+        if (mainForm != null)
+        {
             mainForm.updateUI();
         }
     }
 
-    public static MainPanel getMainForm() {
+    public static MainPanel getMainForm()
+    {
         return mainForm;
     }
 
-    public MainPanel() {
+    public MainPanel()
+    {
         super();
 
         loginPanel = new LogInPanel();
@@ -113,20 +124,27 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
 
         changeMain(LOGIN);
 
-        runner = new TimedRunner(1000 * 180, new Runnable() {
+        runner = new TimedRunner(1000 * 180, new Runnable()
+        {
 
-            public void run() {
+            public void run()
+            {
                 List<Message> msgs = null;
-                if (Communication.isLoggedIn()) {
-                    try {
+                if (Communication.isLoggedIn())
+                {
+                    try
+                    {
                         msgs = Communication.getMessages(Communication.LoggedInUserEmail);
-                    } catch (Exception e) {
+                    }
+                    catch (Exception e)
+                    {
                         e.printStackTrace();
                         System.out.println(msgs.size() + "");
                     }
                 }
 
-                if (msgs == null) {
+                if (msgs == null)
+                {
                     msgs = new ArrayList<Message>();
                 }
 
@@ -134,21 +152,29 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
 
                 System.out.println("Checked for messages: " + length + " new.");
 
-                SwingUtilities.invokeLater(new Runnable() {
+                SwingUtilities.invokeLater(new Runnable()
+                {
 
-                    public void run() {
-                        if(length==0)
+                    public void run()
+                    {
+                        if (length == 0)
+                        {
                             message_button.setText("Meldinger");
+                        }
                         else
+                        {
                             message_button.setText("Meldinger (" + length + ")");
+                        }
                     }
                 });
             }
         }).start();
     }
 
-    private void initGUI() {
-        try {
+    private void initGUI()
+    {
+        try
+        {
             BorderLayout thisLayout = new BorderLayout();
             this.setLayout(thisLayout);
             this.setPreferredSize(new java.awt.Dimension(737, 424));
@@ -156,16 +182,20 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
                 menu = new JPanel();
                 this.add(menu, BorderLayout.NORTH);
                 GridBagLayout menuLayout = new GridBagLayout();
-                menuLayout.columnWidths = new int[]{
+                menuLayout.columnWidths = new int[]
+                        {
                             7, 7, 7, 7, 7, 7, 7, 7, 7, 7
                         };
-                menuLayout.rowHeights = new int[]{
+                menuLayout.rowHeights = new int[]
+                        {
                             7
                         };
-                menuLayout.columnWeights = new double[]{
+                menuLayout.columnWeights = new double[]
+                        {
                             0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1
                         };
-                menuLayout.rowWeights = new double[]{
+                menuLayout.rowWeights = new double[]
+                        {
                             0.1
                         };
                 menu.setLayout(menuLayout);
@@ -180,10 +210,12 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
                     new_agreement_button.setVerticalTextPosition(SwingConstants.BOTTOM);
                     new_agreement_button.setSize(50, 50);
                     new_agreement_button.setPreferredSize(new java.awt.Dimension(50, 50));
-                    new_agreement_button.addActionListener(new ActionListener() {
+                    new_agreement_button.addActionListener(new ActionListener()
+                    {
 
                         @Override
-                        public void actionPerformed(ActionEvent e) {
+                        public void actionPerformed(ActionEvent e)
+                        {
                             changeMain(APPOINTMENT);
                         }
                     });
@@ -197,10 +229,12 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
                     calendar_button.setVerticalTextPosition(SwingConstants.BOTTOM);
                     calendar_button.setSize(50, 50);
                     calendar_button.setPreferredSize(new java.awt.Dimension(50, 50));
-                    calendar_button.addActionListener(new ActionListener() {
+                    calendar_button.addActionListener(new ActionListener()
+                    {
 
                         @Override
-                        public void actionPerformed(ActionEvent e) {
+                        public void actionPerformed(ActionEvent e)
+                        {
                             changeMain(CALENDAR);
                         }
                     });
@@ -214,10 +248,12 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
                     message_button.setVerticalTextPosition(SwingConstants.BOTTOM);
                     message_button.setSize(50, 50);
                     message_button.setPreferredSize(new java.awt.Dimension(50, 50));
-                    message_button.addActionListener(new ActionListener() {
+                    message_button.addActionListener(new ActionListener()
+                    {
 
                         @Override
-                        public void actionPerformed(ActionEvent e) {
+                        public void actionPerformed(ActionEvent e)
+                        {
                             changeMain(MESSAGES);
                         }
                     });
@@ -231,9 +267,11 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
                     employee_button.setVerticalTextPosition(SwingConstants.BOTTOM);
                     employee_button.setSize(78, 78);
                     employee_button.setPreferredSize(new java.awt.Dimension(50, 50));
-                    employee_button.addActionListener(new ActionListener() {
+                    employee_button.addActionListener(new ActionListener()
+                    {
 
-                        public void actionPerformed(ActionEvent e) {
+                        public void actionPerformed(ActionEvent e)
+                        {
                             changeMain(EMPLOYEES);
                         }
                     });
@@ -247,9 +285,11 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
                     logout_button.setVerticalTextPosition(SwingConstants.BOTTOM);
                     logout_button.setPreferredSize(new java.awt.Dimension(50, 50));
                     logout_button.setSize(50, 50);
-                    logout_button.addActionListener(new ActionListener() {
+                    logout_button.addActionListener(new ActionListener()
+                    {
 
-                        public void actionPerformed(ActionEvent e) {
+                        public void actionPerformed(ActionEvent e)
+                        {
                             Communication.logout();
                             changeMain(LOGIN);
                         }
@@ -263,26 +303,31 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
                 this.add(maincontainer, BorderLayout.CENTER);
             }
 
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
     }
 
-    public void loginAction(boolean isLoggedIn) {
+    public void loginAction(boolean isLoggedIn)
+    {
         changeMain(CALENDAR);
         runner.invoke();
     }
-
     public static void refresCalendar()
     {
         getMainForm().calendarPanel.getCalendarPanel().setEvents(Communication.getEvents(Communication.LoggedInUserEmail));
     }
 
     private int activePanel;
-    public void changeMain(int panel) {
+
+    public void changeMain(int panel)
+    {
         maincontainer.removeAll();
 
-        if (!Communication.isLoggedIn()) {
+        if (!Communication.isLoggedIn())
+        {
             panel = LOGIN;
         }
 
@@ -290,16 +335,19 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
 
         activePanel = panel;
 
-        switch (panel) {
+        switch (panel)
+        {
             case CALENDAR:
-                if (calendarPanel == null) {
+                if (calendarPanel == null)
+                {
                     calendarPanel = new CalendarViewPanel();
                     calendarPanel.getCalendarPanel().addCalendarPanelActionListener(this);
                 }
                 maincontainer.add(calendarPanel, BorderLayout.CENTER);
                 break;
             case APPOINTMENT:
-                if(meetingPanel == null){
+                if (meetingPanel == null)
+                {
                     System.out.println("LAGA NY MEETING PANEL MED TOM ******************************************************");
                     meetingPanel = new CreateMeetingPanel();
                 }
@@ -314,14 +362,16 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
                 //TODO legge til pålogget bruker over
                 break;
             case EMPLOYEES:
-                if (employeesPanel == null) {
+                if (employeesPanel == null)
+                {
                     employeesPanel = new EmployeesPanel();
                 }
                 maincontainer.add(employeesPanel, BorderLayout.CENTER);
                 break;
             case LOGIN:
 
-                if (loginPanel == null) {
+                if (loginPanel == null)
+                {
                     loginPanel = new LogInPanel();
                     loginPanel.setLoginListener(this);
                 }
@@ -332,7 +382,8 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
         updateUI();
     }
 
-    public void action(){
+    public void action()
+    {
         runner.invoke();
     }
 
@@ -345,8 +396,10 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
 
     public void timeClicked(CalendarPanel panel, TimeSpan timeSpan)
     {
-        if(activePanel != CALENDAR)
+        if (activePanel != CALENDAR)
+        {
             return;
+        }
 
         meetingPanel = new CreateMeetingPanel(timeSpan.startCal(), timeSpan.startCal(), timeSpan.endCal());
 
