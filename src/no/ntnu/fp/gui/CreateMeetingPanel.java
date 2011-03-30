@@ -37,6 +37,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import com.toedter.calendar.JDateChooser;
+import java.awt.AWTEventMulticaster;
 import javax.swing.UIManager;
 
 
@@ -45,6 +46,7 @@ public class CreateMeetingPanel extends BaseCalendarView {
 	private CreateMeetingModel model;
 	private JPanel meetingPanel;
 	private JButton save_button;
+    private JButton delete_button;
 	private JButton add_users;
 	private JPanel buttons_panel;
 	private JLabel newMeetingLabel;
@@ -290,6 +292,35 @@ public class CreateMeetingPanel extends BaseCalendarView {
 		}
 		return save_button;
 	}
+
+    private JButton getDelete_button() {
+        if(delete_button == null) {
+            delete_button = new JButton();
+            delete_button.setIcon(new ImageIcon(getClass().getResource("/Save.png")));
+            delete_button.setIconTextGap(10);
+			delete_button.setText("Slett");
+            delete_button.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e)
+                {
+                    deleteEvent();
+                }
+            });
+            if(model.isNew()) {
+                delete_button.setText("Avbryt");
+            }
+        }
+        return delete_button;
+    }
+
+    protected void deleteEvent() {
+        if(model.isNew()) {
+            MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
+        } else {
+            model.delete();
+            MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
+        }
+    }
 	
 	protected void saveEvent() {
 		model.setDate(calendar.getCalendar());
@@ -309,6 +340,7 @@ public class CreateMeetingPanel extends BaseCalendarView {
 		
 		if (model.isValidInput()){
 			model.save();
+            MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
 		}
 		else {
 			
@@ -544,6 +576,7 @@ public class CreateMeetingPanel extends BaseCalendarView {
 			buttons_panelLayout.columnWidths = new int[] {7, 7};
 			buttons_panel.setLayout(buttons_panelLayout);
 			buttons_panel.add(getSave_button(), new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+            buttons_panel.add(getDelete_button(), new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 			buttons_panel.add(getAdd_users(), new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		}
 		return buttons_panel;
