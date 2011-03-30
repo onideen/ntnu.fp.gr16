@@ -109,7 +109,7 @@ public class MessagePanel extends javax.swing.JPanel {
                 e.printStackTrace();
         }
                 
-        lblInvitation.setText(m.getType().toString());
+        lblInvitation.setText(m.getType()==Message.Type.Information ? "Informasjon" : "Invitasjon");
         lblContents.setText(m.getContent());
         lblDate.setText(m.getTimeSent().toString());
     }

@@ -262,6 +262,13 @@ public class CalendarService implements ConnectionListener,
             p.setInt(1, e.getEid());
             p.executeUpdate();
 
+            List<String> earlierAttendees = new ArrayList<String>();
+            p = c.prepareStatement("SELET `e-mail` FROM Deltaker WHERE hid = ?;");
+            p.setInt(1, e.getEid());
+            ResultSet rs = p.executeQuery();
+            while(rs.next())
+                earlierAttendees.add(rs.getString("e-mail"));
+
             p = c.prepareStatement("DELETE FROM Deltaker WHERE hid = ?;");
             p.setInt(1, e.getEid());
             p.executeUpdate();
@@ -279,9 +286,19 @@ public class CalendarService implements ConnectionListener,
 
                 p.executeUpdate();
 
+                earlierAttendees.remove(attendee);
+
                 Message m = new Message(boss.getName()
                         + " har endret møtet. Møtet er nå " + e.getDateString()
                         + ". Møtet gjelder: " + e.getDescription(),
+                        Message.Type.Invitation, attendee, e.getEid());
+                saveMessage(m);
+            }
+
+            for(String attendee : earlierAttendees)
+            {
+                Message m = new Message(boss.getName()
+                        + " har fjernet deg fra møtet '" + e.getDescription() + "'.",
                         Message.Type.Invitation, attendee, e.getEid());
                 saveMessage(m);
             }
@@ -412,8 +429,7 @@ public class CalendarService implements ConnectionListener,
                         System.out.println("*********************************** Sending message " + person.getName());
                         Message message = new Message(sender.getName()
                                 + " har avslått møtet til " + creator.getName()
-                                + " den " + relatedEvent.getDate() + " kl "
-                                + relatedEvent.getStartTime() + ".",
+                                + " den " + relatedEvent.getDateString() + ".",
                                 Message.Type.Information, person.getEmail(),
                                 m.getEvent());
                         saveMessage(message);
