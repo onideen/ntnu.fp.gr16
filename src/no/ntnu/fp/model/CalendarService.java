@@ -592,7 +592,12 @@ public class CalendarService implements ConnectionListener,
         return e;
     }
 
-    public List<Room> getFreeRooms(Reservation r) throws SQLException {
+    public List<Room> getFreeRooms(Reservation r) throws SQLException
+    {
+        return getFreeRooms(r, -1);
+    }
+
+    public List<Room> getFreeRooms(Reservation r, int ignoreEvent) throws SQLException {
         HashMap<String, Room> hashRooms = new HashMap<String, Room>();
         List<Room> freeRooms = new ArrayList<Room>();
         Connection c = getConnection();
@@ -606,8 +611,9 @@ public class CalendarService implements ConnectionListener,
 
         // rs = s.executeQuery("SELECT id from Hendelse WHERE dato =" +
         // r.getDate() );
-        PreparedStatement p = c.prepareStatement("SELECT * from Hendelse WHERE dato = ?;");
+        PreparedStatement p = c.prepareStatement("SELECT * from Hendelse WHERE dato = ? AND id <> ?;");
         p.setDate(1, r.getDate());
+        p.setInt(2, ignoreEvent);
         rs = p.executeQuery();
 
         while (rs.next()) {
