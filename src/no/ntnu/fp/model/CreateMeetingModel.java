@@ -19,6 +19,7 @@ public class CreateMeetingModel {
 	private String description;
 	private Room room;
 	private List<Person> attendees;
+	private String responsible;
 	
 	public CreateMeetingModel(Calendar date, Calendar startTime, Calendar endTime){
 		this(new Event());

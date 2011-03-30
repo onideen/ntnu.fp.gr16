@@ -74,10 +74,15 @@ public class CreateMeetingPanel extends BaseCalendarView {
 	private DefaultComboBoxModel roomChooserModel;
 	private ComboBoxModel end_comboModel;
 	private ComboBoxModel startTimeModel;
-	
 	private JPanel room_chooser_panel;
 	
-	public CreateMeetingPanel(Event event) {
+	public CreateMeetingPanel(Calendar date, Calendar startTime, Calendar endTime){
+		super();
+		model = new CreateMeetingModel(date, startTime, endTime);
+		initGUI();
+	}
+	
+	public CreateMeetingPanel(no.ntnu.fp.model.Event event) {
 		super();
 		model = new CreateMeetingModel(event);
 		initGUI();
