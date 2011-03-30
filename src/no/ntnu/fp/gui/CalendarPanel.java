@@ -24,8 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.WindowConstants;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -38,7 +36,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 import no.ntnu.fp.gui.listeners.CalendarPanelActionListener;
 import no.ntnu.fp.model.Event;
 import no.ntnu.fp.model.calendar.Utils;
@@ -60,7 +57,7 @@ public class CalendarPanel extends JPanel implements ComponentListener
 
     private static final String[] WEEKS =
     {
-        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+        "Mandag", "Tysdag", "Onsdag", "Torsdag", "Fredag", "Laurdag", "Sundag"
     };
     private static DateFormat COLHEADER_FORMATTER = new SimpleDateFormat("EEE, MMM dd");
     private DateTimeBounds bounds;
@@ -110,6 +107,9 @@ public class CalendarPanel extends JPanel implements ComponentListener
         }
     }
 
+    /**
+     * @wbp.parser.constructor
+     */
     public CalendarPanel(BaseCalendarView container) {
         this(container, 410);
     }

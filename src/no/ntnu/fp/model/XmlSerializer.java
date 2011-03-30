@@ -21,6 +21,7 @@ import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
 import nu.xom.ParsingException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * @author GR16
@@ -145,7 +146,7 @@ public class XmlSerializer {
 	 */
 	public static Element eventToXml(Event m) {
 		Element e = new Element("contents");
-		
+
 		appendChildren(e,
 				createElement(Event.PROPERTY_EID, m.getEid()),
 				createElement(Event.PROPERTY_DATE, m.getDate().getTimeInMillis()),
@@ -157,8 +158,6 @@ public class XmlSerializer {
 				createElement(Event.PROPERTY_ATTENDEE, m.getAttendees()),
 				createElement(Room.PROPERTY_NAME, m.getRoom())
 				);
-
-                System.out.println(e.toXML());
 		
 		return createDataXml("Event", e);
 	}

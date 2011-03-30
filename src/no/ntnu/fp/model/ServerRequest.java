@@ -37,6 +37,8 @@ public class ServerRequest {
 			try {
 				e.appendChild(createElementFromObject(o));
 			} catch (Exception e1) {
+                            System.out.println("COULDNT CREATE XML!!!");
+                            e1.printStackTrace();
 			}
 
 		this.function = function;
@@ -57,52 +59,67 @@ public class ServerRequest {
 	 */
 	public static Element createElementFromObject(Object o) throws Exception {
 		if (o == null)
-			return XmlSerializer.createDataXml("null",
+                {
+                    System.out.println("Object is null.");
+                    return XmlSerializer.createDataXml("null",
 					XmlSerializer.createElement("contents", ""));
+                }
+
+                System.out.println("Creating element from object: " + o.getClass());
 
 		if (o.getClass().equals(Integer.TYPE) || o.getClass().equals(int.class)
 				|| o.getClass().equals(Integer.class)) {
+                        System.out.println("INT");
 			return XmlSerializer.createDataXml("int", XmlSerializer
 					.createElement("contents", (int) ((Integer) o)));
 		}
 
 		if (o.getClass().equals(java.util.ArrayList.class)) {
+                        System.out.println("LIST");
 			return XmlSerializer.createDataXml("list", XmlSerializer
 					.createElementFromList("contents", (ArrayList) o));
 		}
 
 		if (o.getClass().equals(String.class)) {
+                        System.out.println("STRING");
 			return XmlSerializer.createDataXml("string",
 					XmlSerializer.createElement("contents", (String) o));
 		}
 
 		if (o.getClass().equals(Message.class)) {
+                        System.out.println("MESSAGE");
 			return XmlSerializer.messageToXml((Message) o);
 		}
 
 		if (o.getClass().equals(Event.class)) {
+                        System.out.println("EVENT");
 			return XmlSerializer.eventToXml((Event) o);
 		}
 
 		if (o.getClass().equals(Room.class)) {
+                        System.out.println("ROOM");
 			return XmlSerializer.roomToXml((Room) o);
 		}
 
 		if (o.getClass().equals(Person.class)) {
+                        System.out.println("PERSON");
 			return XmlSerializer.personToXml((Person) o);
 		}
 
 		if (o.getClass().equals(Reservation.class)) {
+                        System.out.println("RESERVATION");
 			return XmlSerializer.reservationToXml((Reservation) o);
 		}
 
 		if (o.getClass().equals(Boolean.class)) {
+                        System.out.println("BOOL");
 			return XmlSerializer.createDataXml(
 					"bool",
 					XmlSerializer.createElement("contents",
 							Boolean.toString((Boolean) o)));
 		}
 
+                System.out.println("NUTHIN!");
 		throw new Exception(o.getClass() + " is not supported.");
 	}
 

@@ -1,8 +1,8 @@
 package no.ntnu.fp.gui;
 
-import com.u2d.type.atom.Email;
+import com.u2d.type.atom.TimeSpan;
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.Event;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import no.ntnu.fp.gui.listeners.CalendarPanelActionListener;
 import no.ntnu.fp.gui.listeners.IGeneralListener;
 import no.ntnu.fp.model.Communication;
 import no.ntnu.fp.gui.listeners.ILoginListener;
@@ -41,7 +42,7 @@ import no.ntnu.fp.utils.TimedRunner;
  * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
  * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
  */
-public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGeneralListener {
+public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGeneralListener, CalendarPanelActionListener {
 
     {
         //Set Look & Feel
@@ -52,11 +53,11 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
         }
     }
     private static final int CALENDAR = 1;
-    private static final int AGREEMENT = 2;
+    private static final int APPOINTMENT = 2;
     private static final int MESSAGES = 3;
     private static final int EMPLOYEES = 4;
     private static final int LOGIN = 5;
-    private static String user_email;
+    
     private JPanel menu;
     private JPanel maincontainer;
     private JButton new_agreement_button;
@@ -67,6 +68,7 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
     private LogInPanel loginPanel;
     private CalendarViewPanel calendarPanel;
     private EmployeesPanel employeesPanel;
+    private CreateMeetingPanel meetingPanel;
     private static MainPanel mainForm = null;
 
     TimedRunner runner;
@@ -285,12 +287,17 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
             case CALENDAR:
                 if (calendarPanel == null) {
                     calendarPanel = new CalendarViewPanel();
+                    calendarPanel.getCalendarPanel().addCalendarPanelActionListener(this);
                 }
                 maincontainer.add(calendarPanel, BorderLayout.CENTER);
                 calendarPanel.getCalendarPanel().setEvents(Communication.getEvents(Communication.LoggedInUserEmail));
                 break;
-            case AGREEMENT:
-                maincontainer.add(new CreateMeetingPanel(), BorderLayout.CENTER);
+            case APPOINTMENT:
+                if(meetingPanel == null){
+                    meetingPanel = new CreateMeetingPanel();
+                }
+
+                maincontainer.add(meetingPanel, BorderLayout.CENTER);
                 break;
             case MESSAGES:
                 MessageListPanel message = new MessageListPanel();
@@ -320,5 +327,19 @@ public class MainPanel extends javax.swing.JPanel implements ILoginListener, IGe
 
     public void action(){
         runner.invoke();
+    }
+
+    public void eventClicked(CalendarPanel panel, Event event)
+    {
+        meetingPanel = new CreateMeetingPanel(event);
+
+        changeMain(APPOINTMENT);
+    }
+
+    public void timeClicked(CalendarPanel panel, TimeSpan timeSpan)
+    {
+        meetingPanel = new CreateMeetingPanel();
+
+        changeMain(APPOINTMENT);
     }
 }
