@@ -280,6 +280,9 @@ public class ConnectionImpl extends AbstractConnection
                 sendAck(datagram, false);
                 return datagram.getPayload().toString();
             }
+            else if(isValid(datagram)) {
+                sendAck(datagram, false);
+            }
             else
             {
                 System.out.println("Bad packet received.");
