@@ -173,12 +173,12 @@ public class CalendarService implements ConnectionListener,
 
             Connection c = getConnection();
             Statement s = c.createStatement();
-            ResultSet rs = s.executeQuery("SELECT `e-mail` FROM Person;");
+            ResultSet rs = s.executeQuery("SELECT * FROM Person;");
 
             List<Person> persons = new ArrayList<Person>();
 
             while (rs.next()) {
-                persons.add(getPerson(rs.getString("e-mail")));
+                persons.add(createPerson(rs));
             }
 
             c.close();
@@ -458,11 +458,7 @@ public class CalendarService implements ConnectionListener,
         ResultSet rs = s.executeQuery("SELECT * FROM Melding WHERE `mottaker` = '" + person + "';");
 
         while (rs.next()) {
-            Message m = new Message(rs.getString("innhold"),
-                    Message.Type.valueOf(rs.getString("type")),
-                    rs.getString("mottaker"), rs.getInt("relatertmote"));
-            m.setMid(rs.getInt("id"));
-            m.setTimeSent(rs.getTimestamp("tidsendt"));
+            Message m = createMessage(rs);
             if (m != null) {
                 messages.add(m);
             }
@@ -488,11 +484,7 @@ public class CalendarService implements ConnectionListener,
             ResultSet rs = s.executeQuery("SELECT * FROM Melding WHERE id = " + id + ";");
 
             if (rs.next()) {
-                Message m = new Message(rs.getString("innhold"),
-                        Message.Type.valueOf(rs.getString("type")),
-                        rs.getString("mottaker"), rs.getInt("relatertmote"));
-                m.setMid(rs.getInt("id"));
-                m.setTimeSent(rs.getTimestamp("tidsendt"));
+                Message m = createMessage(rs);
 
                 return m;
             }
@@ -507,12 +499,22 @@ public class CalendarService implements ConnectionListener,
         return null;
     }
 
+    private static Message createMessage(ResultSet rs) throws SQLException
+    {
+        Message m = new Message(rs.getString("innhold"),
+        Message.Type.valueOf(rs.getString("type")),
+        rs.getString("mottaker"), rs.getInt("relatertmote"));
+        m.setMid(rs.getInt("id"));
+        m.setTimeSent(rs.getTimestamp("tidsendt"));
+            return m;
+    }
+
     public List<Event> getEvents(String email) throws SQLException {
         try {
             ArrayList<Event> events = new ArrayList<Event>();
             Connection c = getConnection();
             Statement s = c.createStatement();
-            ResultSet rs = s.executeQuery("SELECT id FROM Hendelse WHERE `ansvarlig` = '"
+            ResultSet rs = s.executeQuery("SELECT * FROM Hendelse WHERE `ansvarlig` = '"
                     + email + "';");
 
             while (rs.next()) {
@@ -520,7 +522,7 @@ public class CalendarService implements ConnectionListener,
                 events.add(e);
             }
 
-            rs = s.executeQuery("SELECT Hendelse.* FROM Deltaker, Hendelse WHERE `e-mail` = '" + email + "' AND Hendelse.id = Deltaker.hid;");
+            rs = s.executeQuery("SELECT Hendelse.* FROM Deltaker, Hendelse WHERE `e-mail` = '" + email + "' AND Hendelse.id = Deltaker.hid AND Hendelse.status = 'true';");
             while (rs.next()) {
                 Event e = createEvent(rs);
                 events.add(e);

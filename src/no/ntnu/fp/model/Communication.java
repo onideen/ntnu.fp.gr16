@@ -93,12 +93,17 @@ public class Communication {
 		return response;
 	}
 
+        private static List<Person> cacheEmployees = null;
 	public static List<Person> getEmployees() {
+                if(cacheEmployees != null)
+                    return cacheEmployees;
+
 		ServerResponse sr = sendData("getEmployees");
 		try {
-			return (List<Person>) ServerRequest
+			List<Person> cache = (List<Person>) ServerRequest
 					.createObjectFromElement(sr.returnData.getChildElements()
 							.get(0));
+                        cacheEmployees = cache;
 		} catch (Exception e) {
                     e.printStackTrace();
 		}
