@@ -157,6 +157,9 @@ public class CreateMeetingPanel extends BaseCalendarView
         }
         fillCells();
         doEditable();
+
+        if(model.getAttendees().size()>1)
+            add_users.doClick();
     }
 
     private void doEditable()
@@ -172,7 +175,6 @@ public class CreateMeetingPanel extends BaseCalendarView
             unselect.setEnabled(false);
             delete_button.setEnabled(false);
             room_button.setEnabled(false);
-            
         }
         else
         {
@@ -680,6 +682,8 @@ public class CreateMeetingPanel extends BaseCalendarView
     {
         for (Object person : selected_users_list.getSelectedValues())
         {
+            if(((Person)person).getEmail().equals(Communication.LoggedInUserEmail))
+                continue;
             selected_users_listModel.removeElement(person);
             all_users_listModel.addElement(person);
         }

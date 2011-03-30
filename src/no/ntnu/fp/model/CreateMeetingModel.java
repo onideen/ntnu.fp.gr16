@@ -13,6 +13,8 @@ public class CreateMeetingModel
     private boolean timeIsSet;
     private Event event;
 
+    private Person responsiblePerson;
+
     public CreateMeetingModel(Calendar date, Calendar startTime, Calendar endTime)
     {
         this(new Event());
@@ -26,6 +28,13 @@ public class CreateMeetingModel
     public CreateMeetingModel(Event event)
     {
         this.event = event;
+
+        for(Person p : Communication.getEmployees())
+            if(p.getEmail().equals(Communication.LoggedInUserEmail))
+            {
+                responsiblePerson = p;
+                break;
+            }
 
         newEvent = false;
         timeIsSet = true;
@@ -75,12 +84,17 @@ public class CreateMeetingModel
 
     public Room getRoom()
     {
+        System.out.println("getRooms() <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<<");
+        
         return event.getRoomObject();
     }
 
     public void setRoom(Room room)
     {
-        event.setRoom(room.toString());
+        if(room==null)
+            event.setRoom("");
+        else
+            event.setRoom(room.toString());
     }
 
     public String getDescription()
@@ -131,6 +145,8 @@ public class CreateMeetingModel
 
     public List<Room> getRooms()
     {
+        System.out.println("getRooms() <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<<");
+
         List<Room> rooms = Communication.getFreeRooms(new Reservation(new Date(getDate().getTimeInMillis()), new Time(getStartTime().getTimeInMillis()), new Time(getEndTime().getTimeInMillis())));
 
         if (!newEvent && getStartTime() == event.getStartTime())
@@ -143,27 +159,31 @@ public class CreateMeetingModel
     {
         List<Person> att = new ArrayList<Person>();
         for(Person p : Communication.getEmployees())
-            if(event.attendees.contains(p.getEmail()))
+            if(event.attendees.contains(p.getEmail()) || Communication.LoggedInUserEmail.equals(p.getEmail()))
                 att.add(p);
+
+        System.out.println(att);
+        
         return att;
     }
 
     public List<Person> getAllUsers()
     {
-        if (newEvent)
-        {
-            return Communication.getEmployees();
-        }
-        else
-        {
-            List<Person> attendees = getAttendees();
-            List<Person> employees = Communication.getEmployees();
+        List<Person> attendees = getAttendees();
+        List<Person> employees = Communication.getEmployees();
 
-            for (Person person : attendees)
-                employees.remove(person);
-            
-            return employees;
+        boolean foundMe = false;
+        for (Person person : attendees)
+        {
+            if(person==null)
+                continue;
+
+            employees.remove(person);
         }
+
+        System.out.println(employees);
+
+        return employees;
     }
 
     public void cleanAttendees()

@@ -102,13 +102,16 @@ public class Event {
 	}
 
         Room roomObject = null;
-		private boolean first;
+        private boolean first;
         public Room getRoomObject()
         {
             if(roomObject!=null)
                 if(roomObject.getName().equals(getRoom()))
                     return roomObject;
 
+            if(getRoom()==null || getRoom().equals(""))
+                return null;
+            
             roomObject = Communication.getARoom(getRoom());
             return roomObject;
         }

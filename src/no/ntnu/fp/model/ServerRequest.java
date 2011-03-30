@@ -173,6 +173,7 @@ public class ServerRequest {
 
                 if(type.equals("null"))
                 {
+                    new Exception().printStackTrace();
                     JOptionPane.showMessageDialog(null, "Feil ved serverkommunikasjon. Vennligst prøv igjen en gang i neste uke.","Kommunikasjonsfeil",JOptionPane.ERROR_MESSAGE);
                     return null;
                 }
@@ -195,11 +196,10 @@ public class ServerRequest {
 	 */
 	private ServerResponse doSendRequest(boolean silent) {
 
-                if(silent == false)
-                    setWorkingFormVisible(true);
+                setWorkingFormVisible(!silent);
 
                 try {
-                        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" + requestData.toXML());
+                        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" + requestData.toXML());
 
 			ServerConnection.connect();
                         String ans = ServerConnection.proxyRequest(requestData.toXML());
@@ -208,8 +208,7 @@ public class ServerRequest {
 
                         ServerResponse sr = new ServerResponse(doc.getRootElement());
 
-                        if(silent == false)
-                            setWorkingFormVisible(false);
+                        setWorkingFormVisible(false);
 
                         return sr;
 
@@ -218,8 +217,7 @@ public class ServerRequest {
 			e.printStackTrace();
 		}
 
-                if(silent == false)
-                    setWorkingFormVisible(false);
+                setWorkingFormVisible(false);
 
 		return ServerResponse.createFail();
 	}
