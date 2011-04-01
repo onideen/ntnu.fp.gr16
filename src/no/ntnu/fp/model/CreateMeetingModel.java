@@ -174,10 +174,13 @@ public class CreateMeetingModel
     public List<Person> getAttendees()
     {
         List<Person> att = new ArrayList<Person>();
-        for(Person p : Communication.getEmployees())
+        List<Person> emps = Communication.getEmployees();
+        String status;
+        for(final Person p : emps)
             if(event.attendees.contains(p.getEmail()) || responsiblePerson.getEmail().equals(p.getEmail()))
             {
-                p.setStatus(Communication.getStatus(event.getEid(), p.getEmail()));
+                status = Communication.getStatus(event.getEid(), p.getEmail());
+                p.setStatus(status);
                 att.add(p);
             }
 

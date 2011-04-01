@@ -94,7 +94,7 @@ public class XmlSerializer {
 	public static Person toPerson(Element e)
 	{
 		e = getContentsFromDataXml(e);
-		return new Person(
+		return new no.ntnu.fp.model.Person(
 				readString(e, Person.NAME_PROPERTY_NAME),
 				readString(e, Person.EMAIL_PROPERTY_NAME),
 				readString(e, Person.PASSWORD_PROPERTY_NAME)

@@ -8,254 +8,299 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-public class Communication {
+public class Communication
+{
 
-        public static String LoggedInUserEmail = "";
+    public static String LoggedInUserEmail = "";
 
-	public static void main(String[] args) throws SQLException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
+    public static void main(String[] args) throws SQLException,
+                                                  InstantiationException, IllegalAccessException,
+                                                  ClassNotFoundException
+    {
 
-		Date d = createDate(2011, 3, 15);
-		Time t1 = new Time(14, 00, 00);
-		Time t2 = new Time(16, 00, 00);
-		Event e = new Event("Ultraviktig møte.", Event.Type.Appointment,
-				"torkristianveld@hotmail.com", d, t1, t2, "Grupperom3");
+        Date d = createDate(2011, 3, 15);
+        Time t1 = new Time(14, 00, 00);
+        Time t2 = new Time(16, 00, 00);
+        Event e = new Event("Ultraviktig møte.", Event.Type.Appointment,
+                            "torkristianveld@hotmail.com", d, t1, t2, "Grupperom3");
 
-		e.addAttendee("bolle@bool.com");
-		e.addAttendee("Trollkjerringa@tull.no");
-		e.addAttendee("svulstig@gmail.com");
-		e.addAttendee("mothersday@monday.com");
+        e.addAttendee("bolle@bool.com");
+        e.addAttendee("Trollkjerringa@tull.no");
+        e.addAttendee("svulstig@gmail.com");
+        e.addAttendee("mothersday@monday.com");
 
-		// System.out.println(saveEvent(e));
+        // System.out.println(saveEvent(e));
 
-		/*
-		 * for(Message p : getMessages("bolle@bool.com")) {
-		 * System.out.println(p.getContent()); }
-		 */
+        /*
+         * for(Message p : getMessages("bolle@bool.com")) {
+         * System.out.println(p.getContent()); }
+         */
 
-		// for(Person p:c.getEmployees())
-		// System.out.println(p.getEmail());
+        // for(Person p:c.getEmployees())
+        // System.out.println(p.getEmail());
 
-		// e = c.getEvent(44);
-		// c.updateEvent(e);
+        // e = c.getEvent(44);
+        // c.updateEvent(e);
 
-		// Message m = getMessage(34);
-		// c.answerMessage(m, true);
+        // Message m = getMessage(34);
+        // c.answerMessage(m, true);
 
-		// for(Event r: getEvents("bolle@bool.com")){
-		// System.out.println(r.getDescription() + " --" + r.getResponsible() +
-		// "-.--- id=" + r.getEid());
-		// }
+        // for(Event r: getEvents("bolle@bool.com")){
+        // System.out.println(r.getDescription() + " --" + r.getResponsible() +
+        // "-.--- id=" + r.getEid());
+        // }
 
-		// System.out.println(deleteEvent(82));
+        // System.out.println(deleteEvent(82));
 
-		System.out.println(login("bolle@bool.com", "bobby"));
+        System.out.println(login("bolle@bool.com", "bobby"));
 
-		// for (Message m : getMessages("bolle@bool.com")) {
-		// System.out.println(m.getContent());
-		// }
-		//
-	}
+        // for (Message m : getMessages("bolle@bool.com")) {
+        // System.out.println(m.getContent());
+        // }
+        //
+    }
 
-	public static boolean login(String user, String password)
-			 {
-		ServerResponse sr = sendDataSilent("login", user, password);
-		if (sr.isSuccess()) {
-                        LoggedInUserEmail = user;
-			return (Boolean) sr.getParameters()[0];
-		}
-
-		return false;
-	}
-        
-        public static boolean isLoggedIn()
+    public static boolean login(String user, String password)
+    {
+        ServerResponse sr = sendDataSilent("login", user, password);
+        if (sr.isSuccess())
         {
-            return !LoggedInUserEmail.equals("");
+            LoggedInUserEmail = user;
+            return (Boolean) sr.getParameters()[0];
         }
 
-        public static void logout()
+        return false;
+    }
+
+    public static boolean isLoggedIn()
+    {
+        return !LoggedInUserEmail.equals("");
+    }
+
+    public static void logout()
+    {
+        LoggedInUserEmail = "";
+    }
+
+    private static Date createDate(int y, int m, int d)
+    {
+        Calendar c = new GregorianCalendar(y, m - 1, d);
+        java.sql.Date dd = new Date(c.getTimeInMillis());
+        return dd;
+    }
+
+    private static ServerResponse sendData(String function,
+                                           Object... parameters)
+    {
+        ServerRequest sr = new ServerRequest(function, parameters);
+        ServerResponse response = sr.sendRequest();
+
+        return response;
+    }
+
+    private static ServerResponse sendDataSilent(String function,
+                                                 Object... parameters)
+    {
+        ServerRequest sr = new ServerRequest(function, parameters);
+        ServerResponse response = sr.sendRequestSilent();
+
+        return response;
+    }
+    private static List<Person> cacheEmployees = null;
+
+    @SuppressWarnings("CallToThreadDumpStack")
+    public static List<Person> getEmployees()
+    {
+        if (cacheEmployees != null)
         {
-            LoggedInUserEmail="";
+            return new ArrayList<Person>(cacheEmployees);
         }
 
-	private static Date createDate(int y, int m, int d) {
-		Calendar c = new GregorianCalendar(y, m - 1, d);
-		java.sql.Date dd = new Date(c.getTimeInMillis());
-		return dd;
-	}
-
-	private static ServerResponse sendData(String function,
-			Object... parameters) {
-		ServerRequest sr = new ServerRequest(function, parameters);
-		ServerResponse response = sr.sendRequest();
-
-		return response;
-	}
-
-        private static ServerResponse sendDataSilent(String function,
-			Object... parameters) {
-		ServerRequest sr = new ServerRequest(function, parameters);
-		ServerResponse response = sr.sendRequestSilent();
-
-		return response;
-	}
-
-        private static List<Person> cacheEmployees = null;
-	public static List<Person> getEmployees() {
-                if(cacheEmployees != null)
+        ServerResponse sr = sendData("getEmployees");
+        try
+        {
+            List<Person> cache = (List<Person>) ServerRequest.createObjectFromElement(sr.returnData.getChildElements().get(0));
+            if (cache != null)
+            {
+                if (cache.size() > 5)
                 {
-                    return new ArrayList<Person>(cacheEmployees);
+                    cacheEmployees = cache;
                 }
-
-		ServerResponse sr = sendData("getEmployees");
-		try {
-			List<Person> cache = (List<Person>) ServerRequest
-					.createObjectFromElement(sr.returnData.getChildElements()
-							.get(0));
-                        if(cache!=null)
-                            if(cache.size()>5)
-                                cacheEmployees = cache;
-                        return cache;
-		} catch (Exception e) {
-                    e.printStackTrace();
-		}
-
-		return new ArrayList<Person>();
-	}
-
-        public static List<Message> getMessagesSilent(String email)
-        {
-            ServerResponse sr = sendDataSilent("getMessages", email);
-            if (sr.isSuccess()) {
-                    return (List<Message>) sr.getParameters()[0];
             }
-
-            return new ArrayList<Message>();
+            return cache;
         }
-
-	public static List<Message> getMessages(String email) {
-		ServerResponse sr = sendData("getMessages", email);
-		if (sr.isSuccess()) {
-			return (List<Message>) sr.getParameters()[0];
-		}
-
-		return new ArrayList<Message>();
-	}
-
-	public static Message getMessage(int mid) {
-		ServerResponse sr = sendData("getMessage", mid);
-		if (sr.isSuccess()) {
-			return (Message) sr.getParameters()[0];
-		}
-
-		return null;
-	}
-
-	public static Room getARoom(String roomname) {
-		ServerResponse sr = sendData("getRoom", roomname);
-		if (sr.isSuccess()) {
-			return (Room) sr.getParameters()[0];
-		}
-
-		return null;
-	}
-
-	public static List<Event> getEvents(String email) {
-		ServerResponse sr = sendData("getEvents", email);
-		if (sr.isSuccess()) {
-			try {
-				return (List<Event>) ServerRequest
-						.createObjectFromElement(sr.returnData
-                                                .getChildElements().get(0));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		return new ArrayList<Event>();
-	}
-
-	public static Event getEvent(int eid) {
-		ServerResponse sr = sendData("getEvent", eid);
-		if (sr.isSuccess())
-			return (Event) sr.getParameters()[0];
-
-		return null;
-	}
-
-	public static boolean saveMessage(Message m) {
-		ServerResponse sr = sendData("saveMessage", m);
-		if (sr.isSuccess())
-			m.setMid((int) (Integer) sr.getParameters()[0]);
-		return sr.isSuccess();
-
-	}
-
-	public static boolean saveEvent(Event e) {
-		ServerResponse sr = sendData("saveEvent", e);
-		if (sr.isSuccess())
-			e.setEid((int) (Integer) sr.getParameters()[0]);
-		return sr.isSuccess();
-	}
-
-	public static boolean messageMeOff(int meetingID, String userEmail) {
-		ServerResponse sr = sendData("messageMeOff", meetingID, userEmail);
-		return sr.isSuccess();
-	}
-
-        public static String getStatus(int meetingID, String userEmail){
-            ServerResponse sr = sendData("getStatus", meetingID, userEmail);
-            if (sr.isSuccess())
-                return (String) sr.getParameters()[0];
-            return "Venter";
-        }
-
-	public static boolean deleteEvent(int eId) {
-		return sendData("deleteEvent", eId).isSuccess();
-	}
-
-	public static boolean updateEvent(Event e) {
-		return sendData("updateEvent", e).isSuccess();
-	}
-
-        public static List<Room> getFreeRooms(Reservation r)
+        catch (Exception e)
         {
-            return getFreeRooms(r, -1);
+            e.printStackTrace();
         }
 
-	public static List<Room> getFreeRooms(Reservation r, int ignoreEvent) {
-		ServerResponse sr = sendData("getFreeRooms", r, ignoreEvent);
-		if (sr.isSuccess()) {
-			try {
-				return (List<Room>) ServerRequest
-						.createObjectFromElement(sr.returnData
-								.getChildElements().get(0));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+        return new ArrayList<Person>();
+    }
 
-		return new ArrayList<Room>();
-	}
+    public static List<Message> getMessagesSilent(String email)
+    {
+        ServerResponse sr = sendDataSilent("getMessages", email);
+        if (sr.isSuccess())
+        {
+            return (List<Message>) sr.getParameters()[0];
+        }
 
-	public static boolean answerMessage(Message m, boolean answer) {
-		ServerResponse sr = sendData("answerMessage", m, answer);
-		return sr.isSuccess();
-	}
+        return new ArrayList<Message>();
+    }
 
-	public static List<Person> getAttendees(int eventID) {
-		ServerResponse sr = sendData("getAttendees", eventID);
-		if (sr.isSuccess()) {
-			try {
-				return (List<Person>) ServerRequest
-						.createObjectFromElement(sr.returnData
-								.getChildElements().get(0));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+    public static List<Message> getMessages(String email)
+    {
+        ServerResponse sr = sendData("getMessages", email);
+        if (sr.isSuccess())
+        {
+            return (List<Message>) sr.getParameters()[0];
+        }
 
-		return new ArrayList<Person>();
-	}
+        return new ArrayList<Message>();
+    }
+
+    public static Message getMessage(int mid)
+    {
+        ServerResponse sr = sendData("getMessage", mid);
+        if (sr.isSuccess())
+        {
+            return (Message) sr.getParameters()[0];
+        }
+
+        return null;
+    }
+
+    public static Room getARoom(String roomname)
+    {
+        ServerResponse sr = sendData("getRoom", roomname);
+        if (sr.isSuccess())
+        {
+            return (Room) sr.getParameters()[0];
+        }
+
+        return null;
+    }
+
+    public static List<Event> getEvents(String email)
+    {
+        ServerResponse sr = sendData("getEvents", email);
+        if (sr.isSuccess())
+        {
+            try
+            {
+                return (List<Event>) ServerRequest.createObjectFromElement(sr.returnData.getChildElements().get(0));
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        return new ArrayList<Event>();
+    }
+
+    public static Event getEvent(int eid)
+    {
+        ServerResponse sr = sendData("getEvent", eid);
+        if (sr.isSuccess())
+        {
+            return (Event) sr.getParameters()[0];
+        }
+
+        return null;
+    }
+
+    public static boolean saveMessage(Message m)
+    {
+        ServerResponse sr = sendData("saveMessage", m);
+        if (sr.isSuccess())
+        {
+            m.setMid((int) (Integer) sr.getParameters()[0]);
+        }
+        return sr.isSuccess();
+
+    }
+
+    public static boolean saveEvent(Event e)
+    {
+        ServerResponse sr = sendData("saveEvent", e);
+        if (sr.isSuccess())
+        {
+            e.setEid((int) (Integer) sr.getParameters()[0]);
+        }
+        return sr.isSuccess();
+    }
+
+    public static boolean messageMeOff(int meetingID, String userEmail)
+    {
+        ServerResponse sr = sendData("messageMeOff", meetingID, userEmail);
+        return sr.isSuccess();
+    }
+
+    public static String getStatus(int meetingID, String userEmail)
+    {
+        ServerResponse sr = sendData("getStatus", meetingID, userEmail);
+        if (sr.isSuccess())
+        {
+            return (String) sr.getParameters()[0];
+        }
+        return "Venter";
+    }
+
+    public static boolean deleteEvent(int eId)
+    {
+        return sendData("deleteEvent", eId).isSuccess();
+    }
+
+    public static boolean updateEvent(Event e)
+    {
+        return sendData("updateEvent", e).isSuccess();
+    }
+
+    public static List<Room> getFreeRooms(Reservation r)
+    {
+        return getFreeRooms(r, -1);
+    }
+
+    public static List<Room> getFreeRooms(Reservation r, int ignoreEvent)
+    {
+        ServerResponse sr = sendData("getFreeRooms", r, ignoreEvent);
+        if (sr.isSuccess())
+        {
+            try
+            {
+                return (List<Room>) ServerRequest.createObjectFromElement(sr.returnData.getChildElements().get(0));
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        return new ArrayList<Room>();
+    }
+
+    public static boolean answerMessage(Message m, boolean answer)
+    {
+        ServerResponse sr = sendData("answerMessage", m, answer);
+        return sr.isSuccess();
+    }
+
+    public static List<Person> getAttendees(int eventID)
+    {
+        ServerResponse sr = sendData("getAttendees", eventID);
+        if (sr.isSuccess())
+        {
+            try
+            {
+                return (List<Person>) ServerRequest.createObjectFromElement(sr.returnData.getChildElements().get(0));
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        return new ArrayList<Person>();
+    }
 }

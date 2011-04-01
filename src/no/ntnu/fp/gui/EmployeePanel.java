@@ -93,6 +93,7 @@ public class EmployeePanel extends javax.swing.JPanel {
     private JButton pnlImage;
     // End of variables declaration//GEN-END:variables
 
+    @SuppressWarnings("CallToThreadDumpStack")
     public void readPerson(Person p)
     {
         if(p==null)
@@ -103,7 +104,7 @@ public class EmployeePanel extends javax.swing.JPanel {
         lblName.setText(p.getName());
         lblEmail.setText(p.getEmail());
 
-        if(!p.getStatus().equals(""))
+        if(p.getStatus() != null && !p.getStatus().equals(""))
             lblEmail.setText(lblEmail.getText() + " - " + p.getStatus());
     }
 }
