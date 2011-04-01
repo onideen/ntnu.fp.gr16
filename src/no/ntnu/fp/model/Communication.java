@@ -199,6 +199,11 @@ public class Communication {
 		return sr.isSuccess();
 	}
 
+	public static boolean messageMeOff(int meetingID, String userEmail) {
+		ServerResponse sr = sendData("messageMeOff", meetingID, userEmail);
+		return sr.isSuccess();
+	}
+
 	public static boolean deleteEvent(int eId) {
 		return sendData("deleteEvent", eId).isSuccess();
 	}
