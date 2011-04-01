@@ -30,8 +30,10 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import com.toedter.calendar.JDateChooser;
+import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JOptionPane;
+import javax.swing.border.LineBorder;
 import javax.tools.Diagnostic;
 
 public class CreateMeetingPanel extends BaseCalendarView
@@ -220,7 +222,7 @@ public class CreateMeetingPanel extends BaseCalendarView
             }
         }
 
-        List<Person> employees = model.getAllUsers();
+        List<Person> employees = model.getAvailUsers();
         if (employees != null)
         {
             for (Person person : employees)
@@ -323,6 +325,7 @@ public class CreateMeetingPanel extends BaseCalendarView
             description = new JEditorPane();
             description.setSize(100, 81);
             description.setPreferredSize(new java.awt.Dimension(100, 21));
+            description.setBorder(new LineBorder(Color.black));
         }
         return description;
     }

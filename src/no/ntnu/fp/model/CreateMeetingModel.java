@@ -2,7 +2,6 @@ package no.ntnu.fp.model;
 
 import java.sql.Date;
 import java.sql.Time;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -185,7 +184,7 @@ public final class CreateMeetingModel
         if (atendees == null)
         {
             List<Person> att = new ArrayList<Person>();
-            List<Person> emps = Communication.getEmployees();
+            getAllUsers();
             String status;
             for (final Person p : emps)
             {
@@ -202,32 +201,37 @@ public final class CreateMeetingModel
         return atendees;
     }
 
-    public List<Person> getAllUsers()
+    public void getAllUsers()
     {
         if (emps == null)
         {
-            List<Person> attendees = getAttendees();
-            List<Person> employees = Communication.getEmployees();
-
-            for (Person person : attendees)
-            {
-                if (person == null)
-                {
-                    continue;
-                }
-
-                employees.remove(person);
-            }
-            
-            for (Person person : employees)
-            {
-                person.setStatus("");
-            }
-
-            
-            emps = employees;
+            emps = Communication.getEmployees();
         }
-        return emps;
+    }
+
+    public List<Person> getAvailUsers()
+    {
+        getAllUsers();
+        List<Person> attendees = getAttendees();
+        List<Person> employees = new ArrayList<Person>(emps);
+
+        for (Person person : attendees)
+        {
+            if (person == null)
+            {
+                continue;
+            }
+
+            employees.remove(person);
+        }
+
+        for (Person person : employees)
+        {
+            person.setStatus("");
+        }
+
+
+        return employees;
 
     }
 
