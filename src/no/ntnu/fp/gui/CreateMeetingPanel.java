@@ -62,7 +62,7 @@ public class CreateMeetingPanel extends BaseCalendarView
     private JLabel descriptionLabel;
     private JLabel endTimeLabel;
     private JLabel startTimeLabel;
-    private JComboBox end_time;
+    private JComboBox endTime;
     private JComboBox startTime;
     private JLabel dateLabel;
     private JDateChooser calendar;
@@ -150,7 +150,7 @@ public class CreateMeetingPanel extends BaseCalendarView
             meetingPanel.add(getEnd_time_label(), new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
             meetingPanel.add(getDescription_label(), new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
             meetingPanel.add(getStart_time(), new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
-            meetingPanel.add(end_time, new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
+            meetingPanel.add(endTime, new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
             meetingPanel.add(getDescription(), new GridBagConstraints(1, 5, 1, 2, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 10), 0, 0));
             meetingPanel.add(getRoom_label(), new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
             meetingPanel.add(getRoomChooserPanel(), new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0, 0));
@@ -172,7 +172,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         {
             calendar.setEnabled(false);
             startTime.setEnabled(false);
-            end_time.setEnabled(false);
+            endTime.setEnabled(false);
             roomChooser.setEnabled(false);
             description.setEnabled(false);
             select.setEnabled(false);
@@ -183,7 +183,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         {
             calendar.setEnabled(true);
             startTime.setEnabled(true);
-            end_time.setEnabled(true);
+            endTime.setEnabled(true);
             roomChooser.setEnabled(false);
             description.setEnabled(true);
             select.setEnabled(true);
@@ -204,7 +204,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         model.setDefaultValues();
         calendar.setDate(new Date(model.getDate().getTimeInMillis()));
         startTime.setSelectedItem(new Time(model.getStartTime().getTimeInMillis()));
-        end_time.setSelectedItem(new Time(model.getEndTime().getTimeInMillis()));
+        endTime.setSelectedItem(new Time(model.getEndTime().getTimeInMillis()));
         description.setText(model.getDescription());
         roomChooserModel.setSelectedItem(model.getRoom());
         addEmployees();
@@ -297,15 +297,15 @@ public class CreateMeetingPanel extends BaseCalendarView
 
     private JComboBox getEnd_time()
     {
-        if (end_time == null)
+        if (endTime == null)
         {
             end_comboModel = new DefaultComboBoxModel(model.hentKlokkeslett());
-            end_time = new JComboBox(end_comboModel);
-            end_time.setRequestFocusEnabled(false);
-            end_time.setEditable(true);
-            end_time.addActionListener(new TimeListener());
+            endTime = new JComboBox(end_comboModel);
+            endTime.setRequestFocusEnabled(false);
+            endTime.setEditable(true);
+            endTime.addActionListener(new TimeListener());
         }
-        return end_time;
+        return endTime;
     }
 
     public ComboBoxModel getEndComboModel()
@@ -416,7 +416,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         startTimeCal.setTime((java.sql.Time) startTime.getSelectedItem());
         model.setStartTime(startTimeCal);
         Calendar endTimeCal = Calendar.getInstance();
-        endTimeCal.setTime((java.sql.Time) end_time.getSelectedItem());
+        endTimeCal.setTime((java.sql.Time) endTime.getSelectedItem());
         model.setEndTime(endTimeCal);
         model.setRoom(((Room) roomChooser.getSelectedItem()));
         model.setDescription(description.getText());
@@ -506,7 +506,7 @@ public class CreateMeetingPanel extends BaseCalendarView
     protected void getRooms()
     {
         model.setDate(calendar.getCalendar());
-        List<Room> rooms = model.getRooms();
+        List<Room> rooms = model.getRooms(calendar.getCalendar(), (Time)startTime.getSelectedItem(), (Time)endTime.getSelectedItem());
 
         roomChooserModel.removeAllElements();
 
