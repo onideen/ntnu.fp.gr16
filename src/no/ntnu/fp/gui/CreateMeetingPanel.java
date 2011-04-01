@@ -553,7 +553,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         if (jScrollPane1 == null)
         {
             jScrollPane1 = new JScrollPane();
-            jScrollPane1.setPreferredSize(new java.awt.Dimension(100, 387));
+//            jScrollPane1.setPreferredSize(new java.awt.Dimension(100, 387));
             jScrollPane1.setViewportView(getAll_users_list());
             jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         }
