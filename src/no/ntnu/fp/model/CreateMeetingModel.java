@@ -108,7 +108,7 @@ public class CreateMeetingModel
 
     public void setRoom(Room room)
     {
-        if(room==null)
+        if(room.equals("Velg et rom"))
             event.setRoom("");
         else
             event.setRoom(room.toString());
@@ -177,8 +177,6 @@ public class CreateMeetingModel
             if(event.attendees.contains(p.getEmail()) || responsiblePerson.getEmail().equals(p.getEmail()))
                 att.add(p);
 
-        System.out.println(att);
-        
         return att;
     }
 
@@ -187,7 +185,6 @@ public class CreateMeetingModel
         List<Person> attendees = getAttendees();
         List<Person> employees = Communication.getEmployees();
 
-        boolean foundMe = false;
         for (Person person : attendees)
         {
             if(person==null)
@@ -195,8 +192,6 @@ public class CreateMeetingModel
 
             employees.remove(person);
         }
-
-        System.out.println(employees);
 
         return employees;
     }

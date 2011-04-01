@@ -10,8 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Calendar;
 import java.util.List;
 import javax.swing.JButton;
@@ -100,12 +98,12 @@ public class CalendarDoubleView extends BaseCalendarView implements ActionListen
 
     private void setupGUI()
     {
-        calendarPanel = new CalendarPanel(this, 172);
+        calendarPanel = new CalendarPanel(this, 222);
         GridBagConstraints s = new GridBagConstraints();
         s.anchor = GridBagConstraints.NORTHWEST;
         s.fill = GridBagConstraints.BOTH;
         s.gridy = 1;
-        calendarPanel.setPreferredSize(new Dimension(985, 205));
+        calendarPanel.setPreferredSize(new Dimension(985, 255));
         add(calendarPanel, s);
 
         yourLabel = new JLabel("Din kalender:");
@@ -116,9 +114,9 @@ public class CalendarDoubleView extends BaseCalendarView implements ActionListen
         s.gridy = 2;
         add(otherLabel, s);
 
-        calendarPanel2 = new CalendarPanel(this, 172);
+        calendarPanel2 = new CalendarPanel(this, 222);
         s.gridy = 3;
-        calendarPanel2.setPreferredSize(new Dimension(985, 205));
+        calendarPanel2.setPreferredSize(new Dimension(985, 255));
         add(calendarPanel2, s);
 
         s.gridy = 5;

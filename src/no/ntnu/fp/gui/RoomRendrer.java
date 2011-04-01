@@ -18,8 +18,11 @@ public class RoomRendrer extends JLabel implements ListCellRenderer {
 	public Component getListCellRendererComponent(JList list, Object room,
 			int index, boolean isSelected, boolean cellHasFocus) {
 		
-		String s = ((Room)room).getName();
-		setText(s);
+		if (room != null)			
+			setText(((Room)room).getName());
+		else
+			setText("Velg et rom");
+		
 		
 		if (isSelected) {
             setBackground(list.getSelectionBackground());

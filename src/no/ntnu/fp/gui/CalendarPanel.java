@@ -116,7 +116,7 @@ public class CalendarPanel extends JPanel implements ComponentListener
      * @wbp.parser.constructor
      */
     public CalendarPanel(BaseCalendarView container) {
-        this(container, 410);
+        this(container, 505);
     }
 
     public CalendarPanel(BaseCalendarView container, int height)
