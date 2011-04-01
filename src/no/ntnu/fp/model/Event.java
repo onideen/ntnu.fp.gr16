@@ -140,6 +140,7 @@ public class Event {
 	
 	public void setStartTime(Calendar startTime) {
 		Time old = this.startTime;
+		startTime.set(1970, 1, 1);
 		this.startTime = Utils.getSqlTime(startTime);
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_STARTTIME, old, this.startTime);
 		propChangeSupp.firePropertyChange(event);
@@ -150,6 +151,7 @@ public class Event {
 	}
 	
 	public void setEndTime(Calendar endTime) {
+		endTime.set(1970, 1, 1);
 		Time old = this.endTime;
 		this.endTime = Utils.getSqlTime(endTime);
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_ENDTIME, old, this.endTime);
