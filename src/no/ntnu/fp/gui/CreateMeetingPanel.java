@@ -89,6 +89,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         initGUI();
     }
 
+    @SuppressWarnings("CallToThreadDumpStack")
     private void initGUI()
     {
         try
@@ -362,9 +363,11 @@ public class CreateMeetingPanel extends BaseCalendarView
                     deleteEvent();
                 }
             });
-            if (model.isNew() || !model.isEditable())
+            if (model.isNew())
             {
                 delete_button.setText("Avbryt");
+            } else if(!model.isEditable()) {
+                delete_button.setText("Meld av");
             }
         }
         return delete_button;
@@ -373,16 +376,21 @@ public class CreateMeetingPanel extends BaseCalendarView
     protected void deleteEvent()
     {
     	//TODO: legg til funksjonalitet til å melde seg av event
-        if (model.isNew() || !model.isEditable())
+        if (model.isNew())
         {
             MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
-            MainPanel.getMainForm().refreshCalendar();
+            MainPanel.refreshCalendar();
+        }
+        else if(!model.isEditable()) {
+            model.messageMeOff();
+            MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
+            MainPanel.refreshCalendar();
         }
         else
         {
             model.delete();
             MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
-            MainPanel.getMainForm().refreshCalendar();
+            MainPanel.refreshCalendar();
         }
     }
 
@@ -408,7 +416,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         {
             model.save();
             MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
-            MainPanel.getMainForm().refreshCalendar();
+            MainPanel.refreshCalendar();
         }
         else
         {

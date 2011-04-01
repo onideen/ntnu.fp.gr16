@@ -248,4 +248,11 @@ public class CreateMeetingModel
 	public String getResponsible() {
 		return event.getResponsible();
 	}
+
+    public void messageMeOff()
+    {
+        if(!isEditable()) {
+            Communication.messageMeOff(event.getEid());
+        }
+    }
 }
