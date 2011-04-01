@@ -97,3 +97,13 @@ java.io.FileNotFoundException: C:\Users\Vidar\Programmer\Eclipse Galileo SR1 Mod
 
 !ENTRY com.instantiations.eclipse 1 0 2011-03-07 10:41:29.135
 !MESSAGE Failed to determine version of plugin com.windowtester.runtime
+!SESSION 2011-03-29 12:46:19.424 -----------------------------------------------
+eclipse.buildId=M20100909-0800
+java.version=1.6.0_24
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=no_NO
+Framework arguments:  -product org.eclipse.epp.package.java.product
+Command-line arguments:  -data C:\Users\tork\Desktop\Skole\4.semester(v11)\TDT4140 (system)\kjerne\ntnu.fp.gr16 -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.java.product
+
+!ENTRY org.eclipse.epp.usagedata.recording 1 0 2011-03-29 12:46:41.578
+!MESSAGE Usage data uploaded to http://udc.eclipse.org/upload.php in 4261 milliseconds.

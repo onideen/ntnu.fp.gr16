@@ -109,7 +109,7 @@ public class CreateMeetingModel
 
     public void setRoom(Room room)
     {
-        if(room.equals("Velg et rom"))
+        if(room == null)
             event.setRoom("");
         else
             event.setRoom(room.toString());
