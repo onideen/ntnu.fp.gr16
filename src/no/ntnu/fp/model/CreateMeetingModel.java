@@ -160,12 +160,12 @@ public final class CreateMeetingModel
         }
     }
 
-    public Time[] hentKlokkeslett()
+    public Time[] getTimes()
     {
         Time[] comboChoose = new Time[24];
         for (int i = 0; i < 24; i++)
         {
-            comboChoose[i] = new Time(i, 0, 0);
+            comboChoose[i] = new Time(i * 3600 * 1000);
         }
         return comboChoose;
     }
