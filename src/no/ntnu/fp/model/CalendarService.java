@@ -251,6 +251,31 @@ public class CalendarService implements ConnectionListener,
         c.close();
     }
 
+    public static String getStatus(int meetingID, String userEmail) throws SQLException{
+        Connection c = getConnection();
+        PreparedStatement p = c.prepareStatement("SELECT status FROM Deltaker WHERE hid = ? AND `e-mail` = ?;");
+        p.setInt(1, meetingID);
+        p.setString(2, userEmail);
+        
+        ResultSet rs = p.executeQuery();
+
+        String s = "Venter";
+        if(rs.next())
+        {
+            if(rs.getString("status").equals("venter"))
+                s = "Venter";
+            if(rs.getString("status").equals("true"))
+                s = "Godtatt";
+            if(rs.getString("status").equals("false"))
+                s = "Avslått";
+        }
+
+        p.close();
+        c.close();
+
+        return s;
+    }
+
     public void updateEvent(Event e) {
 
         try {
