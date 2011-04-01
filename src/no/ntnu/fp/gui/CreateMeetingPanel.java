@@ -435,7 +435,7 @@ public class CreateMeetingPanel extends BaseCalendarView
             roomChooserModel = new DefaultComboBoxModel();
             roomChooser = new JComboBox();
             roomChooser.setModel(roomChooserModel);
-            roomChooser.setEditable(true);
+            roomChooser.setEditable(false);
             roomChooser.setEnabled(false);
             roomChooser.setRenderer(new RoomRendrer());
         }
