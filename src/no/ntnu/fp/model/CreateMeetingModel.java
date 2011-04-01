@@ -179,6 +179,16 @@ public final class CreateMeetingModel
         return rooms;
     }
 
+    public List<Room> getRooms(Calendar date, Time startTime, Time endTime)
+    {
+    	List<Room> rooms = Communication.getFreeRooms(
+                new Reservation(new Date(date.getTimeInMillis()), startTime, endTime),
+                event.getEid());
+
+        return rooms;
+    }
+    
+    
     public List<Person> getAttendees()
     {
         if (atendees == null)
