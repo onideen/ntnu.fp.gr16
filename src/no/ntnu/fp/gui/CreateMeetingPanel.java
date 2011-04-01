@@ -175,7 +175,6 @@ public class CreateMeetingPanel extends BaseCalendarView
             description.setEnabled(false);
             select.setEnabled(false);
             unselect.setEnabled(false);
-            delete_button.setEnabled(false);
             room_button.setEnabled(false);
         }
         else
@@ -183,11 +182,10 @@ public class CreateMeetingPanel extends BaseCalendarView
             calendar.setEnabled(true);
             startTime.setEnabled(true);
             end_time.setEnabled(true);
-            roomChooser.setEnabled(true);
+            roomChooser.setEnabled(false);
             description.setEnabled(true);
             select.setEnabled(true);
             unselect.setEnabled(true);
-            delete_button.setEnabled(true);
             room_button.setEnabled(true);
         }
     }
