@@ -200,6 +200,9 @@ public class CreateMeetingModel
             employees.remove(person);
         }
 
+        for (Person person : employees)
+            person.setStatus("");
+
         return employees;
     }
 

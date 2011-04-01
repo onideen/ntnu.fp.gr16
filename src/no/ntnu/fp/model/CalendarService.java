@@ -68,7 +68,7 @@ public class CalendarService implements ConnectionListener,
         return null;
     }
 
-    private static Connection getConnection() {
+    private Connection getConnection() {
         for (int i = 0; i < 5; i++) {
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance();
@@ -229,8 +229,9 @@ public class CalendarService implements ConnectionListener,
         String s = "DELETE FROM Hendelse WHERE id = " + eId + ";";
         executeUpdate(s);
 
+        Person boss = getPerson(e.getResponsible());
         for (String attendee : attendees) {
-            Message m = new Message(e.getResponsible()
+            Message m = new Message(boss.getName()
                     + " har avlyst møtet den: " + e.getDateString(),
                     Message.Type.Information, attendee, eId);
             saveMessage(m);
@@ -242,6 +243,19 @@ public class CalendarService implements ConnectionListener,
     public void messageMeOff(int meetingID, String userEmail) throws SQLException
     {
         Connection c = getConnection();
+
+        Event e = getEvent(meetingID);
+
+        Person user = getPerson(userEmail);
+        for (String attendee : e.getAttendees()) {
+            if(attendee.equals(userEmail))
+                continue;
+            Message m = new Message(user.getName()
+                    + " har meldt seg av møtet den: " + e.getDateString(),
+                    Message.Type.Information, attendee, meetingID);
+            saveMessage(m);
+        }
+
         PreparedStatement p = c.prepareStatement("DELETE FROM Deltaker WHERE hid = ? AND `e-mail` = ?;");
         p.setInt(1, meetingID);
         p.setString(2, userEmail);
@@ -251,8 +265,14 @@ public class CalendarService implements ConnectionListener,
         c.close();
     }
 
-    public static String getStatus(int meetingID, String userEmail) throws SQLException{
+    public String getStatus(int meetingID, String userEmail) throws SQLException{
+
+        Event e = getEvent(meetingID);
+        if(e.getResponsible().equals(userEmail))
+            return "Godtatt";
+        
         Connection c = getConnection();
+
         PreparedStatement p = c.prepareStatement("SELECT status FROM Deltaker WHERE hid = ? AND `e-mail` = ?;");
         p.setInt(1, meetingID);
         p.setString(2, userEmail);
@@ -569,7 +589,7 @@ public class CalendarService implements ConnectionListener,
         return messages;
     }
 
-    public static Message getMessage(int id) {
+    public Message getMessage(int id) {
 
         try {
 
@@ -598,7 +618,7 @@ public class CalendarService implements ConnectionListener,
         return null;
     }
 
-    private static Message createMessage(ResultSet rs) throws SQLException {
+    private Message createMessage(ResultSet rs) throws SQLException {
         Message m = new Message(rs.getString("innhold"),
                 Message.Type.valueOf(rs.getString("type")),
                 rs.getString("mottaker"), rs.getInt("relatertmote"));
@@ -676,10 +696,6 @@ public class CalendarService implements ConnectionListener,
         }
 
         return e;
-    }
-
-    public List<Room> getFreeRooms(Reservation r) throws SQLException {
-        return getFreeRooms(r, -1);
     }
 
     public List<Room> getFreeRooms(Reservation r, int ignoreEvent) throws SQLException {
@@ -785,7 +801,7 @@ public class CalendarService implements ConnectionListener,
         Communication.getEmployees();
     }
 
-    private static Date createDate(int y, int m, int d) {
+    private Date createDate(int y, int m, int d) {
         Calendar c = new GregorianCalendar(y, m - 1, d);
         java.sql.Date dd = new Date(c.getTimeInMillis());
         return dd;
