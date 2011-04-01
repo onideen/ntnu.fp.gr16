@@ -267,9 +267,14 @@ public class CalendarService implements ConnectionListener,
 
     public String getStatus(int meetingID, String userEmail) throws SQLException{
 
+        System.out.println("CHECKING STATUS: " + Integer.toString(meetingID) + ", " + userEmail);
+
         Event e = getEvent(meetingID);
-        if(e.getResponsible().equals(userEmail))
-            return "Godtatt";
+        if(e!=null)
+            if(e.getResponsible().equals(userEmail)){
+                System.out.print(("Yeah, he was responsible."));
+                return "Godtatt";
+            }
         
         Connection c = getConnection();
 
@@ -292,6 +297,8 @@ public class CalendarService implements ConnectionListener,
 
         p.close();
         c.close();
+
+        System.out.println("Status was: " + s);
 
         return s;
     }

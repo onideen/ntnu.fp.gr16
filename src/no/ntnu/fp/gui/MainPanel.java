@@ -314,6 +314,7 @@ public class MainPanel extends javax.swing.JPanel implements LoginListener, Gene
 
     public void loginAction(boolean isLoggedIn)
     {
+        calendarPanel = null;
         changeMain(CALENDAR);
         runner.invoke();
     }
