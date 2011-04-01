@@ -74,7 +74,7 @@
     </Container>
     <Component class="javax.swing.JButton" name="btnYes">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Yes"/>
+        <Property name="text" type="java.lang.String" value="Ja"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
@@ -83,7 +83,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnNo">
       <Properties>
-        <Property name="text" type="java.lang.String" value="No"/>
+        <Property name="text" type="java.lang.String" value="Nei"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
