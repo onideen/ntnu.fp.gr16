@@ -239,6 +239,12 @@ public class Communication
 
     public static String getStatus(int meetingID, String userEmail)
     {
+        if(meetingID==-1)
+            if(userEmail.equals(LoggedInUserEmail))
+                return "Godtatt";
+            else
+                return "Venter";
+
         ServerResponse sr = sendData("getStatus", meetingID, userEmail);
         if (sr.isSuccess())
         {
