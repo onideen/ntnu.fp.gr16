@@ -162,6 +162,8 @@ public class MessageListPanel extends javax.swing.JPanel {
 
        if(dlm.getSize()>0)
            jList1.setSelectedIndex(0);
+
+       jList1.updateUI();
    }
 
     /**

@@ -218,9 +218,17 @@ public final class CreateMeetingModel
 
                 employees.remove(person);
             }
+            
+            for (Person person : employees)
+            {
+                person.setStatus("");
+            }
+
+            
             emps = employees;
         }
         return emps;
+
     }
 
     public void cleanAttendees()
