@@ -59,16 +59,22 @@ public class MessageListPanel extends javax.swing.JPanel {
             }
         });
         jScrollPane1.setViewportView(jList1);
-
+        
+        btnYes.setIcon(new ImageIcon(getClass().getResource("/accept.png")));
         btnYes.setText("Ja");
+        btnYes.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnYes.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnYes.setEnabled(false);
         btnYes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnYesActionPerformed(evt);
             }
         });
-
+        
+        btnNo.setIcon(new ImageIcon(getClass().getResource("/no.png")));
         btnNo.setText("Nei");
+        btnNo.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnNo.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnNo.setEnabled(false);
         btnNo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

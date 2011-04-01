@@ -39,7 +39,7 @@ public class BaseCalendarView extends JPanel {
             Logger.getLogger(BaseCalendarView.class.getName()).log(Level.SEVERE, null, ex);
         }
         service = new ServiceWrapper();
-        Dimension size = new Dimension(985, 505);
+        Dimension size = new Dimension(985, 600);
         setSize(size);
         setMinimumSize(size);
         setMaximumSize(size);
