@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeSupport;
 import java.sql.Time;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -140,7 +141,10 @@ public class Event {
 	
 	public void setStartTime(Calendar startTime) {
 		Time old = this.startTime;
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+                System.out.println("HALLO HALLO HALLO HALLO HALLO" + sdf.format(startTime.getTime()));
 		this.startTime = Utils.getSqlTime(startTime);
+                System.out.println("HALLO HALLO HALLO HALLO HALLO" + sdf.format(this.startTime.getTime()));
 		PropertyChangeEvent event = new PropertyChangeEvent(this, PROPERTY_STARTTIME, old, this.startTime);
 		propChangeSupp.firePropertyChange(event);
 	}
