@@ -353,7 +353,7 @@ public class CreateMeetingPanel extends BaseCalendarView
             delete_button = new JButton();
             delete_button.setIcon(new ImageIcon(getClass().getResource("/Close-icon.png")));
             delete_button.setIconTextGap(10);
-            delete_button.setText("Slett");
+        	delete_button.setText("Slett");
             delete_button.addActionListener(new ActionListener()
             {
 
@@ -372,6 +372,7 @@ public class CreateMeetingPanel extends BaseCalendarView
 
     protected void deleteEvent()
     {
+    	//TODO: legg til funksjonalitet til å melde seg av event
         if (model.isNew() || !model.isEditable())
         {
             MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
@@ -434,7 +435,7 @@ public class CreateMeetingPanel extends BaseCalendarView
             roomChooserModel = new DefaultComboBoxModel();
             roomChooser = new JComboBox();
             roomChooser.setModel(roomChooserModel);
-            roomChooser.setEditable(true);
+            roomChooser.setEditable(false);
             roomChooser.setEnabled(false);
             roomChooser.setRenderer(new RoomRendrer());
         }
@@ -552,7 +553,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         if (jScrollPane1 == null)
         {
             jScrollPane1 = new JScrollPane();
-            jScrollPane1.setPreferredSize(new java.awt.Dimension(100, 387));
+//            jScrollPane1.setPreferredSize(new java.awt.Dimension(100, 387));
             jScrollPane1.setViewportView(getAll_users_list());
             jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         }
@@ -721,7 +722,7 @@ public class CreateMeetingPanel extends BaseCalendarView
                     };
             buttons_panel.setLayout(buttons_panelLayout);
             buttons_panel.add(getSave_button(), new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-            buttons_panel.add(getDelete_button(), new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+        	buttons_panel.add(getDelete_button(), new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
         }
         return buttons_panel;
     }

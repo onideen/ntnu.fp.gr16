@@ -82,6 +82,7 @@ public class MainPanel extends javax.swing.JPanel implements LoginListener, Gene
     public static void main(String[] args)
     {
         JFrame frame = new JFrame();
+        frame.setResizable(false);
         MainPanel mp = new MainPanel();
         frame.setContentPane(mp);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
