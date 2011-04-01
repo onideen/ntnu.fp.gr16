@@ -247,7 +247,9 @@ public class CalendarService implements ConnectionListener,
         Event e = getEvent(meetingID);
 
         Person user = getPerson(userEmail);
-        for (String attendee : e.getAttendees()) {
+        List<String> att = e.getAttendees();
+        att.add(e.getResponsible());
+        for (String attendee : att) {
             if(attendee.equals(userEmail))
                 continue;
             Message m = new Message(user.getName()
@@ -307,6 +309,8 @@ public class CalendarService implements ConnectionListener,
 
         try {
 
+            System.out.println("HEIH IHIEHIEH IEHIHEIHEIH IHEIHEIHIEHIEH I EHIEHIEHIEHIEHI E" + e.getAttendees());
+
             Connection c = getConnection();
             PreparedStatement p = c.prepareStatement("UPDATE Hendelse SET dato = ?, starttid = ?, sluttid = ?, "
                     + "beskrivelse = ?, type = ?, ansvarlig = ?, reservertrom = ? WHERE id = "
@@ -327,7 +331,7 @@ public class CalendarService implements ConnectionListener,
             p.executeUpdate();
 
             List<String> earlierAttendees = new ArrayList<String>();
-            p = c.prepareStatement("SELET `e-mail` FROM Deltaker WHERE hid = ?;");
+            p = c.prepareStatement("SELECT `e-mail` FROM Deltaker WHERE hid = ?;");
             p.setInt(1, e.getEid());
             ResultSet rs = p.executeQuery();
             while(rs.next())
