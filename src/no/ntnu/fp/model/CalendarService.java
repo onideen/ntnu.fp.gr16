@@ -239,6 +239,18 @@ public class CalendarService implements ConnectionListener,
         c.close();
     }
 
+    public void messageMeOff(int meetingID, String userEmail) throws SQLException
+    {
+        Connection c = getConnection();
+        PreparedStatement p = c.prepareStatement("DELETE FROM Deltaker WHERE hid = ? AND `e-mail` = ?;");
+        p.setInt(1, meetingID);
+        p.setString(2, userEmail);
+        p.executeUpdate();
+
+        p.close();
+        c.close();
+    }
+
     public void updateEvent(Event e) {
 
         try {
