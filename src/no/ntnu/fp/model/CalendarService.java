@@ -710,6 +710,9 @@ public class CalendarService implements ConnectionListener,
     }
 
     public List<Room> getFreeRooms(Reservation r, int ignoreEvent) throws SQLException {
+
+        System.out.println("Skal no sjekke etter ledige rom i tidsrommet " + r.startTime.toString() + ", " + r.endTime.toString() + ". Hendelse: " + ignoreEvent);
+
         HashMap<String, Room> hashRooms = new HashMap<String, Room>();
         List<Room> freeRooms = new ArrayList<Room>();
         Connection c = getConnection();
@@ -721,8 +724,8 @@ public class CalendarService implements ConnectionListener,
             hashRooms.put(rs.getString("navn"), room);
         }
 
-        // rs = s.executeQuery("SELECT id from Hendelse WHERE dato =" +
-        // r.getDate() );
+        System.out.println("Alle rom: " + hashRooms);
+
         PreparedStatement p = c.prepareStatement("SELECT * from Hendelse WHERE dato = ? AND id <> ?;");
         p.setDate(1, r.getDate());
         p.setInt(2, ignoreEvent);
@@ -730,15 +733,23 @@ public class CalendarService implements ConnectionListener,
 
         while (rs.next()) {
             Event e = createEvent(rs);
+
+            System.out.println("Fann Event same dag: " + e.getEid() + ", " + e.getDateString());
+
             long a = e.getStartTime().getTimeInMillis();
             long b = e.getEndTime().getTimeInMillis();
             long ss = r.getStartTime().getTime();
             long ee = r.getEndTime().getTime();
             if (((a >= ss && a < ee) || (b > ss && b < ee))
                     || ((ss > a && ss < b) || (ee > a && ee <= b))) {
+
+                System.out.println("Eventen krasjar.");
+
                 if (hashRooms.containsKey(e.getRoom())) {
                     hashRooms.remove(e.getRoom());
                 }
+            }else{
+                System.out.println("Eventen krasjar ikkje.");
             }
         }
 
@@ -749,6 +760,8 @@ public class CalendarService implements ConnectionListener,
         for (Room room : hashRooms.values()) {
             freeRooms.add(room);
         }
+
+        System.out.println("Ledige rom: " + freeRooms);
 
         return freeRooms;
 
