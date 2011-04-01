@@ -375,8 +375,11 @@ public class CreateMeetingPanel extends BaseCalendarView
             if (model.isNew())
             {
                 delete_button.setText("Avbryt");
-            } else if(!model.isEditable()) {
+            } else if(model.isAtendee() && !model.isEditable()) {
                 delete_button.setText("Meld av");
+            } else if(!model.isEditable())
+            {
+                delete_button.setEnabled(false);
             }
         }
         return delete_button;
