@@ -353,7 +353,7 @@ public class CreateMeetingPanel extends BaseCalendarView
             delete_button = new JButton();
             delete_button.setIcon(new ImageIcon(getClass().getResource("/Close-icon.png")));
             delete_button.setIconTextGap(10);
-            delete_button.setText("Slett");
+        	delete_button.setText("Slett");
             delete_button.addActionListener(new ActionListener()
             {
 
@@ -372,6 +372,7 @@ public class CreateMeetingPanel extends BaseCalendarView
 
     protected void deleteEvent()
     {
+    	//TODO: legg til funksjonalitet til å melde seg av event
         if (model.isNew() || !model.isEditable())
         {
             MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
@@ -721,7 +722,7 @@ public class CreateMeetingPanel extends BaseCalendarView
                     };
             buttons_panel.setLayout(buttons_panelLayout);
             buttons_panel.add(getSave_button(), new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-            buttons_panel.add(getDelete_button(), new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+        	buttons_panel.add(getDelete_button(), new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
         }
         return buttons_panel;
     }

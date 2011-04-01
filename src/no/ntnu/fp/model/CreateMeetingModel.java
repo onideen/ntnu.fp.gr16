@@ -244,4 +244,8 @@ public class CreateMeetingModel
     {
         return event.getResponsible().equals(Communication.LoggedInUserEmail);
     }
+
+	public String getResponsible() {
+		return event.getResponsible();
+	}
 }
