@@ -484,6 +484,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         {
             room_button = new JButton();
             room_button.setText("");
+            room_button.setIcon(new ImageIcon(getClass().getResource("/refresh.png")));
             room_button.setPreferredSize(new Dimension(20, 20));
             room_button.addActionListener(new ActionListener()
             {
