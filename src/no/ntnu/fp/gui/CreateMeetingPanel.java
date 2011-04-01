@@ -30,7 +30,9 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import com.toedter.calendar.JDateChooser;
+import java.awt.Dimension;
 import javax.swing.JOptionPane;
+import javax.tools.Diagnostic;
 
 public class CreateMeetingPanel extends BaseCalendarView
 {
@@ -455,6 +457,7 @@ public class CreateMeetingPanel extends BaseCalendarView
             roomChooser.setEditable(false);
             roomChooser.setEnabled(false);
             roomChooser.setRenderer(new RoomRendrer());
+            roomChooser.setPreferredSize(new Dimension(160, 20));
         }
         return roomChooser;
     }
@@ -480,7 +483,8 @@ public class CreateMeetingPanel extends BaseCalendarView
         if (room_button == null)
         {
             room_button = new JButton();
-            room_button.setText("Finn ledige rom");
+            room_button.setText("");
+            room_button.setPreferredSize(new Dimension(20, 20));
             room_button.addActionListener(new ActionListener()
             {
 
