@@ -1,5 +1,6 @@
 package no.ntnu.fp.gui;
 
+import javax.activity.InvalidActivityException;
 import no.ntnu.fp.model.*;
 
 
@@ -358,9 +359,17 @@ public class CreateMeetingPanel extends BaseCalendarView
             delete_button.addActionListener(new ActionListener()
             {
 
+                @SuppressWarnings("CallToThreadDumpStack")
                 public void actionPerformed(ActionEvent e)
                 {
-                    deleteEvent();
+                    try
+                    {
+                        deleteEvent();
+                    }
+                    catch (InvalidActivityException ex)
+                    {
+                        ex.printStackTrace();
+                    }
                 }
             });
             if (model.isNew())
@@ -373,7 +382,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         return delete_button;
     }
 
-    protected void deleteEvent()
+    protected void deleteEvent() throws InvalidActivityException
     {
     	//TODO: legg til funksjonalitet til å melde seg av event
         if (model.isNew())
