@@ -204,6 +204,13 @@ public class Communication {
 		return sr.isSuccess();
 	}
 
+        public static String getStatus(int meetingID, String userEmail){
+            ServerResponse sr = sendData("getStatus", meetingID, userEmail);
+            if (sr.isSuccess())
+                return (String) sr.getParameters()[0];
+            return "Venter";
+        }
+
 	public static boolean deleteEvent(int eId) {
 		return sendData("deleteEvent", eId).isSuccess();
 	}

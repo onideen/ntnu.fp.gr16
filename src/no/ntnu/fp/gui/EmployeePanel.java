@@ -102,5 +102,8 @@ public class EmployeePanel extends javax.swing.JPanel {
         }
         lblName.setText(p.getName());
         lblEmail.setText(p.getEmail());
+
+        if(!p.getStatus().equals(""))
+            lblEmail.setText(lblEmail.getText() + " - " + p.getStatus());
     }
 }
