@@ -1,5 +1,6 @@
 package no.ntnu.fp.gui;
 
+import javax.activity.InvalidActivityException;
 import no.ntnu.fp.model.*;
 
 
@@ -89,6 +90,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         initGUI();
     }
 
+    @SuppressWarnings("CallToThreadDumpStack")
     private void initGUI()
     {
         try
@@ -357,32 +359,47 @@ public class CreateMeetingPanel extends BaseCalendarView
             delete_button.addActionListener(new ActionListener()
             {
 
+                @SuppressWarnings("CallToThreadDumpStack")
                 public void actionPerformed(ActionEvent e)
                 {
-                    deleteEvent();
+                    try
+                    {
+                        deleteEvent();
+                    }
+                    catch (InvalidActivityException ex)
+                    {
+                        ex.printStackTrace();
+                    }
                 }
             });
-            if (model.isNew() || !model.isEditable())
+            if (model.isNew())
             {
                 delete_button.setText("Avbryt");
+            } else if(!model.isEditable()) {
+                delete_button.setText("Meld av");
             }
         }
         return delete_button;
     }
 
-    protected void deleteEvent()
+    protected void deleteEvent() throws InvalidActivityException
     {
     	//TODO: legg til funksjonalitet til å melde seg av event
-        if (model.isNew() || !model.isEditable())
+        if (model.isNew())
         {
             MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
-            MainPanel.getMainForm().refreshCalendar();
+            MainPanel.refreshCalendar();
+        }
+        else if(!model.isEditable()) {
+            model.messageMeOff();
+            MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
+            MainPanel.refreshCalendar();
         }
         else
         {
             model.delete();
             MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
-            MainPanel.getMainForm().refreshCalendar();
+            MainPanel.refreshCalendar();
         }
     }
 
@@ -408,7 +425,7 @@ public class CreateMeetingPanel extends BaseCalendarView
         {
             model.save();
             MainPanel.getMainForm().changeMain(MainPanel.CALENDAR);
-            MainPanel.getMainForm().refreshCalendar();
+            MainPanel.refreshCalendar();
         }
         else
         {
