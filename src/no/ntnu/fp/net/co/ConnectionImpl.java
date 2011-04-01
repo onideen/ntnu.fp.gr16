@@ -3,7 +3,6 @@
  */
 package no.ntnu.fp.net.co;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
@@ -14,10 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import no.ntnu.fp.net.admin.Log;
-import no.ntnu.fp.net.cl.ClException;
 import no.ntnu.fp.net.cl.ClSocket;
 import no.ntnu.fp.net.cl.KtnDatagram;
 import no.ntnu.fp.net.cl.KtnDatagram.Flag;
@@ -103,7 +99,7 @@ public class ConnectionImpl extends AbstractConnection
         KtnDatagram synAck = null;
         for (int i = 0; i < 3; i++)
         {
-            if(i % 1 == 0 && i > 0)
+            if (i % 1 == 0 && i > 0)
             {
                 try
                 {
@@ -247,7 +243,13 @@ public class ConnectionImpl extends AbstractConnection
      * @see AbstractConnection#sendDataPacketWithRetransmit(KtnDatagram)
      * @see no.ntnu.fp.net.co.Connection#send(String)
      */
-    public synchronized void send(String msg) throws ConnectException, IOException
+    public void send(String msg) throws ConnectException, IOException
+    {
+        send(msg, 2);
+    }
+
+    @SuppressWarnings("CallToThreadDumpStack")
+    private synchronized void send(String msg, int ttl) throws ConnectException, IOException
     {
         if (state != State.ESTABLISHED)
         {
@@ -260,7 +262,22 @@ public class ConnectionImpl extends AbstractConnection
         KtnDatagram ack = sendDataPacketWithRetransmit(datagram);
         if (ack == null)
         {
-            throw new IOException("No ack received.");
+            if (ttl == 0)
+            {
+                throw new IOException("No ack received.");
+            }
+            else
+            {
+                try
+                {
+                    wait(500);
+                }
+                catch (Throwable ex)
+                {
+                    ex.printStackTrace();
+                }
+                send(msg, --ttl);
+            }
         }
     }
 
@@ -285,7 +302,8 @@ public class ConnectionImpl extends AbstractConnection
             {
                 throw new IOException("No data came.");
             }
-            if(isValid(datagram)) {
+            if (isValid(datagram))
+            {
                 sendAck(datagram, false);
             }
             if (isValid(datagram) && datagram.getSeq_nr() != lastReceived)
@@ -349,9 +367,9 @@ public class ConnectionImpl extends AbstractConnection
     protected boolean isValid(KtnDatagram packet)
     {
         return packet.getChecksum() == packet.calculateChecksum()
-                && packet.getDest_addr().equals(myAddress)
-                && packet.getDest_port() == myPort
-                && packet.getSrc_addr().equals(remoteAddress)
-                && packet.getSrc_port() == remotePort;
+            && packet.getDest_addr().equals(myAddress)
+            && packet.getDest_port() == myPort
+            && packet.getSrc_addr().equals(remoteAddress)
+            && packet.getSrc_port() == remotePort;
     }
 }
