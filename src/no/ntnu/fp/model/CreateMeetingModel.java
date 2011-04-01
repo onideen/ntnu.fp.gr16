@@ -5,6 +5,7 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import javax.activity.InvalidActivityException;
 
 import no.ntnu.fp.model.Event.Type;
 
@@ -248,4 +249,15 @@ public class CreateMeetingModel
 	public String getResponsible() {
 		return event.getResponsible();
 	}
+
+    public void messageMeOff() throws InvalidActivityException
+    {
+        if(!isEditable()) {
+            Communication.messageMeOff(event.getEid(), Communication.LoggedInUserEmail);
+        }
+        else
+        {
+            throw new InvalidActivityException("Can't message off the event if you own it.");
+        }
+    }
 }
