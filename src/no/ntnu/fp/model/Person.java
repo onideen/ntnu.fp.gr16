@@ -20,7 +20,7 @@ public class Person {
 	 * This member variable holds the person's name.
 	 */
 	private String name;
-	
+	private String status;
 	private String password;
 	
 	private List<Event> events = new ArrayList<Event>();
@@ -91,6 +91,16 @@ public class Person {
 		id = System.currentTimeMillis();
 		propChangeSupp = new PropertyChangeSupport(this);
 	}
+
+        public void setStatus(String status)
+        {
+            this.status = status;
+        }
+
+        public String getStatus()
+        {
+            return this.status;
+        }
 	
 	/**
 	 * Constructs a new <code>Person</code> object with specified name, email, and date
