@@ -471,9 +471,7 @@ public class CreateMeetingPanel extends BaseCalendarView
             room_chooser_panel.add(getRoom_chooser(), c);
             c.gridx = 1;
             room_chooser_panel.add(getRoom_button(), c);
-
         }
-
         return room_chooser_panel;
     }
 
@@ -560,7 +558,6 @@ public class CreateMeetingPanel extends BaseCalendarView
         all_users_list = new JList();
         all_users_list.setCellRenderer(new AllEmployeesListRenderer());
         all_users_list.setModel(all_users_listModel);
-        all_users_list.setPreferredSize(new java.awt.Dimension(60, 70));
         return all_users_list;
 
     }
@@ -570,9 +567,10 @@ public class CreateMeetingPanel extends BaseCalendarView
         if (jScrollPane1 == null)
         {
             jScrollPane1 = new JScrollPane();
-//            jScrollPane1.setPreferredSize(new java.awt.Dimension(100, 387));
+            jScrollPane1.setPreferredSize(new java.awt.Dimension(100, 387));
             jScrollPane1.setViewportView(getAll_users_list());
             jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+            jScrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         }
         return jScrollPane1;
     }
@@ -584,6 +582,7 @@ public class CreateMeetingPanel extends BaseCalendarView
             selected_users_scroll = new JScrollPane();
             selected_users_scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
             selected_users_scroll.setViewportView(getSelected_users_list());
+            selected_users_scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         }
         return selected_users_scroll;
     }
@@ -596,8 +595,6 @@ public class CreateMeetingPanel extends BaseCalendarView
             selected_users_list = new JList();
             selected_users_list.setCellRenderer(new AllEmployeesListRenderer());
             selected_users_list.setModel(selected_users_listModel);
-            selected_users_list.setPreferredSize(new java.awt.Dimension(60, 70));
-            selected_users_list.setSize(177, 385);
         }
         return selected_users_list;
     }

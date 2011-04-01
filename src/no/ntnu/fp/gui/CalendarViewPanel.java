@@ -55,7 +55,7 @@ public class CalendarViewPanel extends BaseCalendarView implements ActionListene
         GridBagConstraints s = new GridBagConstraints();
         s.anchor = GridBagConstraints.NORTHWEST;
         s.fill = GridBagConstraints.BOTH;
-        calendarPanel.setPreferredSize(new Dimension(985, 445));
+        calendarPanel.setPreferredSize(new Dimension(985, 540));
 
         add(calendarPanel, s);
 
