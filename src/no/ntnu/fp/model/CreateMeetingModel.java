@@ -10,14 +10,15 @@ import javax.activity.InvalidActivityException;
 
 import no.ntnu.fp.model.Event.Type;
 
-public class CreateMeetingModel
+public final class CreateMeetingModel
 {
 
     private boolean newEvent;
     private boolean timeIsSet;
     private Event event;
-
     private Person responsiblePerson;
+    private List<Person> atendees;
+    private List<Person> emps;
 
     public CreateMeetingModel(Calendar date, Calendar startTime, Calendar endTime)
     {
@@ -27,21 +28,24 @@ public class CreateMeetingModel
         setEndTime(endTime);
         newEvent = true;
         timeIsSet = true;
-        
-        for(Person p : Communication.getEmployees())
-            if(p.getEmail().equals(Communication.LoggedInUserEmail))
+
+        for (Person p : Communication.getEmployees())
+        {
+            if (p.getEmail().equals(Communication.LoggedInUserEmail))
             {
                 responsiblePerson = p;
                 break;
             }
+        }
     }
 
     public CreateMeetingModel(Event event)
     {
         this.event = event;
-        
-        for(Person p : Communication.getEmployees()) {
-            if(p.getEmail().equals(event.getResponsible()))
+
+        for (Person p : Communication.getEmployees())
+        {
+            if (p.getEmail().equals(event.getResponsible()))
             {
                 responsiblePerson = p;
                 break;
@@ -57,12 +61,14 @@ public class CreateMeetingModel
         newEvent = true;
         timeIsSet = false;
 
-        for(Person p : Communication.getEmployees())
-            if(p.getEmail().equals(Communication.LoggedInUserEmail))
+        for (Person p : Communication.getEmployees())
+        {
+            if (p.getEmail().equals(Communication.LoggedInUserEmail))
             {
                 responsiblePerson = p;
                 break;
             }
+        }
     }
 
     public Calendar getDate()
@@ -103,16 +109,20 @@ public class CreateMeetingModel
     public Room getRoom()
     {
         System.out.println("getRooms() <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<< <<<");
-        
+
         return event.getRoomObject();
     }
 
     public void setRoom(Room room)
     {
-        if(room == null)
+        if (room == null)
+        {
             event.setRoom("");
+        }
         else
+        {
             event.setRoom(room.toString());
+        }
     }
 
     public String getDescription()
@@ -164,43 +174,53 @@ public class CreateMeetingModel
     public List<Room> getRooms()
     {
         List<Room> rooms = Communication.getFreeRooms(
-                new Reservation(new Date(getDate().getTimeInMillis()), new Time(getStartTime().getTimeInMillis()), new Time(getEndTime().getTimeInMillis())),
-                event.getEid()
-                );
+            new Reservation(new Date(getDate().getTimeInMillis()), new Time(getStartTime().getTimeInMillis()), new Time(getEndTime().getTimeInMillis())),
+            event.getEid());
 
         return rooms;
     }
 
     public List<Person> getAttendees()
     {
-        List<Person> att = new ArrayList<Person>();
-        List<Person> emps = Communication.getEmployees();
-        String status;
-        for(final Person p : emps)
-            if(event.attendees.contains(p.getEmail()) || responsiblePerson.getEmail().equals(p.getEmail()))
+        if (atendees == null)
+        {
+            List<Person> att = new ArrayList<Person>();
+            List<Person> emps = Communication.getEmployees();
+            String status;
+            for (final Person p : emps)
             {
-                status = Communication.getStatus(event.getEid(), p.getEmail());
-                p.setStatus(status);
-                att.add(p);
+                if (event.attendees.contains(p.getEmail()) || responsiblePerson.getEmail().equals(p.getEmail()))
+                {
+                    status = Communication.getStatus(event.getEid(), p.getEmail());
+                    p.setStatus(status);
+                    att.add(p);
+                }
             }
 
-        return att;
+            atendees = att;
+        }
+        return atendees;
     }
 
     public List<Person> getAllUsers()
     {
-        List<Person> attendees = getAttendees();
-        List<Person> employees = Communication.getEmployees();
-
-        for (Person person : attendees)
+        if (emps == null)
         {
-            if(person==null)
-                continue;
+            List<Person> attendees = getAttendees();
+            List<Person> employees = Communication.getEmployees();
 
-            employees.remove(person);
+            for (Person person : attendees)
+            {
+                if (person == null)
+                {
+                    continue;
+                }
+
+                employees.remove(person);
+            }
+            emps = employees;
         }
-
-        return employees;
+        return emps;
     }
 
     public void cleanAttendees()
@@ -215,19 +235,25 @@ public class CreateMeetingModel
 
     public boolean isValidInput()
     {
-    	if(getEndTime().before(getStartTime()) || getEndTime()==getStartTime())
+        if (getEndTime().before(getStartTime()) || getEndTime() == getStartTime())
+        {
             return false;
+        }
 
         return true;
     }
 
     public void save()
     {
-    	if (event.getAttendees().size() == 1)
-    		event.setType(Type.Appointment);
-    	else
-    		event.setType(Type.Meeting);
-    	
+        if (event.getAttendees().size() == 1)
+        {
+            event.setType(Type.Appointment);
+        }
+        else
+        {
+            event.setType(Type.Meeting);
+        }
+
         if (newEvent)
         {
             Communication.saveEvent(event);
@@ -248,18 +274,32 @@ public class CreateMeetingModel
         return event.getResponsible().equals(Communication.LoggedInUserEmail);
     }
 
-	public String getResponsible() {
-		return event.getResponsible();
-	}
+    public String getResponsible()
+    {
+        return event.getResponsible();
+    }
 
     public void messageMeOff() throws InvalidActivityException
     {
-        if(!isEditable()) {
+        if (!isEditable())
+        {
             Communication.messageMeOff(event.getEid(), Communication.LoggedInUserEmail);
         }
         else
         {
             throw new InvalidActivityException("Can't message off the event if you own it.");
         }
+    }
+
+    public boolean isAtendee()
+    {
+        for (Person p : getAttendees())
+        {
+            if (p.getEmail().equals(Communication.LoggedInUserEmail))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
