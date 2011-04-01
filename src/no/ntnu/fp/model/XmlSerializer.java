@@ -6,7 +6,6 @@
  */
 package no.ntnu.fp.model;
 
-import java.io.IOException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -16,12 +15,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
-import nu.xom.ParsingException;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * @author GR16
@@ -192,8 +188,8 @@ public class XmlSerializer {
 		
 		appendChildren(e,
 				createElement(Event.PROPERTY_DATE, m.getDate()),
-				createElement(Event.PROPERTY_ENDTIME, m.getEndTime()),
-				createElement(Event.PROPERTY_STARTTIME, m.getStartTime())
+				createElement(Event.PROPERTY_ENDTIME, m.getEndTime().getTimeInMillis()),
+				createElement(Event.PROPERTY_STARTTIME, m.getStartTime().getTimeInMillis())
 				);
 		
 		return createDataXml("Reservation", e);

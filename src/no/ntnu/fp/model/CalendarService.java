@@ -734,14 +734,16 @@ public class CalendarService implements ConnectionListener,
         while (rs.next()) {
             Event e = createEvent(rs);
 
-            System.out.println("Fann Event same dag: " + e.getEid() + ", " + e.getDateString());
+            System.out.println("Fann Event same dag: " + e.getEid() + ", " + e.getDateString() + ", " + e.getRoom());
 
             long a = e.getStartTime().getTimeInMillis();
             long b = e.getEndTime().getTimeInMillis();
-            long ss = r.getStartTime().getTime();
-            long ee = r.getEndTime().getTime();
-            if (((a >= ss && a < ee) || (b > ss && b < ee))
-                    || ((ss > a && ss < b) || (ee > a && ee <= b))) {
+            long ss = r.getStartTime().getTimeInMillis();
+            long ee = r.getEndTime().getTimeInMillis();
+
+            System.out.println(a + ", " + b + ", " + ss + ", " + ee);
+
+            if (((a >= ss && a < ee) || (b > ss && b < ee)) || ((ss > a && ss < b) || (ee > a && ee <= b))) {
 
                 System.out.println("Eventen krasjar.");
 
