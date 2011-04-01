@@ -85,7 +85,7 @@ public class EmployeesPanel extends BaseCalendarView
             }
         });
         jScrollPane1.setViewportView(lstEmployees);
-
+        
         btnShowCalendar.setText("Vis kalender");
         btnShowCalendar.setEnabled(false);
         btnShowCalendar.addActionListener(new java.awt.event.ActionListener() {
