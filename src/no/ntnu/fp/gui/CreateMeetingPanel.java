@@ -205,8 +205,10 @@ public class CreateMeetingPanel extends BaseCalendarView
 
         model.setDefaultValues();
         calendar.setDate(new Date(model.getDate().getTimeInMillis()));
-        startTime.setSelectedItem(new Time(model.getStartTime().getTimeInMillis()));
-        endTime.setSelectedItem(new Time(model.getEndTime().getTimeInMillis()));
+        //int startTimeIndex = model.getStartTime().get(Calendar.HOUR_OF_DAY) - 1;
+        startTime.setSelectedIndex((model.getStartTime().get(Calendar.HOUR_OF_DAY) + 23) % 24);
+        endTime.setSelectedIndex((model.getEndTime().get(Calendar.HOUR_OF_DAY) + 23) % 24);
+        System.out.println("index="+(model.getStartTime().get(Calendar.HOUR_OF_DAY) + 23) % 24);
         description.setText(model.getDescription());
         roomChooserModel.setSelectedItem(model.getRoom());
         addEmployees();
@@ -304,7 +306,6 @@ public class CreateMeetingPanel extends BaseCalendarView
         	System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ " + model.getTimes()[1].getTime());
         	System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ " + model.getTimes()[1].getTime());
         	System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ " + model.getTimes()[1].getTime());
-        	System.out.println(model.getStartTime().getTimeInMillis());
         	
             end_comboModel = new DefaultComboBoxModel(model.getTimes());
             endTime = new JComboBox(end_comboModel);
@@ -514,10 +515,14 @@ public class CreateMeetingPanel extends BaseCalendarView
     protected void getRooms()
     {
         model.setDate(calendar.getCalendar());
-        Time t1 = (Time)startTime.getSelectedItem();
+        int tt1 = (startTime.getSelectedIndex() + 1) * 3600 * 1000;
+        Time t1 = new Time(tt1);
+        
         int t = (endTime.getSelectedIndex() + 1) * 3600 * 1000;
+        System.out.println(endTime.getSelectedIndex());
         Time t2 = new Time(t);
-        //throw new NotImplementedException();*/
+        System.out.println(t1.getTime());
+        System.out.println(t2.getTime());
         List<Room> rooms = model.getRooms(calendar.getCalendar(), t1, t2);
 
         roomChooserModel.removeAllElements();

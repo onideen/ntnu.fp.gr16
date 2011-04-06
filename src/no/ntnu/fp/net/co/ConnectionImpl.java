@@ -136,6 +136,9 @@ public class ConnectionImpl extends AbstractConnection
             this.remoteAddress = synAck.getSrc_addr();
             this.remotePort = synAck.getSrc_port();
             sendAck(synAck, false);
+            sendAck(synAck, false);
+            sendAck(synAck, false);
+            sendAck(synAck, false);
             state = State.ESTABLISHED;
 
         }
