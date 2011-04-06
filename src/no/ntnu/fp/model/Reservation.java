@@ -4,9 +4,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeSupport;
 import java.sql.Date;
 import java.sql.Time;
+import java.util.Calendar;
 import java.util.List;
 
 import no.ntnu.fp.model.Event.Type;
+import no.ntnu.fp.model.calendar.Utils;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Reservation {
@@ -30,19 +32,21 @@ public class Reservation {
 		this.date = date;
 	}
 	
-	public Time getStartTime() {
-		return startTime;
+	public Calendar getStartTime() {
+		return Utils.getCalendar(startTime);
 	}
 	
-	public void setStartTime(Time startTime) {
-		this.startTime = startTime;
+	public void setStartTime(Calendar startTime) {
+		startTime.set(1970, 1, 1);
+		this.startTime = Utils.getSqlTime(startTime);
 	}
 	
-	public Time getEndTime() {
-		return endTime;
+	public Calendar getEndTime() {
+		return Utils.getCalendar(endTime);
 	}
 	
-	public void setEndTime(Time endTime) {
-		this.endTime = endTime;
+	public void setEndTime(Calendar endTime) {
+		endTime.set(1970, 1, 1);
+		this.startTime = Utils.getSqlTime(endTime);
 	}	
 }

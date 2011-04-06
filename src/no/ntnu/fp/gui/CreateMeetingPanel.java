@@ -36,6 +36,8 @@ import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
 import javax.tools.Diagnostic;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 public class CreateMeetingPanel extends BaseCalendarView
 {
 
@@ -286,7 +288,7 @@ public class CreateMeetingPanel extends BaseCalendarView
     {
         if (startTime == null)
         {
-            startTimeModel = new DefaultComboBoxModel(model.hentKlokkeslett());
+            startTimeModel = new DefaultComboBoxModel(model.getTimes());
             startTime = new JComboBox(startTimeModel);
             startTime.setEditable(true);
             startTime.setRequestFocusEnabled(false);
@@ -299,11 +301,17 @@ public class CreateMeetingPanel extends BaseCalendarView
     {
         if (endTime == null)
         {
-            end_comboModel = new DefaultComboBoxModel(model.hentKlokkeslett());
+        	System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ " + model.getTimes()[1].getTime());
+        	System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ " + model.getTimes()[1].getTime());
+        	System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ " + model.getTimes()[1].getTime());
+        	System.out.println(model.getStartTime().getTimeInMillis());
+        	
+            end_comboModel = new DefaultComboBoxModel(model.getTimes());
             endTime = new JComboBox(end_comboModel);
             endTime.setRequestFocusEnabled(false);
             endTime.setEditable(true);
             endTime.addActionListener(new TimeListener());
+            System.out.println(((Time)endTime.getItemAt(5)).getTime());
         }
         return endTime;
     }
@@ -506,7 +514,11 @@ public class CreateMeetingPanel extends BaseCalendarView
     protected void getRooms()
     {
         model.setDate(calendar.getCalendar());
-        List<Room> rooms = model.getRooms(calendar.getCalendar(), (Time)startTime.getSelectedItem(), (Time)endTime.getSelectedItem());
+        Time t1 = (Time)startTime.getSelectedItem();
+        int t = (endTime.getSelectedIndex() + 1) * 3600 * 1000;
+        Time t2 = new Time(t);
+        //throw new NotImplementedException();*/
+        List<Room> rooms = model.getRooms(calendar.getCalendar(), t1, t2);
 
         roomChooserModel.removeAllElements();
 
