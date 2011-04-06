@@ -736,6 +736,11 @@ public class CalendarService implements ConnectionListener,
 
             System.out.println("Fann Event same dag: " + e.getEid() + ", " + e.getDateString() + ", " + e.getRoom());
 
+            e.getStartTime().set(1970, 1, 1);
+            e.getEndTime().set(1970, 1, 1);
+            r.getStartTime().set(1970, 1, 1);
+            r.getEndTime().set(1970, 1, 1);
+
             long a = e.getStartTime().getTimeInMillis();
             long b = e.getEndTime().getTimeInMillis();
             long ss = r.getStartTime().getTimeInMillis();
