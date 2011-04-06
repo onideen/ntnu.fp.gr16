@@ -88,6 +88,7 @@ public class ConnectionImpl extends AbstractConnection
         datagram.setDest_port(remotePort);
         try
         {
+            // Send SYN
             simplySendPacket(datagram);
         }
         catch (Exception e)
@@ -95,8 +96,9 @@ public class ConnectionImpl extends AbstractConnection
             throw new IOException(e);
         }
 
-        state = State.CLOSED.SYN_SENT;
+        state = State.SYN_SENT;
         KtnDatagram synAck = null;
+        // Retry to send 3 times or untill we receive a SYN_ACK
         for (int i = 0; i < 3; i++)
         {
             if (i % 1 == 0 && i > 0)
@@ -133,6 +135,7 @@ public class ConnectionImpl extends AbstractConnection
         }
         else if (synAck.getFlag() == Flag.SYN_ACK)
         {
+            // Send ACK to the SYN_ACK
             this.remoteAddress = synAck.getSrc_addr();
             this.remotePort = synAck.getSrc_port();
             sendAck(synAck, false);
@@ -160,6 +163,7 @@ public class ConnectionImpl extends AbstractConnection
             long timeout = CONNECT_TIMEOUT;
             try
             {
+                // Wait for SYN
                 receiver.join();
             }
             catch (InterruptedException e)
@@ -181,6 +185,7 @@ public class ConnectionImpl extends AbstractConnection
                 remoteAddress = packet.getSrc_addr();
                 remotePort = packet.getSrc_port();
                 int mPort = myPort;
+                // assign new port to the new client.
                 myPort = ++newtPort;
                 sendAck(packet, true);
                 myPort = mPort;
@@ -204,6 +209,8 @@ public class ConnectionImpl extends AbstractConnection
                 connection.remotePort = packet.getSrc_port();
                 KtnDatagram ack = null;
                 int tries = 0;
+                // Wait for ACK. Because of instability in A2, sometimes receivePacket just returns with nothing,
+                // even though timeout didn't hit, so therefore we try 3 times.
                 while (ack == null && tries++ < 3)
                 {
                     ack = connection.receivePacket(true);
@@ -279,6 +286,8 @@ public class ConnectionImpl extends AbstractConnection
                 {
                     ex.printStackTrace();
                 }
+                // Try to send anew. This causes java to exit the synchronized context so that all other waiting acks
+                // and stuff like that gets flushed, and the send get's invoked anew. This is to prevent a livelock.
                 send(msg, --ttl);
             }
         }
@@ -370,9 +379,9 @@ public class ConnectionImpl extends AbstractConnection
     protected boolean isValid(KtnDatagram packet)
     {
         return packet.getChecksum() == packet.calculateChecksum()
-            && packet.getDest_addr().equals(myAddress)
-            && packet.getDest_port() == myPort
-            && packet.getSrc_addr().equals(remoteAddress)
-            && packet.getSrc_port() == remotePort;
+                && packet.getDest_addr().equals(myAddress)
+                && packet.getDest_port() == myPort
+                && packet.getSrc_addr().equals(remoteAddress)
+                && packet.getSrc_port() == remotePort;
     }
 }
