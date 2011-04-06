@@ -514,14 +514,11 @@ public class CreateMeetingPanel extends BaseCalendarView
     protected void getRooms()
     {
         model.setDate(calendar.getCalendar());
-        /*Time t1 = (Time)startTime.getSelectedItem();
+        Time t1 = (Time)startTime.getSelectedItem();
         int t = (endTime.getSelectedIndex() + 1) * 3600 * 1000;
-        System.out.println(endTime.getSelectedIndex());
         Time t2 = new Time(t);
-        System.out.println(t1.getTime());
-        System.out.println(t2.getTime());
-        throw new NotImplementedException();*/
-        List<Room> rooms = model.getRooms(calendar.getCalendar(), (Time)startTime.getSelectedItem(), (Time)endTime.getSelectedItem());
+        //throw new NotImplementedException();*/
+        List<Room> rooms = model.getRooms(calendar.getCalendar(), t1, t2);
 
         roomChooserModel.removeAllElements();
 
